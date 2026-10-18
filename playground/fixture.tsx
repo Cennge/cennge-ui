@@ -5,6 +5,7 @@
 import { StrictMode, Suspense, lazy, type ComponentType } from "react";
 import { createRoot } from "react-dom/client";
 import { CenngeProvider, Toaster } from "cennge-ui";
+import "./fonts";
 import "./styles.css";
 
 const fixtures = import.meta.glob<{ default: ComponentType }>("./fixtures/*.tsx");
