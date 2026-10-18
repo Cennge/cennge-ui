@@ -49,7 +49,8 @@ const alert = tv({
     icon: "mt-0.5 flex shrink-0 items-center",
     content: "flex min-w-0 flex-1 flex-col gap-0.5",
     title: "leading-5 font-semibold",
-    description: "leading-5 opacity-85",
+    // Full opacity: a translucent description fails WCAG contrast on tinted backgrounds.
+    description: "leading-5",
     close: [
       "-mt-1 -mr-1 flex size-7 shrink-0 cursor-pointer items-center justify-center rounded-full",
       "opacity-70 transition hover:bg-black/10 hover:opacity-100 dark:hover:bg-white/10",
@@ -61,7 +62,7 @@ const alert = tv({
       flat: {},
       bordered: { base: "border-[1.5px] bg-transparent" },
       faded: { base: "border-[1.5px] border-border bg-surface-2" },
-      solid: { base: "inset-shadow-tactile shadow-raised", description: "opacity-90" },
+      solid: { base: "inset-shadow-tactile shadow-raised" },
     },
     color: { default: {}, primary: {}, secondary: {}, success: {}, warning: {}, danger: {}, info: {} },
     radius: {
