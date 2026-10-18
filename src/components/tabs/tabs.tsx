@@ -21,10 +21,12 @@ const TabsStyleContext = React.createContext<TabsStyle>({
 });
 
 const list = tv({
-  base: "inline-flex items-center",
+  // w-fit: the Tabs root is a flex column and would stretch the list to full width.
+  base: "inline-flex w-fit items-center",
   variants: {
     variant: {
-      solid: "gap-1 rounded-medium bg-surface-2 p-1 inset-shadow-[inset_0_1px_2px_rgb(0_0_0/0.18)]",
+      // Translucent track: reads as sunken on any surface, in both themes.
+      solid: "gap-1 rounded-medium bg-default-bg p-1 inset-shadow-[inset_0_1px_2px_rgb(0_0_0/0.18)]",
       underlined: "gap-4 border-b border-border",
       light: "gap-1",
     },
