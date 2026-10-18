@@ -13,6 +13,7 @@ export * from "./components/dialog";
 export * from "./components/drawer";
 export * from "./components/dropdown";
 export * from "./components/empty-state";
+export * from "./components/file-upload";
 export * from "./components/hover-card";
 export * from "./components/indicator";
 export * from "./components/input";

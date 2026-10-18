@@ -10,6 +10,8 @@ import {
   Timeline,
   TimelineItem,
   TagsInput,
+  FileUpload,
+  toast,
 } from "cennge-ui";
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
@@ -123,6 +125,33 @@ export function AdvancedDemo() {
             removeLabel={(tag) => `Удалить ${tag}`}
           />
           <TagsInput label="Получатели" variant="bordered" placeholder="email и Enter" maxTags={5} size="sm" />
+        </div>
+      </Section>
+      <Section title="FileUpload">
+        <div className="flex flex-col gap-6">
+          <FileUpload
+            label="Скриншоты для README"
+            description="PNG или JPG, до 2 МБ, не больше 4 файлов"
+            accept={["image/png", "image/jpeg"]}
+            maxSize={2 * 1024 * 1024}
+            maxFiles={4}
+            onReject={(rejections) => toast.error(`Отклонено файлов: ${rejections.length}`)}
+            messages={{
+              prompt: "Перетащите файлы сюда или",
+              browse: "выберите",
+              dropping: "Отпустите, чтобы добавить",
+              fileList: "Выбранные файлы",
+              remove: (name) => `Удалить ${name}`,
+              error: (code, file) =>
+                ({
+                  "file-invalid-type": `${file.name}: нужен PNG или JPG`,
+                  "file-too-large": `${file.name}: больше 2 МБ`,
+                  "file-too-small": `${file.name}: пустой файл`,
+                  "too-many-files": `${file.name}: не больше 4 файлов`,
+                })[code],
+            }}
+          />
+          <FileUpload label="Вложение к issue" variant="button" multiple={false} messages={{ button: "Выбрать файл" }} />
         </div>
       </Section>
       {/* next */}
