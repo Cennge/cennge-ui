@@ -1,4 +1,5 @@
 import * as React from "react";
+import { flushSync } from "react-dom";
 import { tv } from "../../utils/tv";
 import { useId } from "../../utils/use-id";
 import { useCenngeDefaults } from "../../provider";
@@ -271,7 +272,9 @@ export const NumberInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
         }
         break;
       case "Enter":
-        commitText(); // the form still submits, with the committed value
+        // The form submits right after this keydown. Firefox does that before React's normal
+        // update would reach the hidden input, so commit synchronously.
+        flushSync(commitText);
         break;
     }
   };
