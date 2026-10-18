@@ -4,6 +4,8 @@ import {
   Separator,
   Button,
   Input,
+  BreadcrumbItem,
+  Breadcrumbs,
 } from "cennge-ui";
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
@@ -50,6 +52,28 @@ export function BasicsDemo() {
             <Separator orientation="vertical" />
             <span>Pull requests</span>
           </div>
+        </div>
+      </Section>
+      <Section title="Breadcrumbs">
+        <div className="flex flex-col gap-4">
+          <Breadcrumbs>
+            <BreadcrumbItem href="#Cennge">Cennge</BreadcrumbItem>
+            <BreadcrumbItem href="#cennge-ui">cennge-ui</BreadcrumbItem>
+            <BreadcrumbItem>README.md</BreadcrumbItem>
+          </Breadcrumbs>
+          <Breadcrumbs maxItems={3}>
+            <BreadcrumbItem href="#Cennge">Cennge</BreadcrumbItem>
+            <BreadcrumbItem href="#cennge-ui">cennge-ui</BreadcrumbItem>
+            <BreadcrumbItem href="#src">src</BreadcrumbItem>
+            <BreadcrumbItem href="#components">components</BreadcrumbItem>
+            <BreadcrumbItem href="#button">button</BreadcrumbItem>
+            <BreadcrumbItem>button.tsx</BreadcrumbItem>
+          </Breadcrumbs>
+          <Breadcrumbs separator="/" size="sm">
+            <BreadcrumbItem href="#Cennge">Cennge</BreadcrumbItem>
+            <BreadcrumbItem href="#ai-niche-scout">ai-niche-scout</BreadcrumbItem>
+            <BreadcrumbItem>Settings</BreadcrumbItem>
+          </Breadcrumbs>
         </div>
       </Section>
       {/* next */}
