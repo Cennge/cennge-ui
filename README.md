@@ -342,7 +342,7 @@ import { cn, tv } from "cennge-ui/utils";
 pnpm install
 pnpm dev            # playground at http://localhost:5173
 pnpm test           # Vitest unit tests
-pnpm test:e2e       # Playwright in real Chromium, desktop and mobile profiles
+pnpm test:e2e       # Playwright: Chromium, Firefox, WebKit; desktop, Pixel and iPhone profiles
 pnpm typecheck
 pnpm build          # tsup → dist/
 pnpm check:package  # publint + are-the-types-wrong
@@ -353,8 +353,8 @@ pnpm changeset      # describe a change for the next release
 
 - **Unit tests (Vitest + Testing Library)** for logic, roles and labels.
 - **End-to-end tests (Playwright)** on isolated fixture pages (`playground/fixtures/*`, opened as
-  `/fixture.html?name=…`), in headless Chromium on a desktop and a Pixel 7 profile: real keyboard, mouse,
-  touch, file choosers and drag events.
+  `/fixture.html?name=…`) in all three engines — Chromium, Firefox and WebKit (Safari's engine) — with
+  desktop, Pixel 7 and iPhone 17 profiles: real keyboard, mouse, touch, file choosers and drag events.
 - **Accessibility:** every fixture runs through axe-core against WCAG 2.2 AA in the dark and the light theme,
   and so does the whole playground.
 - **Clean console:** any error or warning in the browser console fails the test.

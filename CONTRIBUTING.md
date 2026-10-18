@@ -34,7 +34,8 @@ pnpm dev     # playground at http://localhost:5173
 ```bash
 pnpm typecheck
 pnpm test
-pnpm test:e2e    # first run: pnpm exec playwright install chromium
+pnpm test:e2e    # first run: pnpm exec playwright install chromium firefox webkit
+                 # one engine: pnpm test:e2e --project=firefox
 pnpm build && pnpm check:package
 pnpm changeset   # if the change affects the published package
 ```
