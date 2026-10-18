@@ -17,6 +17,7 @@ export * from "./components/hover-card";
 export * from "./components/indicator";
 export * from "./components/input";
 export * from "./components/kbd";
+export * from "./components/number-input";
 export * from "./components/pagination";
 export * from "./components/popover";
 export * from "./components/progress";

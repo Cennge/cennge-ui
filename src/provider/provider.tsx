@@ -6,6 +6,12 @@ export interface CenngeDefaults {
   color?: CenngeColor;
   size?: CenngeSize;
   radius?: CenngeRadius;
+  /**
+   * BCP 47 locale for number formatting and parsing, e.g. "ru-RU".
+   * Fixed (not the browser's) so server and client render the same text.
+   * @default "en-US"
+   */
+  locale?: string;
 }
 
 export interface CenngeProviderProps extends CenngeDefaults {
@@ -40,13 +46,14 @@ export function CenngeProvider({
   color,
   size,
   radius,
+  locale,
   reducedMotion = "user",
   tooltipDelay = 300,
   children,
 }: CenngeProviderProps) {
   const value = React.useMemo(
-    () => ({ color, size, radius, hasTooltipProvider: true }),
-    [color, size, radius],
+    () => ({ color, size, radius, locale, hasTooltipProvider: true }),
+    [color, size, radius, locale],
   );
 
   let content = <Tooltip.Provider delayDuration={tooltipDelay}>{children}</Tooltip.Provider>;
