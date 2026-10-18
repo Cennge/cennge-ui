@@ -21,6 +21,17 @@ describe("Combobox (single)", () => {
     expect(options()).toHaveLength(4);
   });
 
+  it("opens on click but not on focus alone", () => {
+    render(<Combobox label="Repository" items={repos} />);
+    const input = screen.getByRole("combobox");
+    fireEvent.focus(input);
+    expect(input).toHaveAttribute("aria-expanded", "false");
+    fireEvent.click(input);
+    expect(input).toHaveAttribute("aria-expanded", "true");
+    fireEvent.click(input);
+    expect(input).toHaveAttribute("aria-expanded", "true");
+  });
+
   it("filters as you type and shows the empty state", () => {
     render(<Combobox label="Repository" items={repos} emptyContent="Nothing found" />);
     const input = screen.getByRole("combobox");

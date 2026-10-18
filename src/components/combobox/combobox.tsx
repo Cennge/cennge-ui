@@ -348,6 +348,10 @@ export const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(functi
                 setActiveIndex(0);
               }}
               onKeyDown={onKeyDown}
+              // A click or tap in the field shows the list; keyboard focus alone does not.
+              onClick={() => {
+                if (!isOpen) open();
+              }}
               onBlur={(event) => {
                 // Focus moving into the popup (mouse) keeps it open; anything else closes.
                 const next = event.relatedTarget as Node | null;
