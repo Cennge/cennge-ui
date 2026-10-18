@@ -44,7 +44,25 @@ export async function openFixture(page: Page, name: string, theme: Theme = "dark
 }
 
 /**
- * axe-core against WCAG 2.2 A/AA. Reports rule, impact and the first offending nodes.
+ * Wait until every finite CSS transition and animation has finished, so checks see the settled UI
+ * rather than in-between colours (e.g. right after switching the theme). Endless ones (spinners,
+ * shimmer) are ignored. getAnimations() flushes styles, so transitions that just started are included.
+ */
+export async function settleAnimations(page: Page) {
+  await page.evaluate(async () => {
+    const finite = document.getAnimations().filter((animation) => {
+      const end = animation.effect?.getComputedTiming().endTime;
+      return typeof end === "number" && Number.isFinite(end);
+    });
+    await Promise.race([
+      Promise.all(finite.map((animation) => animation.finished.catch(() => undefined))),
+      new Promise((resolve) => setTimeout(resolve, 3000)),
+    ]);
+  });
+}
+
+/**
+ * axe-core against WCAG 2.2 A/AA, on the settled page. Reports rule, impact and the first offending nodes.
  *
  * `modal: true` while a modal overlay (Dialog, Drawer, Select, modal menus) is open: Radix hides the
  * rest of the page with aria-hidden and makes it unreachable (focus trap + outside pointer events off).
@@ -55,11 +73,18 @@ export async function expectAccessible(
   page: Page,
   options: { include?: string; exclude?: string[]; modal?: boolean } = {},
 ) {
+  await settleAnimations(page);
+  // Anything still running (e.g. a headless engine whose animation clock does not advance) is cut
+  // short: cancelling a transition jumps straight to its end value, in every engine.
+  const freeze = await page.addStyleTag({
+    content: "*, *::before, *::after { transition: none !important; }",
+  });
   let builder = new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"]);
   if (options.modal) builder = builder.disableRules(["aria-hidden-focus"]);
   if (options.include) builder = builder.include(options.include);
   for (const selector of options.exclude ?? []) builder = builder.exclude(selector);
   const { violations } = await builder.analyze();
+  await freeze.evaluate((node) => (node as Element).remove());
   const report = violations.map(
     (v) =>
       `${v.id} [${v.impact}] ${v.help}\n` +
