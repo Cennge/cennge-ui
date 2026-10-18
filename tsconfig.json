@@ -17,5 +17,5 @@
       "cennge-ui/utils": ["./src/utils/index.ts"]
     }
   },
-  "include": ["src", "playground", "tests", "*.config.ts"]
+  "include": ["src", "playground", "tests", "e2e", "*.config.ts"]
 }
