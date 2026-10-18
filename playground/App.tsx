@@ -3,6 +3,7 @@ import { Button, type CenngeColor, type CenngeRadius, type CenngeSize, type Cenn
 import { ComponentsDemo } from "./ComponentsDemo";
 import { MoreDemo } from "./MoreDemo";
 import { SelectDemo } from "./SelectDemo";
+import { LayoutDemo } from "./LayoutDemo";
 
 const colors: CenngeColor[] = ["default", "primary", "secondary", "success", "warning", "danger", "info"];
 const variants: CenngeVariant[] = ["solid", "shadow", "bordered", "flat", "faded", "light", "ghost"];
@@ -64,6 +65,7 @@ export function App() {
       <SelectDemo />
       <ComponentsDemo />
       <MoreDemo />
+      <LayoutDemo />
 
       <Section title="Button: цвета × варианты">
         <div className="overflow-x-auto">

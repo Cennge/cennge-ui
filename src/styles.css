@@ -368,6 +368,32 @@
   --animate-cennge-toast-in: cennge-toast-in 320ms cubic-bezier(0.23, 1, 0.32, 1);
   --animate-cennge-toast-out: cennge-fade-out 160ms ease-in forwards;
   --animate-cennge-shimmer: cennge-shimmer 1.6s ease-in-out infinite;
+  --animate-cennge-accordion-down: cennge-accordion-down 220ms cubic-bezier(0.23, 1, 0.32, 1);
+  --animate-cennge-accordion-up: cennge-accordion-up 180ms ease-in;
+  --animate-cennge-slide-in: cennge-slide-in 300ms cubic-bezier(0.32, 0.72, 0, 1);
+  --animate-cennge-slide-out: cennge-slide-out 200ms ease-in forwards;
+  --animate-cennge-progress: cennge-progress 1.4s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+
+  /* Height is the one layout animation here: Radix measures it for us. */
+  @keyframes cennge-accordion-down {
+    from { height: 0; opacity: 0; }
+    to { height: var(--radix-accordion-content-height); }
+  }
+  @keyframes cennge-accordion-up {
+    from { height: var(--radix-accordion-content-height); }
+    to { height: 0; opacity: 0; }
+  }
+  /* Drawers set --cennge-slide-x / --cennge-slide-y for their edge. */
+  @keyframes cennge-slide-in {
+    from { transform: translate(var(--cennge-slide-x, 0), var(--cennge-slide-y, 0)); }
+  }
+  @keyframes cennge-slide-out {
+    to { transform: translate(var(--cennge-slide-x, 0), var(--cennge-slide-y, 0)); }
+  }
+  @keyframes cennge-progress {
+    from { transform: translateX(-100%); }
+    to { transform: translateX(250%); }
+  }
 
   @keyframes cennge-toast-in {
     from { opacity: 0; transform: translateY(var(--cennge-toast-from, 16px)) scale(0.97); }

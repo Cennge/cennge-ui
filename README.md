@@ -27,8 +27,11 @@ A regular npm package — `npm update` and every app gets the fix.
 - **Server Components ready.** `"use client"` ships in the build; helpers stay server-safe.
 
 > **Status:** early development (0.x).
-> **Components:** Button · Input · Select · Combobox · MultiSelect · Checkbox · Switch · Card · Badge · Avatar · Tabs ·
-> Tooltip · Dialog · Dropdown · Toast · Alert · Skeleton · Spinner.
+> **26 components.**
+> Forms: Button · Input · Textarea · Select · Combobox · MultiSelect · Checkbox · RadioGroup · Switch · Slider.
+> Overlays: Dialog · Drawer · Popover · Dropdown · Tooltip · Toast.
+> Display: Card · Badge · Avatar · Alert · Progress · Skeleton · Spinner.
+> Navigation: Tabs · Accordion · Pagination.
 
 <details>
 <summary>Light theme with the blue accent preset</summary>
@@ -189,6 +192,44 @@ const repos = [
 
 // MultiSelect — the same component with selectionMode="multiple": tags, Backspace removes the last one.
 <Combobox selectionMode="multiple" label="Topics" items={topics} values={selected} onValuesChange={setSelected} />
+```
+
+### More inputs
+
+```tsx
+<Textarea label="Release notes" minRows={3} maxRows={8} />          // grows with the text
+
+<RadioGroup label="Visibility" value={visibility} onValueChange={setVisibility}>
+  <Radio value="public" description="Anyone on the internet">Public</Radio>
+  <Radio value="private">Private</Radio>
+</RadioGroup>
+
+<Slider label="Stars" value={range} onValueChange={setRange} min={0} max={1000} />   // [from, to] → range
+<Slider label="Opacity" defaultValue={70} formatValue={(v) => `${v}%`} />
+```
+
+### Drawer, Popover, Accordion, Progress, Pagination
+
+```tsx
+<Drawer>
+  <DrawerTrigger><Button>Settings</Button></DrawerTrigger>
+  <DrawerContent placement="right" size="md">          {/* left | right | top | bottom */}
+    <DrawerHeader><DrawerTitle>Repository settings</DrawerTitle></DrawerHeader>
+    <DrawerBody>…</DrawerBody>
+  </DrawerContent>
+</Drawer>
+
+<Popover>
+  <PopoverTrigger><Button>Share</Button></PopoverTrigger>
+  <PopoverContent showArrow>…</PopoverContent>
+</Popover>
+
+<Accordion variant="splitted" selectionMode="multiple">
+  <AccordionItem value="install" title="How do I install it?">pnpm add cennge-ui</AccordionItem>
+</Accordion>
+
+<Progress label="Uploading" value={42} />    {/* no value → indeterminate */}
+<Pagination total={24} page={page} onPageChange={setPage} />
 ```
 
 ### Forms and feedback
