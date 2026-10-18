@@ -2,7 +2,7 @@ import * as React from "react";
 import { Slot } from "radix-ui";
 import { useCenngeDefaults } from "../../provider";
 import type { CenngeColor, CenngeRadius, CenngeSize, CenngeVariant } from "../../types";
-import { Spinner } from "./spinner";
+import { Spinner } from "../spinner";
 import { button } from "./button.styles";
 
 export interface ButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "color"> {

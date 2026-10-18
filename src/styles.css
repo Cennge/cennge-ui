@@ -365,6 +365,17 @@
   --animate-cennge-pop-out: cennge-pop-out 110ms ease-in forwards;
   --animate-cennge-dialog-in: cennge-dialog-in 240ms cubic-bezier(0.23, 1, 0.32, 1);
   --animate-cennge-dialog-out: cennge-dialog-out 140ms ease-in forwards;
+  --animate-cennge-toast-in: cennge-toast-in 320ms cubic-bezier(0.23, 1, 0.32, 1);
+  --animate-cennge-toast-out: cennge-fade-out 160ms ease-in forwards;
+  --animate-cennge-shimmer: cennge-shimmer 1.6s ease-in-out infinite;
+
+  @keyframes cennge-toast-in {
+    from { opacity: 0; transform: translateY(var(--cennge-toast-from, 16px)) scale(0.97); }
+  }
+  @keyframes cennge-shimmer {
+    from { transform: translateX(-100%); }
+    to { transform: translateX(100%); }
+  }
 
   @keyframes cennge-fade-in {
     from { opacity: 0; }

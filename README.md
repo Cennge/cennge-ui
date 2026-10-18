@@ -26,8 +26,9 @@ A regular npm package — `npm update` and every app gets the fix.
 - **Light on dependencies.** No CSS-in-JS, no animation library: motion is plain CSS and respects `prefers-reduced-motion`.
 - **Server Components ready.** `"use client"` ships in the build; helpers stay server-safe.
 
-> **Status:** early development (0.x). Components: **Button, Input, Card, Badge, Tooltip, Dialog, Dropdown**.
-> Next up: Combobox / MultiSelect.
+> **Status:** early development (0.x).
+> **Components:** Button · Input · Checkbox · Switch · Card · Badge · Avatar · Tabs · Tooltip · Dialog · Dropdown ·
+> Toast · Alert · Skeleton · Spinner. Next up: Combobox / MultiSelect.
 
 <details>
 <summary>Light theme with the blue accent preset</summary>
@@ -152,6 +153,45 @@ import {
 ```
 
 Inner parts of `Input` and `DialogContent` take classes through `classNames={{ slot: "…" }}`.
+
+### Toasts
+
+Mount `<Toaster />` once, then call `toast()` from anywhere — event handlers, data hooks, plain modules.
+
+```tsx
+import { Toaster, toast } from "cennge-ui";
+
+<Toaster placement="bottom-right" />;
+
+toast("Link copied");
+toast.success("Deployed", { description: "v0.1.0 is live" });
+toast.warning("Branch is behind", { action: { label: "Update", onClick: rebase } });
+toast.promise(push(), { loading: "Pushing…", success: "Pushed", error: "Push failed" });
+```
+
+### Forms and feedback
+
+```tsx
+<Switch isSelected={on} onValueChange={setOn}>Pull request notifications</Switch>
+<Checkbox isIndeterminate={some && !all} isSelected={all} onValueChange={selectAll}>All labels</Checkbox>
+<Alert color="danger" title="Build failed" description="Typecheck job exited with code 2" isClosable />
+
+<Tabs defaultValue="code" variant="underlined" color="primary">
+  <TabsList aria-label="Repository">
+    <TabsTrigger value="code">Code</TabsTrigger>
+    <TabsTrigger value="issues">Issues</TabsTrigger>
+  </TabsList>
+  <TabsContent value="code">…</TabsContent>
+  <TabsContent value="issues">…</TabsContent>
+</Tabs>
+
+<AvatarGroup max={3}>
+  <Avatar src="https://github.com/Cennge.png" name="Cennge" isBordered />
+  <Avatar name="Ann Lee" color="primary" isBordered />
+</AvatarGroup>
+
+<Skeleton isLoaded={!isLoading} className="h-4 w-40"><p>{user.name}</p></Skeleton>
+```
 
 ## Provider (optional)
 
