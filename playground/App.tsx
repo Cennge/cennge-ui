@@ -1,5 +1,6 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { Button, type CenngeColor, type CenngeRadius, type CenngeSize, type CenngeVariant } from "cennge-ui";
+import { ComponentsDemo } from "./ComponentsDemo";
 
 const colors: CenngeColor[] = ["default", "primary", "secondary", "success", "warning", "danger", "info"];
 const variants: CenngeVariant[] = ["solid", "shadow", "bordered", "flat", "faded", "light", "ghost"];
@@ -38,7 +39,7 @@ export function App() {
       <header className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-extrabold tracking-tight">cennge-ui</h1>
-          <p className="text-muted">Button — 7 цветов × 7 вариантов</p>
+          <p className="text-muted">Песочница компонентов</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           {accents.map((a) => (
@@ -58,7 +59,9 @@ export function App() {
         </div>
       </header>
 
-      <Section title="Цвета × варианты">
+      <ComponentsDemo />
+
+      <Section title="Button: цвета × варианты">
         <div className="overflow-x-auto">
           <table className="border-separate border-spacing-2">
             <thead>

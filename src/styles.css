@@ -353,6 +353,39 @@
   transition-duration: 0.01ms !important;
 }
 
+/* ------------------------------------------------------------ animations */
+/*
+ * Overlays enter with the tactile ease-out and leave faster. Only opacity and transform.
+ * Exit animations use `forwards` so the end state holds until Radix unmounts the node.
+ */
+@theme {
+  --animate-cennge-fade-in: cennge-fade-in 200ms cubic-bezier(0.23, 1, 0.32, 1);
+  --animate-cennge-fade-out: cennge-fade-out 140ms ease-in forwards;
+  --animate-cennge-pop-in: cennge-pop-in 160ms cubic-bezier(0.23, 1, 0.32, 1);
+  --animate-cennge-pop-out: cennge-pop-out 110ms ease-in forwards;
+  --animate-cennge-dialog-in: cennge-dialog-in 240ms cubic-bezier(0.23, 1, 0.32, 1);
+  --animate-cennge-dialog-out: cennge-dialog-out 140ms ease-in forwards;
+
+  @keyframes cennge-fade-in {
+    from { opacity: 0; }
+  }
+  @keyframes cennge-fade-out {
+    to { opacity: 0; }
+  }
+  @keyframes cennge-pop-in {
+    from { opacity: 0; transform: scale(0.96); }
+  }
+  @keyframes cennge-pop-out {
+    to { opacity: 0; transform: scale(0.96); }
+  }
+  @keyframes cennge-dialog-in {
+    from { opacity: 0; transform: translateY(8px) scale(0.96); }
+  }
+  @keyframes cennge-dialog-out {
+    to { opacity: 0; transform: scale(0.97); }
+  }
+}
+
 /* ----------------------------------------------------- Tailwind mapping */
 @theme inline {
   --color-background: var(--cennge-background);

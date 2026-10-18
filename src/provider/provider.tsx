@@ -20,11 +20,16 @@ export interface CenngeProviderProps extends CenngeDefaults {
   children?: React.ReactNode;
 }
 
-const DefaultsContext = React.createContext<CenngeDefaults>({});
+interface CenngeContextValue extends CenngeDefaults {
+  /** Set inside <CenngeProvider>: a shared Radix Tooltip.Provider is already mounted. */
+  hasTooltipProvider?: boolean;
+}
+
+const CenngeContext = React.createContext<CenngeContextValue>({});
 
 /** Prop defaults set by the nearest <CenngeProvider>. Empty object without a provider. */
-export function useCenngeDefaults(): CenngeDefaults {
-  return React.useContext(DefaultsContext);
+export function useCenngeDefaults(): CenngeContextValue {
+  return React.useContext(CenngeContext);
 }
 
 /**
@@ -39,7 +44,10 @@ export function CenngeProvider({
   tooltipDelay = 300,
   children,
 }: CenngeProviderProps) {
-  const defaults = React.useMemo(() => ({ color, size, radius }), [color, size, radius]);
+  const value = React.useMemo(
+    () => ({ color, size, radius, hasTooltipProvider: true }),
+    [color, size, radius],
+  );
 
   let content = <Tooltip.Provider delayDuration={tooltipDelay}>{children}</Tooltip.Provider>;
   if (reducedMotion === "always") {
@@ -50,5 +58,5 @@ export function CenngeProvider({
     );
   }
 
-  return <DefaultsContext.Provider value={defaults}>{content}</DefaultsContext.Provider>;
+  return <CenngeContext.Provider value={value}>{content}</CenngeContext.Provider>;
 }

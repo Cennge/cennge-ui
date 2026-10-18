@@ -26,8 +26,8 @@ A regular npm package — `npm update` and every app gets the fix.
 - **Light on dependencies.** No CSS-in-JS, no animation library: motion is plain CSS and respects `prefers-reduced-motion`.
 - **Server Components ready.** `"use client"` ships in the build; helpers stay server-safe.
 
-> **Status:** early development (0.x). Available now: `Button`, `CenngeProvider`, `cn`.
-> Next up: Input, Card, Dialog, Dropdown, Badge, Tooltip.
+> **Status:** early development (0.x). Components: **Button, Input, Card, Badge, Tooltip, Dialog, Dropdown**.
+> Next up: Combobox / MultiSelect.
 
 <details>
 <summary>Light theme with the blue accent preset</summary>
@@ -94,6 +94,64 @@ See [`src/styles.css`](src/styles.css).
 | `startContent`, `endContent`, `spinner` | ReactNode | |
 | `asChild` | render your own element, e.g. a router `<Link>` | `false` |
 | `className` | merged with tailwind-merge, wins over variant classes | |
+
+## Components
+
+```tsx
+import {
+  Badge, Button, Card, CardBody, CardFooter, CardHeader,
+  Dialog, DialogBody, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger,
+  Dropdown, DropdownContent, DropdownItem, DropdownSeparator, DropdownTrigger,
+  Input, Tooltip,
+} from "cennge-ui";
+
+// Input — controlled or uncontrolled, with label, helper text, validation and a clear button
+<Input label="Email" isRequired isClearable value={email} onValueChange={setEmail}
+       isInvalid={!valid} errorMessage="Enter a valid email" />
+
+// Badge — solid, flat, bordered, faded, dot
+<Badge color="success" variant="dot">Online</Badge>
+
+// Card — raised, bordered, flat; pressable as a link
+<Card asChild isPressable>
+  <a href="/project/sodium">
+    <CardHeader>Sodium</CardHeader>
+    <CardBody>Rendering engine</CardBody>
+  </a>
+</Card>
+
+// Tooltip — works with or without the provider
+<Tooltip content="Add to favourites" showArrow>
+  <Button isIconOnly aria-label="Favourite"><HeartIcon /></Button>
+</Tooltip>
+
+// Dialog — long content scrolls inside DialogBody
+<Dialog>
+  <DialogTrigger><Button color="danger">Delete</Button></DialogTrigger>
+  <DialogContent size="sm">
+    <DialogHeader>
+      <DialogTitle>Delete project?</DialogTitle>
+      <DialogDescription>This cannot be undone.</DialogDescription>
+    </DialogHeader>
+    <DialogFooter>
+      <DialogClose><Button variant="flat">Cancel</Button></DialogClose>
+      <Button color="danger" onClick={remove}>Delete</Button>
+    </DialogFooter>
+  </DialogContent>
+</Dialog>
+
+// Dropdown
+<Dropdown>
+  <DropdownTrigger><Button variant="faded">Actions</Button></DropdownTrigger>
+  <DropdownContent>
+    <DropdownItem shortcut="⌘E" onAction={edit}>Edit</DropdownItem>
+    <DropdownSeparator />
+    <DropdownItem color="danger" onAction={remove}>Delete</DropdownItem>
+  </DropdownContent>
+</Dropdown>
+```
+
+Inner parts of `Input` and `DialogContent` take classes through `classNames={{ slot: "…" }}`.
 
 ## Provider (optional)
 
