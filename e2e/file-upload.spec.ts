@@ -150,9 +150,11 @@ test("long file names stay inside the row on small screens", async ({ page }) =>
 for (const theme of ["dark", "light"] as const) {
   test(`passes axe in the ${theme} theme, with files and errors shown`, async ({ page }) => {
     await openFixture(page, "file-upload", theme);
-    const chooser = page.waitForEvent("filechooser");
-    await zone(page).click();
-    await (await chooser).setFiles([png("cat.png"), { name: "notes.txt", mimeType: "text/plain", buffer: Buffer.from("x") }]);
+    // This test is about the rendered state; the file chooser itself has its own tests above.
+    await page
+      .locator('input[type="file"]')
+      .first()
+      .setInputFiles([png("cat.png"), { name: "notes.txt", mimeType: "text/plain", buffer: Buffer.from("x") }]);
     await expect(files(page)).toHaveText("cat.png");
     await expectAccessible(page);
   });
