@@ -111,7 +111,10 @@
 /* --------------------------------------------------- semantic colour roles */
 /*
  * Each role = a scale (50–950) + DEFAULT (solid fill) + foreground (text on the fill)
- * + text (the role used as text on a surface). Pairs are checked for WCAG AA (4.5:1).
+ * + text (the role used as text). All pairs meet WCAG AA (4.5:1):
+ *   foreground on DEFAULT;
+ *   text on every surface AND on the role's tinted -bg (14%) and -highlight (26%) backgrounds.
+ * That is why text is the 800 step in light theme and the 300 step in dark theme.
  * To recolour a role, override its 11 scale steps plus DEFAULT, foreground and text.
  */
 :root,
@@ -129,7 +132,7 @@
   --cennge-primary-950: var(--cennge-orange-950);
   --cennge-primary: var(--cennge-orange-500);
   --cennge-primary-foreground: var(--cennge-ink);
-  --cennge-primary-text: var(--cennge-orange-700);
+  --cennge-primary-text: var(--cennge-orange-800);
 }
 
 :root {
@@ -146,7 +149,7 @@
   --cennge-secondary-950: var(--cennge-violet-950);
   --cennge-secondary: var(--cennge-violet-600);
   --cennge-secondary-foreground: var(--cennge-white);
-  --cennge-secondary-text: var(--cennge-violet-700);
+  --cennge-secondary-text: var(--cennge-violet-800);
 
   --cennge-success-50: var(--cennge-green-50);
   --cennge-success-100: var(--cennge-green-100);
@@ -161,7 +164,7 @@
   --cennge-success-950: var(--cennge-green-950);
   --cennge-success: var(--cennge-green-500);
   --cennge-success-foreground: var(--cennge-ink);
-  --cennge-success-text: var(--cennge-green-700);
+  --cennge-success-text: var(--cennge-green-800);
 
   --cennge-warning-50: var(--cennge-amber-50);
   --cennge-warning-100: var(--cennge-amber-100);
@@ -176,7 +179,7 @@
   --cennge-warning-950: var(--cennge-amber-950);
   --cennge-warning: var(--cennge-amber-500);
   --cennge-warning-foreground: var(--cennge-ink);
-  --cennge-warning-text: var(--cennge-amber-700);
+  --cennge-warning-text: var(--cennge-amber-800);
 
   --cennge-danger-50: var(--cennge-red-50);
   --cennge-danger-100: var(--cennge-red-100);
@@ -191,7 +194,7 @@
   --cennge-danger-950: var(--cennge-red-950);
   --cennge-danger: var(--cennge-red-600);
   --cennge-danger-foreground: var(--cennge-white);
-  --cennge-danger-text: var(--cennge-red-700);
+  --cennge-danger-text: var(--cennge-red-800);
 
   --cennge-info-50: var(--cennge-blue-50);
   --cennge-info-100: var(--cennge-blue-100);
@@ -206,7 +209,7 @@
   --cennge-info-950: var(--cennge-blue-950);
   --cennge-info: var(--cennge-blue-600);
   --cennge-info-foreground: var(--cennge-white);
-  --cennge-info-text: var(--cennge-blue-700);
+  --cennge-info-text: var(--cennge-blue-800);
 
   /* ------------------------------------------------ light theme surfaces */
   color-scheme: light;
@@ -252,12 +255,12 @@
   --cennge-muted: #9aa2ae;
   --cennge-border: #2f343c;
 
-  --cennge-primary-text: var(--cennge-primary-400);
-  --cennge-secondary-text: var(--cennge-secondary-400);
-  --cennge-success-text: var(--cennge-success-400);
-  --cennge-warning-text: var(--cennge-warning-400);
-  --cennge-danger-text: var(--cennge-danger-400);
-  --cennge-info-text: var(--cennge-info-400);
+  --cennge-primary-text: var(--cennge-primary-300);
+  --cennge-secondary-text: var(--cennge-secondary-300);
+  --cennge-success-text: var(--cennge-success-300);
+  --cennge-warning-text: var(--cennge-warning-300);
+  --cennge-danger-text: var(--cennge-danger-300);
+  --cennge-info-text: var(--cennge-info-300);
 
   --cennge-edge-light: rgb(255 255 255 / 0.16);
   --cennge-edge-dark: rgb(0 0 0 / 0.28);
@@ -283,7 +286,7 @@
   --cennge-primary-950: var(--cennge-blue-950);
   --cennge-primary: var(--cennge-blue-600);
   --cennge-primary-foreground: var(--cennge-white);
-  --cennge-primary-text: var(--cennge-blue-700);
+  --cennge-primary-text: var(--cennge-blue-800);
 }
 
 [data-accent="green"] {
@@ -300,7 +303,7 @@
   --cennge-primary-950: var(--cennge-green-950);
   --cennge-primary: var(--cennge-green-500);
   --cennge-primary-foreground: var(--cennge-ink);
-  --cennge-primary-text: var(--cennge-green-700);
+  --cennge-primary-text: var(--cennge-green-800);
 }
 
 [data-accent="violet"] {
@@ -317,7 +320,7 @@
   --cennge-primary-950: var(--cennge-violet-950);
   --cennge-primary: var(--cennge-violet-600);
   --cennge-primary-foreground: var(--cennge-white);
-  --cennge-primary-text: var(--cennge-violet-700);
+  --cennge-primary-text: var(--cennge-violet-800);
 }
 
 [data-accent="red"] {
@@ -334,14 +337,14 @@
   --cennge-primary-950: var(--cennge-red-950);
   --cennge-primary: var(--cennge-red-600);
   --cennge-primary-foreground: var(--cennge-white);
-  --cennge-primary-text: var(--cennge-red-700);
+  --cennge-primary-text: var(--cennge-red-800);
 }
 
 /* Dark text steps for presets. `.dark` can sit on the same element or an ancestor. */
 .dark[data-accent],
 .dark [data-accent],
 [data-accent].dark {
-  --cennge-primary-text: var(--cennge-primary-400);
+  --cennge-primary-text: var(--cennge-primary-300);
 }
 
 /* <CenngeProvider reducedMotion="always"> */
