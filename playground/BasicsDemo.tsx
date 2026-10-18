@@ -15,6 +15,11 @@ import {
   ContextMenuSeparator,
   ContextMenuTrigger,
   toast,
+  Avatar,
+  Badge,
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
 } from "cennge-ui";
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
@@ -139,6 +144,36 @@ export function BasicsDemo() {
             </ContextMenuItem>
           </ContextMenuContent>
         </ContextMenu>
+      </Section>
+      <Section title="HoverCard">
+        <p className="text-sm text-muted">
+          Автор библиотеки —{" "}
+          <HoverCard>
+            <HoverCardTrigger>
+              <a href="https://github.com/Cennge" className="font-semibold text-primary-text hover:underline">
+                @Cennge
+              </a>
+            </HoverCardTrigger>
+            <HoverCardContent align="start">
+              <div className="flex gap-3">
+                <Avatar src="https://github.com/Cennge.png" name="Cennge" size="lg" />
+                <div className="flex min-w-0 flex-col gap-1">
+                  <p className="font-bold">Cennge</p>
+                  <p className="text-muted">TypeScript, Python, Java</p>
+                  <div className="mt-1 flex flex-wrap gap-1.5">
+                    <Badge size="sm" color="info" variant="dot">
+                      cennge-ui
+                    </Badge>
+                    <Badge size="sm" color="info" variant="dot">
+                      ai-niche-scout
+                    </Badge>
+                  </div>
+                </div>
+              </div>
+            </HoverCardContent>
+          </HoverCard>
+          . Наведите на ссылку.
+        </p>
       </Section>
       {/* next */}
     </div>
