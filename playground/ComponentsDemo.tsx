@@ -51,7 +51,8 @@ const icons = {
   copy: "M8 8h12v12H8zM4 16V4h12",
   trash: "M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14",
   download: "M12 3v12m0 0l-4-4m4 4l4-4M4 21h16",
-  heart: "M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9z",
+  star: "M12 3l2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 17.3 6.4 20.2l1.1-6.2L3 9.6l6.2-.9z",
+  code: "M8 8l-4 4 4 4M16 8l4 4-4 4",
 };
 
 export function ComponentsDemo() {
@@ -65,10 +66,10 @@ export function ComponentsDemo() {
           <div className="flex flex-col gap-4">
             <Input
               label="Поиск"
-              placeholder="Моды, ресурспаки, шейдеры…"
+              placeholder="Репозитории, issues, пользователи…"
               startContent={<Icon d={icons.search} />}
               isClearable
-              defaultValue="sodium"
+              defaultValue="cennge-ui"
             />
             <Input
               label="Email"
@@ -110,8 +111,8 @@ export function ComponentsDemo() {
               <Badge size="lg" color="primary">
                 lg
               </Badge>
-              <Badge color="success" variant="flat" radius="sm" startContent={<Icon d={icons.download} />}>
-                12.4M загрузок
+              <Badge color="info" variant="flat" radius="sm" startContent={<Icon d={icons.code} />}>
+                TypeScript
               </Badge>
             </div>
           </div>
@@ -123,29 +124,36 @@ export function ComponentsDemo() {
           <Card>
             <CardHeader>
               <div className="flex size-12 items-center justify-center rounded-medium bg-primary-bg text-xl font-black text-primary-text">
-                S
+                A
               </div>
               <div className="min-w-0">
-                <h3 className="truncate font-bold">Sodium</h3>
-                <p className="truncate text-xs text-muted">by CaffeineMC</p>
+                <h3 className="truncate font-bold">ai-niche-scout</h3>
+                <p className="truncate text-xs text-muted">Cennge / public</p>
               </div>
             </CardHeader>
             <CardBody>
-              <p className="text-sm text-muted">Современный движок рендеринга, который заметно поднимает FPS.</p>
+              <p className="text-sm text-muted">
+                Проверка идеи AI-стартапа: поиск конкурентов и 54 AI-ниши. Next.js + shadcn/ui.
+              </p>
               <div className="flex flex-wrap gap-1.5">
-                <Badge size="sm">Optimization</Badge>
-                <Badge size="sm" color="success" variant="dot">
-                  Fabric
+                <Badge size="sm" color="info" variant="dot">
+                  TypeScript
                 </Badge>
+                <Badge size="sm">Next.js</Badge>
               </div>
             </CardBody>
             <CardFooter>
-              <Button color="primary" size="sm" startContent={<Icon d={icons.download} />}>
-                Скачать
+              <Button
+                asChild
+                color="primary"
+                size="sm"
+                startContent={<Icon d={icons.download} />}
+              >
+                <a href="https://github.com/Cennge/ai-niche-scout/archive/refs/heads/main.zip">Скачать ZIP</a>
               </Button>
-              <Tooltip content="В избранное">
-                <Button size="sm" variant="flat" isIconOnly aria-label="В избранное">
-                  <Icon d={icons.heart} />
+              <Tooltip content="Поставить звезду">
+                <Button size="sm" variant="flat" isIconOnly aria-label="Поставить звезду">
+                  <Icon d={icons.star} />
                 </Button>
               </Tooltip>
             </CardFooter>

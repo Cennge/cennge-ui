@@ -114,15 +114,15 @@ import {
 
 // Card — raised, bordered, flat; pressable as a link
 <Card asChild isPressable>
-  <a href="/project/sodium">
-    <CardHeader>Sodium</CardHeader>
-    <CardBody>Rendering engine</CardBody>
+  <a href="https://github.com/Cennge/ai-niche-scout">
+    <CardHeader>ai-niche-scout</CardHeader>
+    <CardBody>Validate an AI startup idea: competitors and 54 AI niches</CardBody>
   </a>
 </Card>
 
 // Tooltip — works with or without the provider
-<Tooltip content="Add to favourites" showArrow>
-  <Button isIconOnly aria-label="Favourite"><HeartIcon /></Button>
+<Tooltip content="Star this repository" showArrow>
+  <Button isIconOnly aria-label="Star"><StarIcon /></Button>
 </Tooltip>
 
 // Dialog — long content scrolls inside DialogBody
