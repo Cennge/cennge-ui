@@ -17,6 +17,7 @@ export * from "./components/popover";
 export * from "./components/progress";
 export * from "./components/radio";
 export * from "./components/select";
+export * from "./components/separator";
 export * from "./components/skeleton";
 export * from "./components/slider";
 export * from "./components/spinner";

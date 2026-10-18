@@ -1,6 +1,9 @@
 import type { ReactNode } from "react";
 import {
   Kbd,
+  Separator,
+  Button,
+  Input,
 } from "cennge-ui";
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
@@ -31,6 +34,22 @@ export function BasicsDemo() {
             <Kbd keys="down" size="sm" />
             <Kbd keys="escape" size="sm" />
           </p>
+        </div>
+      </Section>
+      <Section title="Separator">
+        <div className="flex flex-col gap-4">
+          <Button variant="faded" fullWidth>
+            Войти через GitHub
+          </Button>
+          <Separator>или</Separator>
+          <Input aria-label="Email" placeholder="you@example.com" />
+          <div className="flex h-6 items-center gap-3 text-sm text-muted">
+            <span>Code</span>
+            <Separator orientation="vertical" />
+            <span>Issues</span>
+            <Separator orientation="vertical" />
+            <span>Pull requests</span>
+          </div>
         </div>
       </Section>
       {/* next */}
