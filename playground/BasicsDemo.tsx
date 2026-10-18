@@ -22,6 +22,7 @@ import {
   HoverCardTrigger,
   Indicator,
   CircularProgress,
+  EmptyState,
 } from "cennge-ui";
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
@@ -216,6 +217,31 @@ export function BasicsDemo() {
           <CircularProgress label="Лимит Actions" value={1540} max={2000} showValue size="lg" color="warning" />
           <CircularProgress value={34} showValue aria-label="Загрузка" />
           <CircularProgress aria-label="Клонирование" size="sm" color="secondary" />
+        </div>
+      </Section>
+      <Section title="EmptyState">
+        <div className="flex flex-col gap-4">
+          <EmptyState
+            icon={
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="12" cy="12" r="9" />
+                <path d="M8 12.5l2.5 2.5L16 9.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            }
+            title="Открытых issues нет"
+            description="Всё закрыто. Самое время для новой фичи."
+            actions={
+              <Button size="sm" color="primary">
+                Создать issue
+              </Button>
+            }
+          />
+          <EmptyState
+            variant="bordered"
+            size="sm"
+            title="Ничего не найдено"
+            description="По запросу «combobox» в ai-niche-scout"
+          />
         </div>
       </Section>
       {/* next */}
