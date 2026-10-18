@@ -35,7 +35,11 @@ test("Backspace in an empty field removes the last tag", async ({ page }) => {
   await expect(topicsValue(page)).toHaveText("");
 });
 
-test("pasting a list splits it into tags", async ({ page }) => {
+test("pasting a list splits it into tags", async ({ page, browserName }) => {
+  test.skip(
+    browserName === "firefox",
+    "Firefox hides clipboard data from script-created paste events; real pastes are trusted and carry it",
+  );
   await topics(page).focus();
   await topics(page).evaluate((input) => {
     const data = new DataTransfer();
@@ -43,6 +47,13 @@ test("pasting a list splits it into tags", async ({ page }) => {
     input.dispatchEvent(new ClipboardEvent("paste", { clipboardData: data, bubbles: true, cancelable: true }));
   });
   await expect(topicsValue(page)).toHaveText("react|vue|svelte|solid");
+});
+
+test("text inserted without key events is split into tags (Android keyboards, autofill)", async ({ page }) => {
+  await topics(page).focus();
+  await page.keyboard.insertText("vue, svelte, so");
+  await expect(topicsValue(page)).toHaveText("react|vue|svelte");
+  await expect(topics(page)).toHaveValue("so");
 });
 
 test("keyboard: one tab stop; arrows walk the tags; Delete removes and keeps focus nearby", async ({ page }) => {

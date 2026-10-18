@@ -52,6 +52,16 @@ describe("TagsInput", () => {
     expect(tagNames()).toEqual(["react", "vue", "svelte"]);
   });
 
+  it("splits separators that arrive as text, without key events (Android keyboards, autofill)", () => {
+    render(<TagsInput label="Topics" defaultValue={["react"]} />);
+    type("vue, svelte, so");
+    expect(tagNames()).toEqual(["react", "vue", "svelte"]);
+    expect(field()).toHaveValue("so");
+    type("React,");
+    expect(tagNames()).toEqual(["react", "vue", "svelte"]);
+    expect(field()).toHaveValue("React"); // refused duplicate stays to be fixed
+  });
+
   it("validate and maxTags refuse tags", () => {
     render(<TagsInput label="Topics" maxTags={2} validate={(t) => /^[a-z-]+$/.test(t)} />);
     type("Bad Tag");

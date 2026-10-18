@@ -155,26 +155,26 @@ export const TagsInput = React.forwardRef<HTMLInputElement, TagsInputProps>(func
 
   const isSame = (a: string, b: string) => a.toLocaleLowerCase() === b.toLocaleLowerCase();
 
-  /** Adds what it can; returns true when every candidate was accepted. */
-  const addTags = (candidates: string[]): boolean => {
+  /** Adds what it can; returns the candidates it refused. */
+  const addTags = (candidates: string[]): string[] => {
     const next = [...latestTags.current];
-    let allAccepted = true;
+    const refused: string[] = [];
     let message = "";
     for (const candidate of candidates.map((c) => c.trim()).filter(Boolean)) {
       if (maxTags !== undefined && next.length >= maxTags) {
-        allAccepted = false;
+        refused.push(candidate);
         message = formatAnnouncement({ type: "limit", tag: candidate });
-        break;
+        continue;
       }
       const existing = next.find((tag) => isSame(tag, candidate));
       if (existing !== undefined && !allowDuplicates) {
-        allAccepted = false;
+        refused.push(candidate);
         flash(existing);
         message = formatAnnouncement({ type: "duplicate", tag: candidate });
         continue;
       }
       if (validate && !validate(candidate)) {
-        allAccepted = false;
+        refused.push(candidate);
         message = formatAnnouncement({ type: "invalid", tag: candidate });
         continue;
       }
@@ -183,8 +183,11 @@ export const TagsInput = React.forwardRef<HTMLInputElement, TagsInputProps>(func
     }
     if (next.length !== latestTags.current.length) commit(next);
     if (message) setAnnouncement(message);
-    return allAccepted;
+    return refused;
   };
+
+  const splitChars = separators.filter((s) => s.length === 1);
+  const splitter = new RegExp(`[${[...splitChars, "\n", "\r"].map(escapeForClass).join("")}]`);
 
   const removeAt = (index: number, focus: number | "input" | null) => {
     const tag = latestTags.current[index];
@@ -196,7 +199,23 @@ export const TagsInput = React.forwardRef<HTMLInputElement, TagsInputProps>(func
 
   const submitText = () => {
     if (!text.trim()) return;
-    if (addTags([text])) setText(""); // refused text stays so it can be fixed
+    if (addTags([text]).length === 0) setText(""); // refused text stays so it can be fixed
+  };
+
+  /*
+   * Separators that arrive as text: Android keyboards report most keys as "Unidentified" in
+   * keydown, and autofill or drag-and-drop insert text without any key at all. Everything before
+   * the last separator becomes tags; what follows it is still being typed.
+   */
+  const handleChange = (value: string) => {
+    if (!splitter.test(value)) {
+      setText(value);
+      return;
+    }
+    const parts = value.split(splitter);
+    const typing = parts.pop() ?? "";
+    const refused = addTags(parts);
+    setText([...refused, typing.trimStart()].filter(Boolean).join(", "));
   };
 
   /* ------------------------------------------------------------ events */
@@ -249,16 +268,15 @@ export const TagsInput = React.forwardRef<HTMLInputElement, TagsInputProps>(func
     }
   };
 
+  // Split pasted lists here, before a single-line input drops their line breaks.
   const handlePaste = (event: React.ClipboardEvent<HTMLInputElement>) => {
     onPaste?.(event);
     if (event.defaultPrevented) return;
-    const pasted = event.clipboardData.getData("text");
-    const splitChars = separators.filter((s) => s.length === 1);
-    const splitter = new RegExp(`[${[...splitChars, "\n", "\r"].map(escapeForClass).join("")}]`);
+    const pasted = event.clipboardData?.getData("text") ?? "";
     if (!splitter.test(pasted)) return; // a single value: let the browser paste it
     event.preventDefault();
-    addTags((text + pasted).split(splitter));
-    setText("");
+    const refused = addTags((text + pasted).split(splitter));
+    setText(refused.join(", "));
   };
 
   /* ------------------------------------------------------------ styles */
@@ -330,7 +348,7 @@ export const TagsInput = React.forwardRef<HTMLInputElement, TagsInputProps>(func
             required={(isRequired || Boolean(required)) && tags.length === 0}
             aria-invalid={isInvalid || undefined}
             aria-describedby={helper ? helperId : undefined}
-            onChange={(event) => setText(event.target.value)}
+            onChange={(event) => handleChange(event.target.value)}
             onKeyDown={handleKeyDown}
             onPaste={handlePaste}
             onBlur={(event) => {
