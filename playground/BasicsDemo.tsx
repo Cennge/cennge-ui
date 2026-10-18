@@ -20,7 +20,9 @@ import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
+  Indicator,
 } from "cennge-ui";
+import { useState } from "react";
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
@@ -31,7 +33,17 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
   );
 }
 
+function BellIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+      <path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.9 1.9 0 0 0 3.4 0" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
 export function BasicsDemo() {
+  const [unread, setUnread] = useState(5);
+
   return (
     <div className="grid gap-6 md:grid-cols-3">
       <Section title="Kbd">
@@ -174,6 +186,29 @@ export function BasicsDemo() {
           </HoverCard>
           . Наведите на ссылку.
         </p>
+      </Section>
+      <Section title="Indicator">
+        <div className="flex flex-wrap items-center gap-6">
+          <Indicator content={unread} isInvisible={unread === 0} label={`${unread} непрочитанных уведомлений`}>
+            <Button isIconOnly variant="flat" aria-label="Уведомления" onClick={() => setUnread(0)}>
+              <BellIcon />
+            </Button>
+          </Indicator>
+          <Indicator content={150} color="primary">
+            <Button isIconOnly variant="flat" aria-label="Pull requests">
+              PR
+            </Button>
+          </Indicator>
+          <Indicator color="success" shape="circle" placement="bottom-right" size="lg" label="В сети">
+            <Avatar src="https://github.com/Cennge.png" name="Cennge" size="lg" />
+          </Indicator>
+          <Indicator color="warning" shape="circle" label="Отошёл">
+            <Avatar name="Ann Lee" color="secondary" />
+          </Indicator>
+          <Button size="sm" variant="light" onClick={() => setUnread((n) => n + 1)}>
+            +1 уведомление
+          </Button>
+        </div>
       </Section>
       {/* next */}
     </div>
