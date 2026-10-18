@@ -27,8 +27,8 @@ A regular npm package — `npm update` and every app gets the fix.
 - **Server Components ready.** `"use client"` ships in the build; helpers stay server-safe.
 
 > **Status:** early development (0.x).
-> **Components:** Button · Input · Checkbox · Switch · Card · Badge · Avatar · Tabs · Tooltip · Dialog · Dropdown ·
-> Toast · Alert · Skeleton · Spinner. Next up: Combobox / MultiSelect.
+> **Components:** Button · Input · Select · Combobox · MultiSelect · Checkbox · Switch · Card · Badge · Avatar · Tabs ·
+> Tooltip · Dialog · Dropdown · Toast · Alert · Skeleton · Spinner.
 
 <details>
 <summary>Light theme with the blue accent preset</summary>
@@ -167,6 +167,28 @@ toast("Link copied");
 toast.success("Deployed", { description: "v0.1.0 is live" });
 toast.warning("Branch is behind", { action: { label: "Update", onClick: rebase } });
 toast.promise(push(), { loading: "Pushing…", success: "Pushed", error: "Push failed" });
+```
+
+### Select, Combobox, MultiSelect
+
+```tsx
+import { Combobox, Select, SelectItem } from "cennge-ui";
+
+// Select — a fixed list. `null` means "nothing selected"; isClearable returns to the placeholder.
+<Select label="Language" value={lang} onValueChange={setLang} isClearable>
+  <SelectItem value="ts">TypeScript</SelectItem>
+  <SelectItem value="py">Python</SelectItem>
+</Select>
+
+// Combobox — type to filter. Full keyboard support: arrows, Home/End, Enter, Escape.
+const repos = [
+  { value: "cennge-ui", label: "cennge-ui", description: "React UI library" },
+  { value: "ai-niche-scout", label: "ai-niche-scout" },
+];
+<Combobox label="Repository" items={repos} value={repo} onValueChange={setRepo} isClearable />
+
+// MultiSelect — the same component with selectionMode="multiple": tags, Backspace removes the last one.
+<Combobox selectionMode="multiple" label="Topics" items={topics} values={selected} onValuesChange={setSelected} />
 ```
 
 ### Forms and feedback
