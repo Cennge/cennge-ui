@@ -27,11 +27,11 @@ A regular npm package — `npm update` and every app gets the fix.
 - **Server Components ready.** `"use client"` ships in the build; helpers stay server-safe.
 
 > **Status:** early development (0.x).
-> **35 components.**
-> Forms: Button · Input · Textarea · Select · Combobox · MultiSelect · Checkbox · RadioGroup · Switch · Slider · ToggleGroup.
+> **40 components.**
+> Forms: Button · Input · Textarea · NumberInput · Select · Combobox · MultiSelect · TagsInput · FileUpload · Checkbox · RadioGroup · Switch · Slider · ToggleGroup.
 > Overlays: Dialog · Drawer · Popover · Dropdown · ContextMenu · HoverCard · Tooltip · Toast.
-> Display: Card · Badge · Avatar · Indicator · Alert · Progress · CircularProgress · Skeleton · Spinner · EmptyState · Kbd · Separator.
-> Navigation: Tabs · Accordion · Breadcrumbs · Pagination.
+> Display: Card · Badge · Avatar · Indicator · Alert · Progress · CircularProgress · Skeleton · Spinner · EmptyState · Kbd · Separator · Timeline.
+> Navigation: Tabs · Accordion · Breadcrumbs · Pagination · Stepper.
 
 <details>
 <summary>Light theme with the blue accent preset</summary>
@@ -232,6 +232,40 @@ const repos = [
 <Pagination total={24} page={page} onPageChange={setPage} />
 ```
 
+### NumberInput, TagsInput, FileUpload
+
+```tsx
+// Locale-aware: "1 234,5 ₽" in, 1234.5 out. Arrows, PageUp/PageDown, Home/End; hold − / + to repeat.
+<NumberInput label="Budget" locale="ru-RU" min={0} step={100}
+             formatOptions={{ style: "currency", currency: "RUB" }} value={budget} onValueChange={setBudget} />
+
+// Free-typed tags: Enter or comma adds, pasted lists are split, duplicates are refused.
+<TagsInput label="Topics" value={topics} onValueChange={setTopics} maxTags={10}
+           validate={(tag) => /^[a-z0-9-]+$/.test(tag)} />
+
+// Drag and drop or browse; type, size and count checks with readable reasons; image previews.
+<FileUpload label="Screenshots" accept={["image/*", ".pdf"]} maxSize={5 * 1024 * 1024} maxFiles={4}
+            value={files} onValueChange={setFiles} onReject={(rejections) => …} />
+```
+
+Pass `locale` to `CenngeProvider` once to format numbers and file sizes for your language.
+
+### Stepper and Timeline
+
+```tsx
+<Stepper activeStep={step} onStepClick={setStep} completedContent={<p>Done</p>}>
+  <Step title="Repository" description="Owner and name"><RepoForm /></Step>
+  <Step title="Settings"><SettingsForm /></Step>
+  <Step title="Review" />
+</Stepper>
+
+<Timeline activeIndex={1}>                     {/* omit activeIndex for a plain history */}
+  <TimelineItem title="Ordered" time="Mon" />
+  <TimelineItem title="Shipped" time="Tue, 14:30" dateTime="2026-10-20T14:30" />
+  <TimelineItem title="Delivered" />
+</Timeline>
+```
+
 ### Small building blocks
 
 ```tsx
@@ -307,12 +341,23 @@ import { cn, tv } from "cennge-ui/utils";
 ```bash
 pnpm install
 pnpm dev            # playground at http://localhost:5173
-pnpm test           # Vitest
+pnpm test           # Vitest unit tests
+pnpm test:e2e       # Playwright in real Chromium, desktop and mobile profiles
 pnpm typecheck
 pnpm build          # tsup → dist/
 pnpm check:package  # publint + are-the-types-wrong
 pnpm changeset      # describe a change for the next release
 ```
+
+### How components are tested
+
+- **Unit tests (Vitest + Testing Library)** for logic, roles and labels.
+- **End-to-end tests (Playwright)** on isolated fixture pages (`playground/fixtures/*`, opened as
+  `/fixture.html?name=…`), in headless Chromium on a desktop and a Pixel 7 profile: real keyboard, mouse,
+  touch, file choosers and drag events.
+- **Accessibility:** every fixture runs through axe-core against WCAG 2.2 AA in the dark and the light theme,
+  and so does the whole playground.
+- **Clean console:** any error or warning in the browser console fails the test.
 
 Contributions are welcome — see [CONTRIBUTING.md](CONTRIBUTING.md).
 
