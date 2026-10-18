@@ -14,7 +14,8 @@ export default defineConfig([
   {
     ...shared,
     entry: { index: "src/index.ts" },
-    clean: true,
+    // No `clean` here: both builds run in parallel and it would delete the other one's output.
+    // dist/ is wiped by scripts/clean.mjs before tsup starts.
     banner: { js: '"use client";' },
   },
   // Pure helpers (cn, tv) stay server-safe so they can be called inside React Server Components.

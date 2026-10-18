@@ -52,7 +52,7 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "tsup && node scripts/copy-css.mjs",
+    "build": "node scripts/clean.mjs && tsup && node scripts/copy-css.mjs",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
