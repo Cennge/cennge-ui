@@ -6,6 +6,7 @@ import { useCenngeDefaults } from "../../provider";
 import type { CenngeColor, CenngeRadius, CenngeSize } from "../../types";
 import { input, type InputVariant } from "../input/input.styles";
 import { CheckIcon, ChevronIcon, ClearIcon, optionCheckClass, optionClass, popoverClass } from "../listbox/styles";
+import { Tag } from "../listbox/tag";
 
 export interface ComboboxItem {
   value: string;
@@ -79,12 +80,6 @@ export type ComboboxProps = ComboboxSingleProps | ComboboxMultipleProps;
 
 const defaultFilter = (item: ComboboxItem, query: string) =>
   item.label.toLowerCase().includes(query.trim().toLowerCase());
-
-const tagSizes: Record<CenngeSize, string> = {
-  sm: "h-5 text-[11px]",
-  md: "h-6 text-xs",
-  lg: "h-7 text-sm",
-};
 
 export const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(function Combobox(props, ref) {
   const {
@@ -316,26 +311,16 @@ export const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(functi
             <div className={cn("flex min-w-0 flex-1 items-center", isMultiple && "flex-wrap gap-1.5")}>
             {isMultiple
               ? selection.map((value) => (
-                  <span
+                  <Tag
                     key={value}
-                    className={cn(
-                      "inline-flex max-w-full items-center gap-1 rounded-full bg-surface-4 pr-1 pl-2 font-semibold text-foreground",
-                      tagSizes[sizeValue],
-                      classNames?.tag,
-                    )}
+                    size={sizeValue}
+                    removeLabel={`Remove ${labelOf(value)}`}
+                    isDisabled={isDisabled}
+                    onRemove={() => commit(selection.filter((v) => v !== value))}
+                    className={classNames?.tag}
                   >
-                    <span className="truncate">{labelOf(value)}</span>
-                    <button
-                      type="button"
-                      tabIndex={-1}
-                      aria-label={`Remove ${labelOf(value)}`}
-                      disabled={isDisabled}
-                      onClick={() => commit(selection.filter((v) => v !== value))}
-                      className="flex size-4 cursor-pointer items-center justify-center rounded-full text-muted hover:bg-default-bg hover:text-foreground"
-                    >
-                      <ClearIcon />
-                    </button>
-                  </span>
+                    {labelOf(value)}
+                  </Tag>
                 ))
               : null}
             <input
