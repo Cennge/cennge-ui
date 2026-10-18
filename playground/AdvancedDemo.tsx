@@ -1,6 +1,12 @@
 import { useState, type ReactNode } from "react";
 import {
   NumberInput,
+  Button,
+  Input,
+  Select,
+  SelectItem,
+  Step,
+  Stepper,
 } from "cennge-ui";
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
@@ -14,6 +20,7 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
 
 export function AdvancedDemo() {
   const [runners, setRunners] = useState<number | null>(4);
+  const [step, setStep] = useState(1);
 
   return (
     <div className="grid gap-6 md:grid-cols-2">
@@ -37,6 +44,37 @@ export function AdvancedDemo() {
           />
           <NumberInput label="Порог покрытия" defaultValue={0.8} min={0} max={1} formatOptions={{ style: "percent" }} variant="bordered" />
           <NumberInput label="Масштаб" defaultValue={1} step={0.1} min={0.5} max={3} variant="faded" endContent={<span className="text-muted">×</span>} />
+        </div>
+      </Section>
+      <Section title="Stepper">
+        <div className="flex flex-col gap-4">
+          <Stepper
+            activeStep={step}
+            onStepClick={setStep}
+            aria-label="Новый репозиторий"
+            completedContent={<p className="text-sm text-success-text">Репозиторий cennge-ui создан</p>}
+          >
+            <Step title="Репозиторий" description="Владелец и имя">
+              <Input label="Имя" defaultValue="cennge-ui" />
+            </Step>
+            <Step title="Настройки" description="Видимость">
+              <Select label="Видимость" defaultValue="public">
+                <SelectItem value="public">Public</SelectItem>
+                <SelectItem value="private">Private</SelectItem>
+              </Select>
+            </Step>
+            <Step title="Готово">
+              <p className="text-sm text-muted">Проверьте настройки и создайте репозиторий.</p>
+            </Step>
+          </Stepper>
+          <div className="flex gap-2">
+            <Button variant="flat" isDisabled={step === 0} onClick={() => setStep((s) => s - 1)}>
+              Назад
+            </Button>
+            <Button color="primary" isDisabled={step >= 3} onClick={() => setStep((s) => s + 1)}>
+              {step === 2 ? "Создать" : "Далее"}
+            </Button>
+          </div>
         </div>
       </Section>
       {/* next */}
