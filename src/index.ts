@@ -11,6 +11,7 @@ export * from "./components/dialog";
 export * from "./components/drawer";
 export * from "./components/dropdown";
 export * from "./components/input";
+export * from "./components/kbd";
 export * from "./components/pagination";
 export * from "./components/popover";
 export * from "./components/progress";
