@@ -21,10 +21,12 @@ const ItemStyleContext = React.createContext<ItemStyle>({
 });
 
 const root = tv({
-  base: "inline-flex items-center",
+  // w-fit: a flex-column parent would otherwise stretch the group to its full width.
+  base: "inline-flex w-fit items-center",
   variants: {
     variant: {
-      segmented: "gap-1 rounded-medium bg-surface-2 p-1 inset-shadow-[inset_0_1px_2px_rgb(0_0_0/0.18)]",
+      // Translucent track: reads as sunken on any surface, in both themes.
+      segmented: "gap-1 rounded-medium bg-default-bg p-1 inset-shadow-[inset_0_1px_2px_rgb(0_0_0/0.18)]",
       bordered: "overflow-hidden rounded-medium border border-border",
     },
     fullWidth: { true: "flex w-full" },
