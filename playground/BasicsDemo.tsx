@@ -8,6 +8,13 @@ import {
   Breadcrumbs,
   ToggleGroup,
   ToggleGroupItem,
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuLabel,
+  ContextMenuSeparator,
+  ContextMenuTrigger,
+  toast,
 } from "cennge-ui";
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
@@ -108,6 +115,30 @@ export function BasicsDemo() {
             </ToggleGroupItem>
           </ToggleGroup>
         </div>
+      </Section>
+      <Section title="ContextMenu">
+        <ContextMenu>
+          <ContextMenuTrigger>
+            <div className="flex h-36 cursor-context-menu flex-col items-center justify-center gap-1 rounded-large border-2 border-dashed border-border text-sm text-muted select-none">
+              <span className="font-mono text-foreground">src/components/button.tsx</span>
+              Правый клик (или долгое нажатие)
+            </div>
+          </ContextMenuTrigger>
+          <ContextMenuContent>
+            <ContextMenuLabel>button.tsx</ContextMenuLabel>
+            <ContextMenuItem shortcut="↵" onAction={() => toast("Файл открыт")}>
+              Открыть
+            </ContextMenuItem>
+            <ContextMenuItem shortcut="F2">Переименовать</ContextMenuItem>
+            <ContextMenuItem description="src/components/button/button.tsx" onAction={() => toast("Путь скопирован")}>
+              Копировать путь
+            </ContextMenuItem>
+            <ContextMenuSeparator />
+            <ContextMenuItem color="danger" shortcut="⌫" onAction={() => toast.error("Файл удалён")}>
+              Удалить
+            </ContextMenuItem>
+          </ContextMenuContent>
+        </ContextMenu>
       </Section>
       {/* next */}
     </div>

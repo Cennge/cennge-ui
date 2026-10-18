@@ -63,10 +63,8 @@ export const DropdownContent = React.forwardRef<HTMLDivElement, DropdownContentP
         sideOffset={offset}
         collisionPadding={8}
         className={cn(
-          "z-50 max-h-(--radix-dropdown-menu-content-available-height) min-w-52 overflow-y-auto",
-          "rounded-medium border border-border bg-surface-3 p-1.5 text-foreground shadow-floating outline-none",
-          "origin-(--radix-dropdown-menu-content-transform-origin)",
-          "data-[state=open]:animate-cennge-pop-in data-[state=closed]:animate-cennge-pop-out motion-reduce:animate-none",
+          menuContentClass,
+          "max-h-(--radix-dropdown-menu-content-available-height) origin-(--radix-dropdown-menu-content-transform-origin)",
           className,
         )}
         {...rest}
@@ -75,9 +73,36 @@ export const DropdownContent = React.forwardRef<HTMLDivElement, DropdownContentP
   );
 });
 
+/* ------------------------------------------------- shared with ContextMenu */
+
+export const menuContentClass = [
+  "z-50 min-w-52 overflow-y-auto rounded-medium border border-border bg-surface-3 p-1.5 text-foreground shadow-floating outline-none",
+  "data-[state=open]:animate-cennge-pop-in data-[state=closed]:animate-cennge-pop-out motion-reduce:animate-none",
+].join(" ");
+
+export function MenuItemInner({
+  startContent,
+  description,
+  shortcut,
+  endContent,
+  children,
+}: Pick<DropdownItemProps, "startContent" | "description" | "shortcut" | "endContent" | "children">) {
+  return (
+    <>
+      {startContent ? <span className="flex shrink-0 items-center opacity-80">{startContent}</span> : null}
+      <span className="flex min-w-0 flex-1 flex-col">
+        <span className="truncate">{children}</span>
+        {description ? <span className="truncate text-xs text-muted">{description}</span> : null}
+      </span>
+      {shortcut ? <kbd className="ml-auto pl-3 font-sans text-xs text-muted">{shortcut}</kbd> : null}
+      {endContent}
+    </>
+  );
+}
+
 /* ------------------------------------------------------------------ item */
 
-const item = tv({
+export const menuItem = tv({
   base: [
     "relative flex w-full cursor-pointer items-center gap-2.5 rounded-small px-2.5 py-2 text-sm outline-none select-none",
     "transition-colors duration-(--cennge-duration-fast) motion-reduce:transition-none",
@@ -138,16 +163,12 @@ export const DropdownItem = React.forwardRef<HTMLDivElement, DropdownItemProps>(
         if (keepOpen) event.preventDefault();
         onAction?.();
       }}
-      className={item({ color, className })}
+      className={menuItem({ color, className })}
       {...rest}
     >
-      {startContent ? <span className="flex shrink-0 items-center opacity-80">{startContent}</span> : null}
-      <span className="flex min-w-0 flex-1 flex-col">
-        <span className="truncate">{children}</span>
-        {description ? <span className="truncate text-xs text-muted">{description}</span> : null}
-      </span>
-      {shortcut ? <kbd className="ml-auto pl-3 font-sans text-xs text-muted">{shortcut}</kbd> : null}
-      {endContent}
+      <MenuItemInner startContent={startContent} description={description} shortcut={shortcut} endContent={endContent}>
+        {children}
+      </MenuItemInner>
     </DropdownMenu.Item>
   );
 });

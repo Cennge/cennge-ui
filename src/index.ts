@@ -8,6 +8,7 @@ export * from "./components/button";
 export * from "./components/card";
 export * from "./components/checkbox";
 export * from "./components/combobox";
+export * from "./components/context-menu";
 export * from "./components/dialog";
 export * from "./components/drawer";
 export * from "./components/dropdown";
