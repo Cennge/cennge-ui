@@ -18,7 +18,11 @@ function useToasts(): ToastRecord[] {
 }
 
 const viewport = tv({
-  base: "fixed z-[100] m-0 flex w-full max-w-[24rem] list-none gap-2 p-4 outline-none",
+  base: [
+    "fixed z-[100] m-0 flex w-full max-w-[24rem] list-none gap-2 p-4 outline-none",
+    // Phones: full width with equal side margins, whatever the placement.
+    "max-sm:right-0 max-sm:left-0 max-sm:max-w-none max-sm:translate-x-0",
+  ],
   variants: {
     placement: {
       "top-left": "top-0 left-0 flex-col-reverse [--cennge-toast-from:-16px]",

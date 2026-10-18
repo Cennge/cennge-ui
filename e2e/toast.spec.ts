@@ -1,4 +1,4 @@
-import { expect, expectAccessible, openFixture, test } from "./test";
+import { expect, expectAccessible, openFixture, settleAnimations, test } from "./test";
 import type { Page } from "@playwright/test";
 
 const button = (page: Page, name: string) => page.getByRole("button", { name, exact: true });
@@ -71,13 +71,21 @@ test("swiping a toast away dismisses it", async ({ page, isMobile }) => {
   await expect(toast).toBeHidden();
 });
 
-test("stays inside the screen on phones", async ({ page }) => {
+test("stays inside the screen, with equal side margins on phones", async ({ page, isMobile }) => {
   await button(page, "Toast with action").click();
-  const box = await toastWith(page, "Token expires soon").boundingBox();
+  const toast = toastWith(page, "Token expires soon");
+  await expect(toast).toBeVisible();
+  await settleAnimations(page);
+  const box = await toast.boundingBox();
   const viewport = page.viewportSize();
   if (!box || !viewport) throw new Error("no box");
   expect(box.x).toBeGreaterThanOrEqual(0);
   expect(box.x + box.width).toBeLessThanOrEqual(viewport.width);
+  if (isMobile) {
+    const left = box.x;
+    const right = viewport.width - (box.x + box.width);
+    expect(Math.abs(left - right)).toBeLessThanOrEqual(1);
+  }
 });
 
 for (const theme of ["dark", "light"] as const) {
