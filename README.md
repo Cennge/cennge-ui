@@ -27,11 +27,11 @@ A regular npm package — `npm update` and every app gets the fix.
 - **Server Components ready.** `"use client"` ships in the build; helpers stay server-safe.
 
 > **Status:** early development (0.x).
-> **26 components.**
-> Forms: Button · Input · Textarea · Select · Combobox · MultiSelect · Checkbox · RadioGroup · Switch · Slider.
-> Overlays: Dialog · Drawer · Popover · Dropdown · Tooltip · Toast.
-> Display: Card · Badge · Avatar · Alert · Progress · Skeleton · Spinner.
-> Navigation: Tabs · Accordion · Pagination.
+> **35 components.**
+> Forms: Button · Input · Textarea · Select · Combobox · MultiSelect · Checkbox · RadioGroup · Switch · Slider · ToggleGroup.
+> Overlays: Dialog · Drawer · Popover · Dropdown · ContextMenu · HoverCard · Tooltip · Toast.
+> Display: Card · Badge · Avatar · Indicator · Alert · Progress · CircularProgress · Skeleton · Spinner · EmptyState · Kbd · Separator.
+> Navigation: Tabs · Accordion · Breadcrumbs · Pagination.
 
 <details>
 <summary>Light theme with the blue accent preset</summary>
@@ -231,6 +231,33 @@ const repos = [
 <Progress label="Uploading" value={42} />    {/* no value → indeterminate */}
 <Pagination total={24} page={page} onPageChange={setPage} />
 ```
+
+### Small building blocks
+
+```tsx
+<Kbd keys="command">K</Kbd>                                   {/* ⌘K, read as "Command K" */}
+<Separator>or</Separator>
+
+<Breadcrumbs maxItems={3}>                                    {/* middle collapses into "…" */}
+  <BreadcrumbItem href="/Cennge">Cennge</BreadcrumbItem>
+  <BreadcrumbItem href="/Cennge/cennge-ui">cennge-ui</BreadcrumbItem>
+  <BreadcrumbItem>README.md</BreadcrumbItem>                   {/* last = current page */}
+</Breadcrumbs>
+
+<ToggleGroup aria-label="View" defaultValue="code">          {/* never ends up empty */}
+  <ToggleGroupItem value="code">Code</ToggleGroupItem>
+  <ToggleGroupItem value="preview">Preview</ToggleGroupItem>
+</ToggleGroup>
+
+<Indicator content={unread} label={`${unread} unread`} isInvisible={unread === 0}>
+  <Button isIconOnly aria-label="Notifications"><BellIcon /></Button>
+</Indicator>
+
+<CircularProgress label="Test coverage" value={87} showValue />
+<EmptyState title="No open issues" actions={<Button>New issue</Button>} />
+```
+
+`ContextMenu` and `HoverCard` follow the same pattern as `Dropdown` and `Popover`: a trigger plus content.
 
 ### Forms and feedback
 
