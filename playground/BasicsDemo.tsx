@@ -169,7 +169,7 @@ export function BasicsDemo() {
             </HoverCardTrigger>
             <HoverCardContent align="start">
               <div className="flex gap-3">
-                <Avatar src="https://github.com/Cennge.png" name="Cennge" size="lg" />
+                <Avatar src="/avatar.svg" name="Cennge" size="lg" />
                 <div className="flex min-w-0 flex-col gap-1">
                   <p className="font-bold">Cennge</p>
                   <p className="text-muted">TypeScript, Python, Java</p>
@@ -201,7 +201,7 @@ export function BasicsDemo() {
             </Button>
           </Indicator>
           <Indicator color="success" shape="circle" placement="bottom-right" size="lg" label="В сети">
-            <Avatar src="https://github.com/Cennge.png" name="Cennge" size="lg" />
+            <Avatar src="/avatar.svg" name="Cennge" size="lg" />
           </Indicator>
           <Indicator color="warning" shape="circle" label="Отошёл">
             <Avatar name="Ann Lee" color="secondary" />

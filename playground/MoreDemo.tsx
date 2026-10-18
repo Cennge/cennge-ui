@@ -174,7 +174,7 @@ export function MoreDemo() {
         <Section title="Avatar">
           <div className="flex flex-col gap-4">
             <div className="flex items-center gap-3">
-              <Avatar src="https://github.com/Cennge.png" name="Cennge" size="xl" />
+              <Avatar src="/avatar.svg" name="Cennge" size="xl" />
               <Avatar name="Illia Gliba" color="primary" size="lg" />
               <Avatar name="ai-niche-scout" color="info" radius="md" />
               <Avatar name="payload-cache" color="success" size="sm" />
@@ -185,7 +185,7 @@ export function MoreDemo() {
                   key={n}
                   name={n}
                   isBordered
-                  src={i === 0 ? "https://github.com/Cennge.png" : undefined}
+                  src={i === 0 ? "/avatar.svg" : undefined}
                   color={(["primary", "secondary", "success", "warning", "info", "danger"] as const)[i]}
                 />
               ))}
@@ -259,7 +259,7 @@ export function MoreDemo() {
             <Card>
               <CardBody className="flex-row items-center gap-3">
                 <Skeleton isLoaded={loaded} className="size-12 rounded-full">
-                  <Avatar src="https://github.com/Cennge.png" name="Cennge" size="lg" />
+                  <Avatar src="/avatar.svg" name="Cennge" size="lg" />
                 </Skeleton>
                 <div className="flex flex-1 flex-col gap-2">
                   <Skeleton isLoaded={loaded} className="h-4 w-32">
