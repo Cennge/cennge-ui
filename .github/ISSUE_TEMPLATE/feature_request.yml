@@ -1,0 +1,22 @@
+name: Feature request
+description: Suggest a component, prop or improvement
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: The problem
+      description: What are you trying to build, and what gets in the way today?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed API
+      description: How you would like to write it.
+      render: tsx
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives and prior art
+      description: How other libraries solve it, workarounds you use now.

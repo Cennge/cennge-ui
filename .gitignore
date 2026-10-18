@@ -1,0 +1,13 @@
+node_modules
+dist
+*.tsbuildinfo
+.DS_Store
+coverage
+test-results
+playwright-report
+*.tgz
+
+# local tooling and notes
+.vscode
+.playwright-mcp
+replica

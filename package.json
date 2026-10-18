@@ -1,0 +1,102 @@
+{
+  "name": "cennge-ui",
+  "version": "0.0.0",
+  "description": "Tactile, dark-first React components on Radix UI and Tailwind CSS v4.",
+  "license": "MIT",
+  "author": "Cennge",
+  "homepage": "https://github.com/Cennge/cennge-ui#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Cennge/cennge-ui.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Cennge/cennge-ui/issues"
+  },
+  "packageManager": "pnpm@12.5.1",
+  "engines": {
+    "node": ">=20"
+  },
+  "type": "module",
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    },
+    "./utils": {
+      "import": {
+        "types": "./dist/utils.d.ts",
+        "default": "./dist/utils.js"
+      },
+      "require": {
+        "types": "./dist/utils.d.cts",
+        "default": "./dist/utils.cjs"
+      }
+    },
+    "./styles.css": "./dist/styles.css",
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "tsup && node scripts/copy-css.mjs",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "check:package": "publint && attw --pack . --profile node16 --exclude-entrypoints styles.css",
+    "changeset": "changeset",
+    "release": "pnpm build && changeset publish"
+  },
+  "peerDependencies": {
+    "react": "^17.0.0 || ^18.0.0 || ^19.0.0",
+    "react-dom": "^17.0.0 || ^18.0.0 || ^19.0.0",
+    "tailwindcss": "^4.0.0"
+  },
+  "dependencies": {
+    "clsx": "^2.1.1",
+    "radix-ui": "^1.8.1",
+    "tailwind-merge": "^3.7.0",
+    "tailwind-variants": "^3.3.1"
+  },
+  "devDependencies": {
+    "@arethetypeswrong/cli": "^0.18.5",
+    "@changesets/cli": "^3.0.3",
+    "@tailwindcss/vite": "^4.3.3",
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/react": "^16.3.3",
+    "@types/node": "^26.6.5",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.2",
+    "jsdom": "^30.1.3",
+    "publint": "^0.3.25",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "tailwindcss": "^4.3.3",
+    "tsup": "^9.0.0",
+    "typescript": "~6.0.3",
+    "vite": "^8.3.4",
+    "vitest": "^5.0.5"
+  },
+  "keywords": [
+    "react",
+    "components",
+    "ui",
+    "tailwindcss",
+    "radix-ui",
+    "design-system"
+  ]
+}

@@ -1,0 +1,506 @@
+/*
+ * cennge-ui — tokens and Tailwind v4 theme.
+ *
+ * Usage in an app stylesheet:
+ *   @import "tailwindcss";
+ *   @import "cennge-ui/styles.css";
+ *
+ * Every value lives in a --cennge-* custom property. Override them in your own CSS
+ * to retheme; the Tailwind utilities (bg-primary, text-primary-text, bg-surface-2…)
+ * read the variables at runtime, so no rebuild or JS config is needed.
+ */
+
+/* Let Tailwind find the class names used by the components shipped next to this file. */
+@source "./";
+
+/* Dark mode is class-based: put `class="dark"` on <html> (next-themes: attribute="class"). */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ---------------------------------------------------------------- scales */
+/* Shared by both themes. A theme only picks which step is DEFAULT and the text steps. */
+:root {
+  --cennge-default-50: #f6f7f9;
+  --cennge-default-100: #eceef2;
+  --cennge-default-200: #d5d9e0;
+  --cennge-default-300: #b1b8c4;
+  --cennge-default-400: #868f9e;
+  --cennge-default-500: #677081;
+  --cennge-default-600: #525a69;
+  --cennge-default-700: #434956;
+  --cennge-default-800: #393e48;
+  --cennge-default-900: #32363e;
+  --cennge-default-950: #1d2025;
+
+  /* Brand: orange */
+  --cennge-orange-50: #fff6ed;
+  --cennge-orange-100: #ffead3;
+  --cennge-orange-200: #ffd1a5;
+  --cennge-orange-300: #ffb06d;
+  --cennge-orange-400: #ff8a3d;
+  --cennge-orange-500: #fb6c1a;
+  --cennge-orange-600: #ec520f;
+  --cennge-orange-700: #c43c0e;
+  --cennge-orange-800: #9b3114;
+  --cennge-orange-900: #7d2b14;
+  --cennge-orange-950: #441208;
+
+  --cennge-violet-50: #f5f3ff;
+  --cennge-violet-100: #ede9fe;
+  --cennge-violet-200: #ddd6fe;
+  --cennge-violet-300: #c4b5fd;
+  --cennge-violet-400: #a78bfa;
+  --cennge-violet-500: #8b5cf6;
+  --cennge-violet-600: #7c3aed;
+  --cennge-violet-700: #6d28d9;
+  --cennge-violet-800: #5b21b6;
+  --cennge-violet-900: #4c1d95;
+  --cennge-violet-950: #2e1065;
+
+  --cennge-green-50: #ecfdf3;
+  --cennge-green-100: #d1fae0;
+  --cennge-green-200: #a7f3c4;
+  --cennge-green-300: #6ee7a0;
+  --cennge-green-400: #34d37a;
+  --cennge-green-500: #12b85f;
+  --cennge-green-600: #06964b;
+  --cennge-green-700: #07773f;
+  --cennge-green-800: #0a5e35;
+  --cennge-green-900: #0a4d2e;
+  --cennge-green-950: #022b18;
+
+  --cennge-amber-50: #fffbeb;
+  --cennge-amber-100: #fef3c7;
+  --cennge-amber-200: #fde68a;
+  --cennge-amber-300: #fcd34d;
+  --cennge-amber-400: #fbbf24;
+  --cennge-amber-500: #f59e0b;
+  --cennge-amber-600: #d97706;
+  --cennge-amber-700: #b45309;
+  --cennge-amber-800: #92400e;
+  --cennge-amber-900: #78350f;
+  --cennge-amber-950: #451a03;
+
+  --cennge-red-50: #fff1f2;
+  --cennge-red-100: #ffe0e3;
+  --cennge-red-200: #ffc6cc;
+  --cennge-red-300: #ff9ba6;
+  --cennge-red-400: #ff5f72;
+  --cennge-red-500: #f83049;
+  --cennge-red-600: #e5112f;
+  --cennge-red-700: #c10a26;
+  --cennge-red-800: #a00c25;
+  --cennge-red-900: #880f26;
+  --cennge-red-950: #4c0210;
+
+  --cennge-blue-50: #eff6ff;
+  --cennge-blue-100: #dbeafe;
+  --cennge-blue-200: #bfdbfe;
+  --cennge-blue-300: #93c5fd;
+  --cennge-blue-400: #60a5fa;
+  --cennge-blue-500: #3b82f6;
+  --cennge-blue-600: #2563eb;
+  --cennge-blue-700: #1d4ed8;
+  --cennge-blue-800: #1e40af;
+  --cennge-blue-900: #1e3a8a;
+  --cennge-blue-950: #172554;
+
+  --cennge-ink: #140c06;
+  --cennge-white: #ffffff;
+}
+
+/* --------------------------------------------------- semantic colour roles */
+/*
+ * Each role = a scale (50–950) + DEFAULT (solid fill) + foreground (text on the fill)
+ * + text (the role used as text on a surface). Pairs are checked for WCAG AA (4.5:1).
+ * To recolour a role, override its 11 scale steps plus DEFAULT, foreground and text.
+ */
+:root,
+[data-accent="orange"] {
+  --cennge-primary-50: var(--cennge-orange-50);
+  --cennge-primary-100: var(--cennge-orange-100);
+  --cennge-primary-200: var(--cennge-orange-200);
+  --cennge-primary-300: var(--cennge-orange-300);
+  --cennge-primary-400: var(--cennge-orange-400);
+  --cennge-primary-500: var(--cennge-orange-500);
+  --cennge-primary-600: var(--cennge-orange-600);
+  --cennge-primary-700: var(--cennge-orange-700);
+  --cennge-primary-800: var(--cennge-orange-800);
+  --cennge-primary-900: var(--cennge-orange-900);
+  --cennge-primary-950: var(--cennge-orange-950);
+  --cennge-primary: var(--cennge-orange-500);
+  --cennge-primary-foreground: var(--cennge-ink);
+  --cennge-primary-text: var(--cennge-orange-700);
+}
+
+:root {
+  --cennge-secondary-50: var(--cennge-violet-50);
+  --cennge-secondary-100: var(--cennge-violet-100);
+  --cennge-secondary-200: var(--cennge-violet-200);
+  --cennge-secondary-300: var(--cennge-violet-300);
+  --cennge-secondary-400: var(--cennge-violet-400);
+  --cennge-secondary-500: var(--cennge-violet-500);
+  --cennge-secondary-600: var(--cennge-violet-600);
+  --cennge-secondary-700: var(--cennge-violet-700);
+  --cennge-secondary-800: var(--cennge-violet-800);
+  --cennge-secondary-900: var(--cennge-violet-900);
+  --cennge-secondary-950: var(--cennge-violet-950);
+  --cennge-secondary: var(--cennge-violet-600);
+  --cennge-secondary-foreground: var(--cennge-white);
+  --cennge-secondary-text: var(--cennge-violet-700);
+
+  --cennge-success-50: var(--cennge-green-50);
+  --cennge-success-100: var(--cennge-green-100);
+  --cennge-success-200: var(--cennge-green-200);
+  --cennge-success-300: var(--cennge-green-300);
+  --cennge-success-400: var(--cennge-green-400);
+  --cennge-success-500: var(--cennge-green-500);
+  --cennge-success-600: var(--cennge-green-600);
+  --cennge-success-700: var(--cennge-green-700);
+  --cennge-success-800: var(--cennge-green-800);
+  --cennge-success-900: var(--cennge-green-900);
+  --cennge-success-950: var(--cennge-green-950);
+  --cennge-success: var(--cennge-green-500);
+  --cennge-success-foreground: var(--cennge-ink);
+  --cennge-success-text: var(--cennge-green-700);
+
+  --cennge-warning-50: var(--cennge-amber-50);
+  --cennge-warning-100: var(--cennge-amber-100);
+  --cennge-warning-200: var(--cennge-amber-200);
+  --cennge-warning-300: var(--cennge-amber-300);
+  --cennge-warning-400: var(--cennge-amber-400);
+  --cennge-warning-500: var(--cennge-amber-500);
+  --cennge-warning-600: var(--cennge-amber-600);
+  --cennge-warning-700: var(--cennge-amber-700);
+  --cennge-warning-800: var(--cennge-amber-800);
+  --cennge-warning-900: var(--cennge-amber-900);
+  --cennge-warning-950: var(--cennge-amber-950);
+  --cennge-warning: var(--cennge-amber-500);
+  --cennge-warning-foreground: var(--cennge-ink);
+  --cennge-warning-text: var(--cennge-amber-700);
+
+  --cennge-danger-50: var(--cennge-red-50);
+  --cennge-danger-100: var(--cennge-red-100);
+  --cennge-danger-200: var(--cennge-red-200);
+  --cennge-danger-300: var(--cennge-red-300);
+  --cennge-danger-400: var(--cennge-red-400);
+  --cennge-danger-500: var(--cennge-red-500);
+  --cennge-danger-600: var(--cennge-red-600);
+  --cennge-danger-700: var(--cennge-red-700);
+  --cennge-danger-800: var(--cennge-red-800);
+  --cennge-danger-900: var(--cennge-red-900);
+  --cennge-danger-950: var(--cennge-red-950);
+  --cennge-danger: var(--cennge-red-600);
+  --cennge-danger-foreground: var(--cennge-white);
+  --cennge-danger-text: var(--cennge-red-700);
+
+  --cennge-info-50: var(--cennge-blue-50);
+  --cennge-info-100: var(--cennge-blue-100);
+  --cennge-info-200: var(--cennge-blue-200);
+  --cennge-info-300: var(--cennge-blue-300);
+  --cennge-info-400: var(--cennge-blue-400);
+  --cennge-info-500: var(--cennge-blue-500);
+  --cennge-info-600: var(--cennge-blue-600);
+  --cennge-info-700: var(--cennge-blue-700);
+  --cennge-info-800: var(--cennge-blue-800);
+  --cennge-info-900: var(--cennge-blue-900);
+  --cennge-info-950: var(--cennge-blue-950);
+  --cennge-info: var(--cennge-blue-600);
+  --cennge-info-foreground: var(--cennge-white);
+  --cennge-info-text: var(--cennge-blue-700);
+
+  /* ------------------------------------------------ light theme surfaces */
+  color-scheme: light;
+  --cennge-background: #eef0f3;
+  --cennge-surface-1: #eef0f3;
+  --cennge-surface-2: #f6f7f9;
+  --cennge-surface-3: #fbfbfc;
+  --cennge-surface-4: #ffffff;
+  --cennge-foreground: #16191d;
+  --cennge-muted: #5b6370;
+  --cennge-border: #dde1e6;
+  --cennge-default: var(--cennge-surface-4);
+  --cennge-default-foreground: var(--cennge-foreground);
+  --cennge-default-text: var(--cennge-foreground);
+  --cennge-ring: var(--cennge-primary);
+
+  /* Tactile edge: a light top highlight and a darker bottom lip. */
+  --cennge-edge-light: rgb(255 255 255 / 0.35);
+  --cennge-edge-dark: rgb(16 18 22 / 0.14);
+  --cennge-shadow-color: 220 30% 15%;
+
+  /* ------------------------------------------------------------- layout */
+  --cennge-radius-small: 0.5rem;
+  --cennge-radius-medium: 0.75rem;
+  --cennge-radius-large: 1rem;
+  --cennge-disabled-opacity: 0.5;
+  --cennge-font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+
+  /* -------------------------------------------------------------- motion */
+  --cennge-ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --cennge-duration-fast: 120ms;
+  --cennge-duration: 180ms;
+}
+
+.dark {
+  color-scheme: dark;
+  --cennge-background: #111317;
+  --cennge-surface-1: #111317;
+  --cennge-surface-2: #181b20;
+  --cennge-surface-3: #21252b;
+  --cennge-surface-4: #2c3038;
+  --cennge-foreground: #e8eaee;
+  --cennge-muted: #9aa2ae;
+  --cennge-border: #2f343c;
+
+  --cennge-primary-text: var(--cennge-primary-400);
+  --cennge-secondary-text: var(--cennge-secondary-400);
+  --cennge-success-text: var(--cennge-success-400);
+  --cennge-warning-text: var(--cennge-warning-400);
+  --cennge-danger-text: var(--cennge-danger-400);
+  --cennge-info-text: var(--cennge-info-400);
+
+  --cennge-edge-light: rgb(255 255 255 / 0.16);
+  --cennge-edge-dark: rgb(0 0 0 / 0.28);
+  --cennge-shadow-color: 220 40% 2%;
+}
+
+/* ------------------------------------------------------- accent presets */
+/*
+ * <html data-accent="blue"> (or any subtree) swaps the brand colour.
+ * DEFAULT and text are re-declared here so nested presets resolve against the new scale.
+ */
+[data-accent="blue"] {
+  --cennge-primary-50: var(--cennge-blue-50);
+  --cennge-primary-100: var(--cennge-blue-100);
+  --cennge-primary-200: var(--cennge-blue-200);
+  --cennge-primary-300: var(--cennge-blue-300);
+  --cennge-primary-400: var(--cennge-blue-400);
+  --cennge-primary-500: var(--cennge-blue-500);
+  --cennge-primary-600: var(--cennge-blue-600);
+  --cennge-primary-700: var(--cennge-blue-700);
+  --cennge-primary-800: var(--cennge-blue-800);
+  --cennge-primary-900: var(--cennge-blue-900);
+  --cennge-primary-950: var(--cennge-blue-950);
+  --cennge-primary: var(--cennge-blue-600);
+  --cennge-primary-foreground: var(--cennge-white);
+  --cennge-primary-text: var(--cennge-blue-700);
+}
+
+[data-accent="green"] {
+  --cennge-primary-50: var(--cennge-green-50);
+  --cennge-primary-100: var(--cennge-green-100);
+  --cennge-primary-200: var(--cennge-green-200);
+  --cennge-primary-300: var(--cennge-green-300);
+  --cennge-primary-400: var(--cennge-green-400);
+  --cennge-primary-500: var(--cennge-green-500);
+  --cennge-primary-600: var(--cennge-green-600);
+  --cennge-primary-700: var(--cennge-green-700);
+  --cennge-primary-800: var(--cennge-green-800);
+  --cennge-primary-900: var(--cennge-green-900);
+  --cennge-primary-950: var(--cennge-green-950);
+  --cennge-primary: var(--cennge-green-500);
+  --cennge-primary-foreground: var(--cennge-ink);
+  --cennge-primary-text: var(--cennge-green-700);
+}
+
+[data-accent="violet"] {
+  --cennge-primary-50: var(--cennge-violet-50);
+  --cennge-primary-100: var(--cennge-violet-100);
+  --cennge-primary-200: var(--cennge-violet-200);
+  --cennge-primary-300: var(--cennge-violet-300);
+  --cennge-primary-400: var(--cennge-violet-400);
+  --cennge-primary-500: var(--cennge-violet-500);
+  --cennge-primary-600: var(--cennge-violet-600);
+  --cennge-primary-700: var(--cennge-violet-700);
+  --cennge-primary-800: var(--cennge-violet-800);
+  --cennge-primary-900: var(--cennge-violet-900);
+  --cennge-primary-950: var(--cennge-violet-950);
+  --cennge-primary: var(--cennge-violet-600);
+  --cennge-primary-foreground: var(--cennge-white);
+  --cennge-primary-text: var(--cennge-violet-700);
+}
+
+[data-accent="red"] {
+  --cennge-primary-50: var(--cennge-red-50);
+  --cennge-primary-100: var(--cennge-red-100);
+  --cennge-primary-200: var(--cennge-red-200);
+  --cennge-primary-300: var(--cennge-red-300);
+  --cennge-primary-400: var(--cennge-red-400);
+  --cennge-primary-500: var(--cennge-red-500);
+  --cennge-primary-600: var(--cennge-red-600);
+  --cennge-primary-700: var(--cennge-red-700);
+  --cennge-primary-800: var(--cennge-red-800);
+  --cennge-primary-900: var(--cennge-red-900);
+  --cennge-primary-950: var(--cennge-red-950);
+  --cennge-primary: var(--cennge-red-600);
+  --cennge-primary-foreground: var(--cennge-white);
+  --cennge-primary-text: var(--cennge-red-700);
+}
+
+/* Dark text steps for presets. `.dark` can sit on the same element or an ancestor. */
+.dark[data-accent],
+.dark [data-accent],
+[data-accent].dark {
+  --cennge-primary-text: var(--cennge-primary-400);
+}
+
+/* <CenngeProvider reducedMotion="always"> */
+[data-cennge-motion="reduce"] *,
+[data-cennge-motion="reduce"] *::before,
+[data-cennge-motion="reduce"] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+}
+
+/* ----------------------------------------------------- Tailwind mapping */
+@theme inline {
+  --color-background: var(--cennge-background);
+  --color-foreground: var(--cennge-foreground);
+  --color-muted: var(--cennge-muted);
+  --color-border: var(--cennge-border);
+  --color-ring: var(--cennge-ring);
+  --color-surface-1: var(--cennge-surface-1);
+  --color-surface-2: var(--cennge-surface-2);
+  --color-surface-3: var(--cennge-surface-3);
+  --color-surface-4: var(--cennge-surface-4);
+
+  --color-default: var(--cennge-default);
+  --color-default-foreground: var(--cennge-default-foreground);
+  --color-default-text: var(--cennge-default-text);
+  --color-default-bg: color-mix(in oklab, var(--cennge-default-500) 14%, transparent);
+  --color-default-highlight: color-mix(in oklab, var(--cennge-default-500) 26%, transparent);
+  --color-default-50: var(--cennge-default-50);
+  --color-default-100: var(--cennge-default-100);
+  --color-default-200: var(--cennge-default-200);
+  --color-default-300: var(--cennge-default-300);
+  --color-default-400: var(--cennge-default-400);
+  --color-default-500: var(--cennge-default-500);
+  --color-default-600: var(--cennge-default-600);
+  --color-default-700: var(--cennge-default-700);
+  --color-default-800: var(--cennge-default-800);
+  --color-default-900: var(--cennge-default-900);
+  --color-default-950: var(--cennge-default-950);
+
+  --color-primary: var(--cennge-primary);
+  --color-primary-foreground: var(--cennge-primary-foreground);
+  --color-primary-text: var(--cennge-primary-text);
+  --color-primary-bg: color-mix(in oklab, var(--cennge-primary) 14%, transparent);
+  --color-primary-highlight: color-mix(in oklab, var(--cennge-primary) 26%, transparent);
+  --color-primary-50: var(--cennge-primary-50);
+  --color-primary-100: var(--cennge-primary-100);
+  --color-primary-200: var(--cennge-primary-200);
+  --color-primary-300: var(--cennge-primary-300);
+  --color-primary-400: var(--cennge-primary-400);
+  --color-primary-500: var(--cennge-primary-500);
+  --color-primary-600: var(--cennge-primary-600);
+  --color-primary-700: var(--cennge-primary-700);
+  --color-primary-800: var(--cennge-primary-800);
+  --color-primary-900: var(--cennge-primary-900);
+  --color-primary-950: var(--cennge-primary-950);
+
+  --color-secondary: var(--cennge-secondary);
+  --color-secondary-foreground: var(--cennge-secondary-foreground);
+  --color-secondary-text: var(--cennge-secondary-text);
+  --color-secondary-bg: color-mix(in oklab, var(--cennge-secondary) 14%, transparent);
+  --color-secondary-highlight: color-mix(in oklab, var(--cennge-secondary) 26%, transparent);
+  --color-secondary-50: var(--cennge-secondary-50);
+  --color-secondary-100: var(--cennge-secondary-100);
+  --color-secondary-200: var(--cennge-secondary-200);
+  --color-secondary-300: var(--cennge-secondary-300);
+  --color-secondary-400: var(--cennge-secondary-400);
+  --color-secondary-500: var(--cennge-secondary-500);
+  --color-secondary-600: var(--cennge-secondary-600);
+  --color-secondary-700: var(--cennge-secondary-700);
+  --color-secondary-800: var(--cennge-secondary-800);
+  --color-secondary-900: var(--cennge-secondary-900);
+  --color-secondary-950: var(--cennge-secondary-950);
+
+  --color-success: var(--cennge-success);
+  --color-success-foreground: var(--cennge-success-foreground);
+  --color-success-text: var(--cennge-success-text);
+  --color-success-bg: color-mix(in oklab, var(--cennge-success) 14%, transparent);
+  --color-success-highlight: color-mix(in oklab, var(--cennge-success) 26%, transparent);
+  --color-success-50: var(--cennge-success-50);
+  --color-success-100: var(--cennge-success-100);
+  --color-success-200: var(--cennge-success-200);
+  --color-success-300: var(--cennge-success-300);
+  --color-success-400: var(--cennge-success-400);
+  --color-success-500: var(--cennge-success-500);
+  --color-success-600: var(--cennge-success-600);
+  --color-success-700: var(--cennge-success-700);
+  --color-success-800: var(--cennge-success-800);
+  --color-success-900: var(--cennge-success-900);
+  --color-success-950: var(--cennge-success-950);
+
+  --color-warning: var(--cennge-warning);
+  --color-warning-foreground: var(--cennge-warning-foreground);
+  --color-warning-text: var(--cennge-warning-text);
+  --color-warning-bg: color-mix(in oklab, var(--cennge-warning) 14%, transparent);
+  --color-warning-highlight: color-mix(in oklab, var(--cennge-warning) 26%, transparent);
+  --color-warning-50: var(--cennge-warning-50);
+  --color-warning-100: var(--cennge-warning-100);
+  --color-warning-200: var(--cennge-warning-200);
+  --color-warning-300: var(--cennge-warning-300);
+  --color-warning-400: var(--cennge-warning-400);
+  --color-warning-500: var(--cennge-warning-500);
+  --color-warning-600: var(--cennge-warning-600);
+  --color-warning-700: var(--cennge-warning-700);
+  --color-warning-800: var(--cennge-warning-800);
+  --color-warning-900: var(--cennge-warning-900);
+  --color-warning-950: var(--cennge-warning-950);
+
+  --color-danger: var(--cennge-danger);
+  --color-danger-foreground: var(--cennge-danger-foreground);
+  --color-danger-text: var(--cennge-danger-text);
+  --color-danger-bg: color-mix(in oklab, var(--cennge-danger) 14%, transparent);
+  --color-danger-highlight: color-mix(in oklab, var(--cennge-danger) 26%, transparent);
+  --color-danger-50: var(--cennge-danger-50);
+  --color-danger-100: var(--cennge-danger-100);
+  --color-danger-200: var(--cennge-danger-200);
+  --color-danger-300: var(--cennge-danger-300);
+  --color-danger-400: var(--cennge-danger-400);
+  --color-danger-500: var(--cennge-danger-500);
+  --color-danger-600: var(--cennge-danger-600);
+  --color-danger-700: var(--cennge-danger-700);
+  --color-danger-800: var(--cennge-danger-800);
+  --color-danger-900: var(--cennge-danger-900);
+  --color-danger-950: var(--cennge-danger-950);
+
+  --color-info: var(--cennge-info);
+  --color-info-foreground: var(--cennge-info-foreground);
+  --color-info-text: var(--cennge-info-text);
+  --color-info-bg: color-mix(in oklab, var(--cennge-info) 14%, transparent);
+  --color-info-highlight: color-mix(in oklab, var(--cennge-info) 26%, transparent);
+  --color-info-50: var(--cennge-info-50);
+  --color-info-100: var(--cennge-info-100);
+  --color-info-200: var(--cennge-info-200);
+  --color-info-300: var(--cennge-info-300);
+  --color-info-400: var(--cennge-info-400);
+  --color-info-500: var(--cennge-info-500);
+  --color-info-600: var(--cennge-info-600);
+  --color-info-700: var(--cennge-info-700);
+  --color-info-800: var(--cennge-info-800);
+  --color-info-900: var(--cennge-info-900);
+  --color-info-950: var(--cennge-info-950);
+
+  /* rounded-small / rounded-medium / rounded-large — do not collide with Tailwind's sm/md/lg. */
+  --radius-small: var(--cennge-radius-small);
+  --radius-medium: var(--cennge-radius-medium);
+  --radius-large: var(--cennge-radius-large);
+
+  /* inset-shadow-tactile: the raised-button edge. Combines with shadow-* utilities. */
+  --inset-shadow-tactile: inset 0 1px 0 var(--cennge-edge-light), inset 0 -2px 0 var(--cennge-edge-dark);
+  --shadow-raised:
+    0 0.5px 0.6px hsl(var(--cennge-shadow-color) / 0.16),
+    0 2px 2.4px -1.2px hsl(var(--cennge-shadow-color) / 0.14),
+    0 6px 10px -3px hsl(var(--cennge-shadow-color) / 0.12);
+  --shadow-floating:
+    0 1px 2px hsl(var(--cennge-shadow-color) / 0.18),
+    0 8px 16px -4px hsl(var(--cennge-shadow-color) / 0.22),
+    0 24px 48px -12px hsl(var(--cennge-shadow-color) / 0.3);
+
+  /* font-cennge: opt-in, so the library never overrides the app's own font-sans. */
+  --font-cennge: var(--cennge-font-sans);
+  --ease-tactile: var(--cennge-ease-out);
+}

@@ -1,0 +1,32 @@
+name: Bug report
+description: Something in cennge-ui does not work as expected
+labels: [bug]
+body:
+  - type: input
+    id: version
+    attributes:
+      label: cennge-ui version
+      placeholder: 0.1.0
+    validations:
+      required: true
+  - type: input
+    id: env
+    attributes:
+      label: Environment
+      description: React version, framework (Next.js App Router, Vite…), browser
+      placeholder: React 19, Next.js 16 App Router, Chrome 140
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: Steps to reproduce. A StackBlitz or CodeSandbox link helps the most.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected
+    validations:
+      required: true
