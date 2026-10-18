@@ -7,6 +7,8 @@ import {
   SelectItem,
   Step,
   Stepper,
+  Timeline,
+  TimelineItem,
 } from "cennge-ui";
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
@@ -75,6 +77,28 @@ export function AdvancedDemo() {
               {step === 2 ? "Создать" : "Далее"}
             </Button>
           </div>
+        </div>
+      </Section>
+      <Section title="Timeline">
+        <div className="flex flex-col gap-8">
+          <Timeline aria-label="Релизы cennge-ui">
+            <TimelineItem title="v0.3.0" time="ноябрь" lineVariant="dashed" color="secondary">
+              DatePicker и Table — в планах
+            </TimelineItem>
+            <TimelineItem title="Select, Combobox, MultiSelect" time="18 окт" dateTime="2026-10-18">
+              Ввод с поиском и множественный выбор
+            </TimelineItem>
+            <TimelineItem title="CI упал" time="18 окт, 15:10" dateTime="2026-10-18T15:10" color="danger">
+              typecheck: ошибка в toggle-group.tsx
+            </TimelineItem>
+            <TimelineItem title="Первый коммит" time="18 окт" dateTime="2026-10-18" />
+          </Timeline>
+          <Timeline aria-label="Путь pull request" orientation="horizontal" activeIndex={1} color="success" size="sm">
+            <TimelineItem title="Открыт" time="10:02" />
+            <TimelineItem title="Ревью" time="10:40" />
+            <TimelineItem title="CI" />
+            <TimelineItem title="Смержен" />
+          </Timeline>
         </div>
       </Section>
       {/* next */}
