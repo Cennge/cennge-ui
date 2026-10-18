@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import {
   Kbd,
   Separator,
@@ -21,8 +21,8 @@ import {
   HoverCardContent,
   HoverCardTrigger,
   Indicator,
+  CircularProgress,
 } from "cennge-ui";
-import { useState } from "react";
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
@@ -208,6 +208,14 @@ export function BasicsDemo() {
           <Button size="sm" variant="light" onClick={() => setUnread((n) => n + 1)}>
             +1 уведомление
           </Button>
+        </div>
+      </Section>
+      <Section title="CircularProgress">
+        <div className="flex flex-wrap items-end gap-6">
+          <CircularProgress label="Покрытие тестами" value={87} showValue size="xl" color="success" />
+          <CircularProgress label="Лимит Actions" value={1540} max={2000} showValue size="lg" color="warning" />
+          <CircularProgress value={34} showValue aria-label="Загрузка" />
+          <CircularProgress aria-label="Клонирование" size="sm" color="secondary" />
         </div>
       </Section>
       {/* next */}
