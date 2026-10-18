@@ -23,7 +23,7 @@ const stepper = tv({
     button: [
       "flex shrink-0 cursor-pointer items-center justify-center rounded-small text-muted select-none",
       "transition-[background-color,color,transform] duration-(--cennge-duration-fast) ease-tactile motion-reduce:transition-none",
-      "hover:bg-surface-4 hover:text-foreground active:scale-90",
+      "hover:bg-default-bg hover:text-foreground active:scale-90",
       "disabled:pointer-events-none disabled:opacity-35",
     ],
   },

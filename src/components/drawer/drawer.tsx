@@ -38,10 +38,10 @@ const drawer = tv({
     ],
     closeButton: [
       "absolute top-3 right-3 flex size-8 cursor-pointer items-center justify-center rounded-full text-muted",
-      "transition-colors hover:bg-surface-4 hover:text-foreground",
+      "transition-colors hover:bg-default-bg hover:text-foreground",
       "outline-none focus-visible:outline-2 focus-visible:outline-ring",
     ],
-    handle: "mx-auto mt-3 h-1.5 w-12 shrink-0 rounded-full bg-surface-4",
+    handle: "mx-auto mt-3 h-1.5 w-12 shrink-0 rounded-full bg-default-highlight",
   },
   variants: {
     placement: {

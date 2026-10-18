@@ -28,7 +28,7 @@ const card = tv({
       true: [
         "cursor-pointer text-left outline-none select-none",
         "transition-[transform,background-color,box-shadow] duration-(--cennge-duration) ease-tactile motion-reduce:transition-none",
-        "hover:bg-surface-4 active:scale-[0.985]",
+        "hover:bg-surface-4 hover:shadow-floating active:scale-[0.985]",
         "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
       ],
     },

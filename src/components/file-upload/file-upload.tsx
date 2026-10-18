@@ -61,7 +61,7 @@ const fileUpload = tv({
     ],
     removeButton: [
       "flex size-7 shrink-0 cursor-pointer items-center justify-center rounded-full text-muted",
-      "transition-colors hover:bg-surface-4 hover:text-foreground",
+      "transition-colors hover:bg-default-bg hover:text-foreground",
       "outline-none focus-visible:outline-2 focus-visible:outline-ring",
       "disabled:pointer-events-none disabled:opacity-(--cennge-disabled-opacity)",
     ],
@@ -72,7 +72,7 @@ const fileUpload = tv({
       dropzone: {
         dropzone: [
           "border-2 border-dashed border-border bg-surface-2 px-6 py-8 text-center",
-          "hover:border-default-400 hover:bg-surface-3 group-data-[dragging]:scale-[1.01]",
+          "hover:border-default-400 hover:bg-default-bg group-data-[dragging]:scale-[1.01]",
           "disabled:hover:border-border disabled:hover:bg-surface-2",
         ],
         icon: "size-11 rounded-large bg-surface-3 inset-shadow-tactile shadow-raised",
@@ -80,7 +80,7 @@ const fileUpload = tv({
       button: {
         dropzone: [
           "h-10 w-auto flex-row self-start border-2 border-border bg-surface-2 px-4 font-semibold text-foreground",
-          "inset-shadow-tactile hover:bg-surface-3 active:scale-[0.97]",
+          "inset-shadow-tactile hover:bg-default-bg active:scale-[0.97]",
         ],
         icon: "text-foreground [&_svg]:size-4",
       },

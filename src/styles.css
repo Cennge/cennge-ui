@@ -219,7 +219,8 @@
   --cennge-surface-3: #fbfbfc;
   --cennge-surface-4: #ffffff;
   --cennge-foreground: #16191d;
-  --cennge-muted: #5b6370;
+  /* Dark enough to keep 4.5:1 on the default-bg hover tint too (≥ 4.9:1). */
+  --cennge-muted: #555d69;
   --cennge-border: #dde1e6;
   --cennge-default: var(--cennge-surface-4);
   --cennge-default-foreground: var(--cennge-foreground);

@@ -61,7 +61,7 @@ const colorVariants: Record<CenngeVariant, Record<CenngeColor, string>> = {
     info: "text-info-text hover:bg-info-bg",
   },
   ghost: {
-    default: "border-border text-default-text hover:bg-default hover:text-default-foreground",
+    default: "border-border text-default-text hover:bg-default-highlight hover:text-default-foreground",
     primary: "border-primary text-primary-text hover:bg-primary hover:text-primary-foreground",
     secondary: "border-secondary text-secondary-text hover:bg-secondary hover:text-secondary-foreground",
     success: "border-success text-success-text hover:bg-success hover:text-success-foreground",
@@ -95,9 +95,9 @@ export const button = tv({
     variant: {
       solid: "inset-shadow-tactile shadow-raised hover:brightness-110",
       shadow: "inset-shadow-tactile hover:brightness-110",
-      bordered: "border-2 bg-transparent hover:bg-surface-3",
+      bordered: "border-2 bg-transparent hover:bg-default-bg",
       flat: "",
-      faded: "border-2 border-border bg-surface-2 hover:bg-surface-3",
+      faded: "border-2 border-border bg-surface-2 hover:bg-default-bg",
       light: "bg-transparent",
       ghost: "border-2 bg-transparent",
     },

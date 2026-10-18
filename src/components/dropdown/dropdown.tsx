@@ -110,7 +110,7 @@ export const menuItem = tv({
   ],
   variants: {
     color: {
-      default: "text-foreground data-[highlighted]:bg-surface-4",
+      default: "text-foreground data-[highlighted]:bg-default-bg",
       primary: "text-foreground data-[highlighted]:bg-primary-bg data-[highlighted]:text-primary-text",
       secondary: "text-foreground data-[highlighted]:bg-secondary-bg data-[highlighted]:text-secondary-text",
       success: "text-foreground data-[highlighted]:bg-success-bg data-[highlighted]:text-success-text",

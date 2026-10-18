@@ -65,7 +65,7 @@ const item = tv({
   variants: {
     variant: {
       segmented: "rounded-small data-[state=on]:inset-shadow-tactile data-[state=on]:shadow-raised",
-      bordered: "border-l border-border first:border-l-0 hover:bg-surface-3",
+      bordered: "border-l border-border first:border-l-0 hover:bg-default-bg",
     },
     size: {
       sm: "h-7 px-2.5 text-xs",

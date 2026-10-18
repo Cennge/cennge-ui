@@ -50,7 +50,7 @@ const toastStyles = tv({
     ],
     close: [
       "absolute top-3 right-3 flex size-6 cursor-pointer items-center justify-center rounded-full text-muted",
-      "opacity-70 transition hover:bg-surface-4 hover:text-foreground hover:opacity-100",
+      "opacity-70 transition hover:bg-default-bg hover:text-foreground hover:opacity-100",
       "outline-none focus-visible:opacity-100 focus-visible:outline-2 focus-visible:outline-ring",
     ],
   },

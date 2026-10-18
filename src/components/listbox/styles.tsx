@@ -9,7 +9,7 @@ export const popoverClass = [
 export const optionClass = [
   "relative flex w-full cursor-pointer items-center gap-2.5 rounded-small py-2 pr-8 pl-2.5 text-sm text-foreground outline-none select-none",
   "transition-colors duration-(--cennge-duration-fast) motion-reduce:transition-none",
-  "data-[highlighted]:bg-surface-4 data-[active]:bg-surface-4",
+  "data-[highlighted]:bg-default-bg data-[active]:bg-default-bg",
   "data-[disabled]:pointer-events-none data-[disabled]:opacity-(--cennge-disabled-opacity)",
 ].join(" ");
 
