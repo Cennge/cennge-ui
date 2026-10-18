@@ -149,6 +149,8 @@ export function Toaster({
                 item.onClose?.();
               }
             }}
+            data-slot="toast"
+            data-color={color}
             className={slots.root()}
           >
             {icon && (item.isLoading || item.icon || iconPaths[color]) ? (
