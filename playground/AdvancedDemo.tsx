@@ -9,6 +9,7 @@ import {
   Stepper,
   Timeline,
   TimelineItem,
+  TagsInput,
 } from "cennge-ui";
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
@@ -99,6 +100,29 @@ export function AdvancedDemo() {
             <TimelineItem title="CI" />
             <TimelineItem title="Смержен" />
           </Timeline>
+        </div>
+      </Section>
+      <Section title="TagsInput">
+        <div className="flex flex-col gap-4">
+          <TagsInput
+            label="Topics репозитория"
+            defaultValue={["react", "tailwindcss", "radix-ui"]}
+            placeholder="Добавьте topic"
+            description="Enter или запятая — добавить. ← и Delete — удалить с клавиатуры. Можно вставить список."
+            isClearable
+            validate={(tag) => /^[a-z0-9-]+$/.test(tag)}
+            formatAnnouncement={(event) =>
+              ({
+                added: `Добавлен ${event.tag}`,
+                removed: `Удалён ${event.tag}`,
+                duplicate: `${event.tag} уже есть`,
+                invalid: `${event.tag}: только строчные латинские буквы, цифры и дефис`,
+                limit: "Достигнут лимит",
+              })[event.type]
+            }
+            removeLabel={(tag) => `Удалить ${tag}`}
+          />
+          <TagsInput label="Получатели" variant="bordered" placeholder="email и Enter" maxTags={5} size="sm" />
         </div>
       </Section>
       {/* next */}
