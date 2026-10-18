@@ -32,9 +32,20 @@ export async function openFixture(page: Page, name: string, theme: Theme = "dark
   await expect(page.getByTestId("fixture-ready")).toBeAttached();
 }
 
-/** axe-core against WCAG 2.2 A/AA. Reports rule, impact and the first offending nodes. */
-export async function expectAccessible(page: Page, options: { include?: string; exclude?: string[] } = {}) {
+/**
+ * axe-core against WCAG 2.2 A/AA. Reports rule, impact and the first offending nodes.
+ *
+ * `modal: true` while a modal overlay (Dialog, Drawer, Select, modal menus) is open: Radix hides the
+ * rest of the page with aria-hidden and makes it unreachable (focus trap + outside pointer events off).
+ * axe still sees focusable elements inside the aria-hidden part and reports aria-hidden-focus, so that
+ * one rule is skipped. Specs that pass `modal` must also prove the background is unreachable.
+ */
+export async function expectAccessible(
+  page: Page,
+  options: { include?: string; exclude?: string[]; modal?: boolean } = {},
+) {
   let builder = new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"]);
+  if (options.modal) builder = builder.disableRules(["aria-hidden-focus"]);
   if (options.include) builder = builder.include(options.include);
   for (const selector of options.exclude ?? []) builder = builder.exclude(selector);
   const { violations } = await builder.analyze();
