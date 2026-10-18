@@ -196,7 +196,7 @@ export function BasicsDemo() {
             </Button>
           </Indicator>
           <Indicator content={150} color="primary">
-            <Button isIconOnly variant="flat" aria-label="Pull requests">
+            <Button isIconOnly variant="flat" aria-label="PR: открытые pull requests">
               PR
             </Button>
           </Indicator>

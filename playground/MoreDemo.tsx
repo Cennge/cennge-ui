@@ -225,6 +225,15 @@ export function MoreDemo() {
                 <TabsTrigger value="license">License</TabsTrigger>
                 <TabsTrigger value="contributing">Contributing</TabsTrigger>
               </TabsList>
+              <TabsContent value="readme" className="text-sm text-muted">
+                Tactile, dark-first React components on Radix UI and Tailwind CSS v4.
+              </TabsContent>
+              <TabsContent value="license" className="text-sm text-muted">
+                MIT © Cennge
+              </TabsContent>
+              <TabsContent value="contributing" className="text-sm text-muted">
+                pnpm install → pnpm dev → pnpm test
+              </TabsContent>
             </Tabs>
             <Tabs defaultValue="day" variant="light" color="secondary" size="sm">
               <TabsList aria-label="Период">
@@ -232,6 +241,15 @@ export function MoreDemo() {
                 <TabsTrigger value="week">Неделя</TabsTrigger>
                 <TabsTrigger value="month">Месяц</TabsTrigger>
               </TabsList>
+              <TabsContent value="day" className="text-sm text-muted">
+                4 коммита за сегодня
+              </TabsContent>
+              <TabsContent value="week" className="text-sm text-muted">
+                23 коммита за неделю
+              </TabsContent>
+              <TabsContent value="month" className="text-sm text-muted">
+                81 коммит за месяц
+              </TabsContent>
             </Tabs>
           </div>
         </Section>
