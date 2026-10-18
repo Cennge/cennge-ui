@@ -111,6 +111,11 @@ export interface TabsProps {
   children?: React.ReactNode;
 }
 
+/**
+ * Tabs switch between panels: every TabsTrigger needs a TabsContent with the same value,
+ * because screen readers follow the trigger's aria-controls to its panel.
+ * For a switch without panels (a filter, a view mode) use ToggleGroup instead.
+ */
 export function Tabs({
   variant = "solid",
   color = "default",
