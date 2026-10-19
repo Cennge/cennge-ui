@@ -22,6 +22,7 @@ import { RepositoryDemo } from "./RepositoryDemo";
 import { AccountDemo } from "./AccountDemo";
 import { DatesDemo } from "./DatesDemo";
 import { DataDemo } from "./DataDemo";
+import { ShellDemo } from "./ShellDemo";
 
 const colors: CenngeColor[] = ["default", "primary", "secondary", "success", "warning", "danger", "info"];
 const variants: CenngeVariant[] = ["solid", "shadow", "bordered", "flat", "faded", "light", "ghost"];
@@ -57,6 +58,7 @@ const sections = [
   "Calendar",
   "Table",
   "Tree",
+  "Sidebar",
   "TagsInput",
   "FileUpload",
   "NumberInput",
@@ -174,6 +176,7 @@ export function App() {
       <AccountDemo />
       <DatesDemo />
       <DataDemo />
+      <ShellDemo />
 
       <Section title="Button: цвета × варианты">
         <div className="overflow-x-auto">
