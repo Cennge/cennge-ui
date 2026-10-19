@@ -28,6 +28,37 @@ jobs:
       # Each typical import stays within its size: catches tree shaking breaking.
       - run: pnpm size
 
+  # React 19 is what the lockfile has, tested above. These swap in an older React after the build.
+  react:
+    name: React ${{ matrix.react }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Testing Library 13 and later need React 18.
+          - react: 17
+            testing-library: 12
+          - react: 18
+            testing-library: 16
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      # Built as published, with the lockfile's React 19 types.
+      - run: pnpm build
+      - run: >-
+          pnpm add -D react@${{ matrix.react }} react-dom@${{ matrix.react }}
+          @types/react@${{ matrix.react }} @types/react-dom@${{ matrix.react }}
+          @testing-library/react@${{ matrix.testing-library }}
+      - run: pnpm test
+      # The published declarations, compiled the way an app on this React would.
+      - run: pnpm exec tsc -p tests/types
+
   e2e:
     name: Playwright · ${{ matrix.engine }}
     runs-on: ubuntu-latest
