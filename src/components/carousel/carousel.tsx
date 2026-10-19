@@ -22,10 +22,11 @@ const carousel = tv({
       "basis-[calc((100%_-_(var(--carousel-per-view)_-_1)_*_var(--carousel-gap))_/_var(--carousel-per-view))]",
     ],
     arrow: "aria-disabled:cursor-not-allowed aria-disabled:opacity-(--cennge-disabled-opacity) aria-disabled:active:scale-100",
-    overlayArrow: "absolute top-1/2 z-10 -translate-y-1/2 shadow-raised",
+    // Over images: a light glass surface, not a raised button.
+    overlayArrow: "absolute top-1/2 z-10 -translate-y-1/2 border border-border bg-surface-2/80 backdrop-blur-sm hover:bg-surface-3",
     previous: "left-2",
     next: "right-2",
-    overlayAutoplay: "absolute top-2 right-2 z-10 shadow-raised",
+    overlayAutoplay: "absolute top-2 right-2 z-10 border border-border bg-surface-2/80 backdrop-blur-sm hover:bg-surface-3",
     controls: "flex items-center justify-between gap-2",
     controlsCenter: "flex min-w-0 items-center justify-center gap-1",
     dots: "flex min-h-6 flex-wrap items-center justify-center",
@@ -599,6 +600,8 @@ function CarouselArrow({ direction, className, onClick, children, ...rest }: Car
       isIconOnly
       radius="full"
       size="sm"
+      // Flat: secondary controls should not look like the page's main buttons.
+      variant="flat"
       aria-label={direction === "previous" ? context.labels.previous : context.labels.next}
       aria-controls={context.viewportId}
       // aria-disabled, not disabled: focus stays on the button when the carousel reaches its end.
@@ -634,6 +637,7 @@ function CarouselAutoplayButton({ className }: { className?: string }) {
       isIconOnly
       radius="full"
       size="sm"
+      variant="light"
       aria-label={context.isPlaying ? context.labels.pause : context.labels.play}
       aria-controls={context.viewportId}
       data-carousel-autoplay=""
