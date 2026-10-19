@@ -35,8 +35,7 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - uses: changesets/action@v2
         with:
-          publish: pnpm release
-          title: "chore: release"
-          commit: "chore: release"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          publish-script: pnpm release
+          pr-title: "chore: release"
+          commit-message: "chore: release"
