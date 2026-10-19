@@ -180,10 +180,15 @@ for (const theme of ["dark", "light"] as const) {
     await expectAccessible(page);
   });
 
-  test(`passes axe with the year and month grids open in the ${theme} theme`, async ({ page }) => {
+  // One axe run per test: two in a row overran the timeout in Firefox during a full parallel run.
+  test(`passes axe with the year grid open in the ${theme} theme`, async ({ page }) => {
     await openFixture(page, "calendar", theme);
     await release(page).getByRole("button", { name: "Year: 2026" }).click();
     await expectAccessible(page);
+  });
+
+  test(`passes axe with the month grid open in the ${theme} theme`, async ({ page }) => {
+    await openFixture(page, "calendar", theme);
     await release(page).getByRole("button", { name: "Month: October" }).click();
     await expectAccessible(page);
   });
