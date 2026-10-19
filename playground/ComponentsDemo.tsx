@@ -61,7 +61,7 @@ export function ComponentsDemo() {
 
   return (
     <>
-      <div className="grid gap-6 md:grid-cols-2">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         <Section title="Input">
           <div className="flex flex-col gap-4">
             <Input
@@ -120,7 +120,7 @@ export function ComponentsDemo() {
       </div>
 
       <Section title="Card">
-        <div className="grid gap-4 md:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
           <Card>
             <CardHeader>
               <div className="flex size-12 items-center justify-center rounded-medium bg-primary-bg text-xl font-black text-primary-text">
@@ -184,7 +184,7 @@ export function ComponentsDemo() {
         </div>
       </Section>
 
-      <div className="grid gap-6 md:grid-cols-3">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
         <Section title="Dialog">
           <div className="flex flex-wrap gap-3">
             <Dialog>

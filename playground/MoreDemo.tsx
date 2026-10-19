@@ -43,7 +43,7 @@ export function MoreDemo() {
 
   return (
     <>
-      <div className="grid gap-6 md:grid-cols-2">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         <Section title="Toast">
           <div className="flex flex-wrap gap-2">
             <Button variant="flat" onClick={() => toast("Ссылка скопирована")}>
@@ -123,7 +123,7 @@ export function MoreDemo() {
         </Section>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-3">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
         <Section title="Switch">
           <div className="flex flex-col gap-4">
             <Switch isSelected={notify} onValueChange={setNotify}>
@@ -194,7 +194,7 @@ export function MoreDemo() {
         </Section>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         <Section title="Tabs">
           <div className="flex flex-col gap-6">
             <Tabs defaultValue="code">

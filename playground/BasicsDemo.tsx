@@ -46,7 +46,7 @@ export function BasicsDemo() {
   const [unread, setUnread] = useState(5);
 
   return (
-    <div className="grid gap-6 md:grid-cols-3">
+    <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
       <Section title="Kbd">
         <div className="flex flex-col gap-3 text-sm text-muted">
           <p className="flex items-center gap-2">

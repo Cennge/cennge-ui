@@ -173,7 +173,7 @@ function Reviews() {
   const [docs, setDocs] = useState(3.5);
 
   return (
-    <div className="grid gap-6 sm:grid-cols-2">
+    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
       <ul className="flex flex-col gap-3">
         {repositories.map((repo) => (
           <li key={repo.name} className="flex flex-col gap-1 rounded-medium bg-surface-3 p-3">
@@ -308,7 +308,7 @@ function Highlights() {
 export function RepositoryDemo() {
   return (
     <div className="flex flex-col gap-6">
-      <div className="grid gap-6 md:grid-cols-2">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         <Section title="Snippet">
           <Commands />
         </Section>

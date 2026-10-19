@@ -77,7 +77,7 @@ const pickerLabels = { ...calendarLabels, chooseDate: "Выбрать дату" 
 function DatePickers() {
   const [deadline, setDeadline] = useState<string | null>(null);
   return (
-    <div className="grid gap-4 sm:grid-cols-2">
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
       <DatePicker
         label="Дедлайн релиза"
         value={deadline}
@@ -117,7 +117,7 @@ function RangePickers() {
     ? Math.round((Date.parse(`${sprint.end}T00:00:00Z`) - Date.parse(`${sprint.start}T00:00:00Z`)) / 86_400_000) + 1
     : 0;
   return (
-    <div className="grid gap-4 sm:grid-cols-2">
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
       <DateRangePicker
         label="Спринт"
         value={sprint}
@@ -150,7 +150,7 @@ function Times() {
   const [date, setDate] = useState<string | null>(isoToday());
   const [time, setTime] = useState<string | null>("12:00");
   return (
-    <div className="grid gap-4 sm:grid-cols-2">
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
       <TimeInput
         label="Начало созвона"
         defaultValue="10:00"
@@ -181,7 +181,7 @@ function Times() {
 
 export function DatesDemo() {
   return (
-    <div className="grid gap-6">
+    <div className="grid grid-cols-1 gap-6">
       <Section title="DatePicker">
         <DatePickers />
       </Section>

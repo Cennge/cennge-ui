@@ -40,7 +40,7 @@ function Passwords() {
   const strength = strengthOf(newPassword);
 
   return (
-    <div className="grid gap-6">
+    <div className="grid grid-cols-1 gap-6">
       <form
         className="flex flex-col gap-3"
         onSubmit={(event) => {
@@ -177,7 +177,7 @@ function Invite() {
 
 export function AccountDemo() {
   return (
-    <div className="grid gap-6 md:grid-cols-2">
+    <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
       <Section title="PasswordInput">
         <Passwords />
       </Section>

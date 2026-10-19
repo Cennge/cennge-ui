@@ -34,7 +34,7 @@ export function SelectDemo() {
   const [selectedTopics, setSelectedTopics] = useState<string[]>(["react", "tailwindcss"]);
 
   return (
-    <div className="grid gap-6 md:grid-cols-3">
+    <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
       <Section title="Select">
         <div className="flex flex-col gap-4">
           <Select

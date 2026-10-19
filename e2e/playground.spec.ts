@@ -7,6 +7,15 @@ test.describe("playground", () => {
     await expect(page.getByRole("heading", { name: "Button: цвета × варианты" })).toBeVisible();
   });
 
+  test("nothing is wider than the screen: no sideways scrolling", async ({ page }) => {
+    await page.goto("/");
+    await expect(page.getByRole("heading", { name: "cennge-ui", level: 1 })).toBeVisible();
+    // A grid column without minmax(0, 1fr) grows to its widest line and pushes the page sideways on a phone.
+    await expect
+      .poll(() => page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth))
+      .toBe(0);
+  });
+
   test("switches theme and accent", async ({ page }) => {
     await page.goto("/");
     const html = page.locator("html");

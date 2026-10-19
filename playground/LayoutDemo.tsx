@@ -49,7 +49,7 @@ export function LayoutDemo() {
 
   return (
     <>
-      <div className="grid gap-6 md:grid-cols-3">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
         <Section title="RadioGroup">
           <RadioGroup label="Видимость репозитория" value={visibility} onValueChange={setVisibility} isRequired>
             <Radio value="public" description="Видят все в интернете">
@@ -107,7 +107,7 @@ export function LayoutDemo() {
         </Section>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         <Section title="Accordion">
           <div className="flex flex-col gap-6">
             <Accordion defaultValue="install">

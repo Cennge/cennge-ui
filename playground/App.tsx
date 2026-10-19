@@ -115,7 +115,7 @@ function SectionsMenu() {
           <NavigationMenuItem key={group.title}>
             <NavigationMenuTrigger>{group.title}</NavigationMenuTrigger>
             <NavigationMenuContent>
-              <ul className="grid w-[min(30rem,calc(100vw-2rem))] gap-1 sm:grid-cols-2">
+              <ul className="grid grid-cols-1 w-[min(30rem,calc(100vw-2rem))] gap-1 sm:grid-cols-2">
                 {group.links.map(([title, description]) => (
                   <li key={title}>
                     <NavigationMenuLink
@@ -281,7 +281,7 @@ export function App() {
         </div>
       </Section>
 
-      <div className="grid gap-6 md:grid-cols-2">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         <Section title="Размеры">
           <div className="flex flex-wrap items-center gap-3">
             {sizes.map((s) => (

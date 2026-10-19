@@ -276,7 +276,7 @@ const loadFolder = () =>
 function Files() {
   const [opened, setOpened] = useState("src/index.ts");
   return (
-    <div className="grid gap-4 sm:grid-cols-[16rem_1fr]">
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-[16rem_1fr]">
       <Tree
         aria-label="Файлы cennge-ui"
         items={repositoryFiles}
@@ -327,7 +327,7 @@ const branches = ["main", "feat/carousel", "feat/prose", "feat/scroll-area", "fi
 
 function History() {
   return (
-    <div className="grid gap-4">
+    <div className="grid grid-cols-1 gap-4">
       <ScrollArea
         aria-label="История коммитов"
         fadeEdges
@@ -404,8 +404,8 @@ function LongHistory() {
 
 export function DataDemo() {
   return (
-    <div className="grid gap-6">
-      <div className="grid gap-6 lg:grid-cols-[3fr_2fr]">
+    <div className="grid grid-cols-1 gap-6">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[3fr_2fr]">
         <Section title="Table">
           <Repositories />
         </Section>
@@ -413,7 +413,7 @@ export function DataDemo() {
           <Services />
         </Section>
       </div>
-      <div className="grid gap-6 lg:grid-cols-[3fr_2fr]">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[3fr_2fr]">
         <Section title="Tree">
           <Files />
         </Section>
