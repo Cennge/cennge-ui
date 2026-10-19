@@ -1,5 +1,17 @@
 import { useEffect, useState, type ReactNode } from "react";
-import { Button, type CenngeColor, type CenngeRadius, type CenngeSize, type CenngeVariant } from "cennge-ui";
+import {
+  Button,
+  CommandDialog,
+  CommandGroup,
+  CommandItem,
+  CommandSeparator,
+  Kbd,
+  toast,
+  type CenngeColor,
+  type CenngeRadius,
+  type CenngeSize,
+  type CenngeVariant,
+} from "cennge-ui";
 import { ComponentsDemo } from "./ComponentsDemo";
 import { MoreDemo } from "./MoreDemo";
 import { SelectDemo } from "./SelectDemo";
@@ -34,9 +46,83 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
   );
 }
 
+const sections = [
+  "Snippet",
+  "AlertDialog",
+  "PasswordInput",
+  "OtpInput",
+  "DatePicker",
+  "DateRangePicker",
+  "TimeInput",
+  "Calendar",
+  "Table",
+  "Tree",
+  "TagsInput",
+  "FileUpload",
+  "NumberInput",
+  "Stepper",
+];
+
+function scrollToSection(title: string) {
+  const heading = Array.from(document.querySelectorAll("section h2")).find((node) => node.textContent === title);
+  heading?.closest("section")?.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function Palette(props: {
+  isOpen: boolean;
+  onOpenChange: (isOpen: boolean) => void;
+  onToggleTheme: () => void;
+  onAccent: (accent: (typeof accents)[number]) => void;
+  isDark: boolean;
+}) {
+  return (
+    <CommandDialog
+      label="Команды"
+      placeholder="Команда или раздел…"
+      emptyContent="Ничего не найдено"
+      labels={{ results: (count) => `Найдено: ${count}` }}
+      isOpen={props.isOpen}
+      onOpenChange={props.onOpenChange}
+    >
+      <CommandGroup heading="Тема">
+        <CommandItem onAction={props.onToggleTheme} keywords={["theme", "dark", "light"]}>
+          {props.isDark ? "Светлая тема" : "Тёмная тема"}
+        </CommandItem>
+        {accents.map((accent) => (
+          <CommandItem key={accent} onAction={() => props.onAccent(accent)} keywords={["accent", "цвет"]}>
+            {`Акцент: ${accent}`}
+          </CommandItem>
+        ))}
+      </CommandGroup>
+      <CommandSeparator />
+      <CommandGroup heading="Разделы">
+        {sections.map((title) => (
+          <CommandItem key={title} onAction={() => scrollToSection(title)} keywords={["перейти"]}>
+            {title}
+          </CommandItem>
+        ))}
+      </CommandGroup>
+      <CommandSeparator />
+      <CommandGroup heading="Действия">
+        <CommandItem
+          onAction={() => {
+            void navigator.clipboard?.writeText("pnpm add cennge-ui");
+            toast.success("Команда установки скопирована");
+          }}
+          keywords={["install", "npm", "pnpm"]}
+          description="pnpm add cennge-ui"
+        >
+          Скопировать команду установки
+        </CommandItem>
+      </CommandGroup>
+    </CommandDialog>
+  );
+}
+
 export function App() {
   const [dark, setDark] = useState(true);
   const [accent, setAccent] = useState<(typeof accents)[number]>("orange");
+  const [isPaletteOpen, setPaletteOpen] = useState(false);
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", dark);
@@ -65,8 +151,18 @@ export function App() {
           <Button size="sm" variant="bordered" onClick={() => setDark((d) => !d)}>
             {dark ? "Светлая тема" : "Тёмная тема"}
           </Button>
+          <Button size="sm" variant="faded" onClick={() => setPaletteOpen(true)} endContent={<Kbd keys="command" size="sm">K</Kbd>}>
+            Команды
+          </Button>
         </div>
       </header>
+      <Palette
+        isOpen={isPaletteOpen}
+        onOpenChange={setPaletteOpen}
+        onToggleTheme={() => setDark((d) => !d)}
+        onAccent={setAccent}
+        isDark={dark}
+      />
 
       <SelectDemo />
       <ComponentsDemo />
