@@ -110,7 +110,7 @@ export function AdvancedDemo() {
             label="Topics репозитория"
             defaultValue={["react", "tailwindcss", "radix-ui"]}
             placeholder="Добавьте topic"
-            description="Enter или запятая — добавить. ← и Delete — удалить с клавиатуры. Можно вставить список."
+            description="Как topics на GitHub: строчные латинские буквы, цифры и дефис. Enter или запятая — добавить, ← и Delete — удалить."
             isClearable
             validate={(tag) => /^[a-z0-9-]+$/.test(tag)}
             formatAnnouncement={(event) =>
