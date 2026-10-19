@@ -25,6 +25,7 @@ export * from "./components/hover-card";
 export * from "./components/indicator";
 export * from "./components/input";
 export * from "./components/kbd";
+export * from "./components/navigation-menu";
 export * from "./components/number-input";
 export * from "./components/otp-input";
 export * from "./components/pagination";

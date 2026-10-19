@@ -27,11 +27,11 @@ A regular npm package — `npm update` and every app gets the fix.
 - **Server Components ready.** `"use client"` ships in the build; helpers stay server-safe.
 
 > **Status:** early development (0.x).
-> **58 components.**
+> **59 components.**
 > Forms: Form · Button · Input · PasswordInput · OtpInput · Textarea · NumberInput · DatePicker · DateRangePicker · TimeInput · Select · Combobox · MultiSelect · TagsInput · FileUpload · Checkbox · RadioGroup · Switch · Slider · Rating · ToggleGroup.
 > Overlays: Dialog · AlertDialog · Command · Drawer · Popover · Dropdown · ContextMenu · HoverCard · Tooltip · Toast.
 > Display: Table · Tree · Calendar · RangeCalendar · Card · Badge · Avatar · Indicator · Alert · Progress · CircularProgress · Skeleton · Spinner · EmptyState · Kbd · Snippet · Separator · Timeline · ScrollArea · Prose · Carousel.
-> Navigation: Sidebar · Tabs · Accordion · Breadcrumbs · Pagination · Stepper.
+> Navigation: NavigationMenu · Sidebar · Tabs · Accordion · Breadcrumbs · Pagination · Stepper.
 
 <details>
 <summary>Light theme with the blue accent preset</summary>
@@ -388,6 +388,28 @@ The styles are the `cennge-prose` class in `cennge-ui/styles.css`, so plain HTML
 `<article class="cennge-prose">`. They sit in the `components` layer: a utility on any element inside
 wins (`<h2 className="text-xl">`), and `not-prose` switches them off for a subtree. Code blocks that
 scroll sideways become keyboard-focusable.
+
+### NavigationMenu
+
+Site navigation with dropdown panels, on Radix NavigationMenu. The panel opens under its own trigger
+and stays inside the window (radix-ui/primitives#1462), can open on click instead of hover (#1630), and
+with `keepMounted` the links of closed panels stay in the HTML for search engines (#1273).
+
+```tsx
+<NavigationMenu aria-label="Main" openOn="click">          {/* or "hover"; orientation="vertical" */}
+  <NavigationMenuList>
+    <NavigationMenuItem>
+      <NavigationMenuTrigger>Components</NavigationMenuTrigger>
+      <NavigationMenuContent>
+        <NavigationMenuLink href="/docs/carousel" title="Carousel" description="Native scroll snapping" />
+      </NavigationMenuContent>
+    </NavigationMenuItem>
+    <NavigationMenuItem>
+      <NavigationMenuLink asChild isActive><Link href="/changelog">Changelog</Link></NavigationMenuLink>
+    </NavigationMenuItem>
+  </NavigationMenuList>
+</NavigationMenu>
+```
 
 ### Command palette and Sidebar
 

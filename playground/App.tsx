@@ -6,6 +6,12 @@ import {
   CommandItem,
   CommandSeparator,
   Kbd,
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
   toast,
   type CenngeColor,
   type CenngeRadius,
@@ -68,6 +74,71 @@ const sections = [
 function scrollToSection(title: string) {
   const heading = Array.from(document.querySelectorAll("section h2")).find((node) => node.textContent === title);
   heading?.closest("section")?.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+const navigation = [
+  {
+    title: "Формы",
+    links: [
+      ["Form + server action", "Ошибки сервера под полями"],
+      ["DatePicker", "Дата с клавиатуры и из календаря"],
+      ["TagsInput", "Теги, вставка списком"],
+      ["Slider", "Метки и остановка на них"],
+    ],
+  },
+  {
+    title: "Данные",
+    links: [
+      ["Table", "Сортировка и выбор строк"],
+      ["Tree", "Файлы с подгрузкой папок"],
+      ["ScrollArea", "Полосы прокрутки в цветах темы"],
+      ["Carousel", "Нативная прокрутка со снапом"],
+    ],
+  },
+  {
+    title: "Оверлеи",
+    links: [
+      ["AlertDialog", "Подтверждение с ожиданием"],
+      ["Snippet", "Команды с копированием"],
+      ["Rating", "Звёзды и средняя оценка"],
+      ["Prose", "README в цветах темы"],
+    ],
+  },
+] as const;
+
+/** Разделы песочницы: панель открывается под своим пунктом и не выходит за край окна. */
+function SectionsMenu() {
+  return (
+    <NavigationMenu aria-label="Разделы">
+      <NavigationMenuList>
+        {navigation.map((group) => (
+          <NavigationMenuItem key={group.title}>
+            <NavigationMenuTrigger>{group.title}</NavigationMenuTrigger>
+            <NavigationMenuContent>
+              <ul className="grid w-[min(30rem,calc(100vw-2rem))] gap-1 sm:grid-cols-2">
+                {group.links.map(([title, description]) => (
+                  <li key={title}>
+                    <NavigationMenuLink
+                      href={`#${title}`}
+                      title={title}
+                      description={description}
+                      onClick={(event) => {
+                        event.preventDefault();
+                        scrollToSection(title);
+                      }}
+                    />
+                  </li>
+                ))}
+              </ul>
+            </NavigationMenuContent>
+          </NavigationMenuItem>
+        ))}
+        <NavigationMenuItem>
+          <NavigationMenuLink href="https://github.com/Cennge/cennge-ui">GitHub</NavigationMenuLink>
+        </NavigationMenuItem>
+      </NavigationMenuList>
+    </NavigationMenu>
+  );
 }
 
 function Palette(props: {
@@ -158,6 +229,7 @@ export function App() {
           </Button>
         </div>
       </header>
+      <SectionsMenu />
       <Palette
         isOpen={isPaletteOpen}
         onOpenChange={setPaletteOpen}
