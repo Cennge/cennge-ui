@@ -170,6 +170,9 @@ export const NavigationMenu = React.forwardRef<HTMLElement, NavigationMenuProps>
               forceMount={keepMounted || undefined}
               className={cn(slots.viewport(), keepMounted && "data-[state=closed]:hidden", classNames?.viewport)}
               onPointerLeave={openOn === "click" ? ignorePointer : undefined}
+              // Radix returns the viewport's children from a component of its own, and React 17 throws when a
+              // component returns undefined.
+              children={null}
             />
           </InContentContext.Provider>
         </div>
