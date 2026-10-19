@@ -18,6 +18,7 @@ import {
   Input,
   Pagination,
   Switch,
+  Snippet,
   Table,
   TableBody,
   TableCell,
@@ -25,6 +26,8 @@ import {
   TableHeader,
   TableRow,
   toast,
+  Tree,
+  type TreeItem,
   useTableSelection,
   useTableSort,
 } from "cennge-ui";
@@ -231,14 +234,82 @@ function Services() {
   );
 }
 
+const repositoryFiles: TreeItem[] = [
+  { id: ".github", label: ".github", children: [{ id: ".github/workflows/ci.yml", label: "ci.yml" }] },
+  {
+    id: "src",
+    label: "src",
+    children: [
+      {
+        id: "src/components",
+        label: "components",
+        children: ["button.tsx", "calendar.tsx", "table.tsx", "tree.tsx"].map((name) => ({
+          id: `src/components/${name}`,
+          label: name,
+        })),
+      },
+      { id: "src/index.ts", label: "index.ts" },
+      { id: "src/styles.css", label: "styles.css" },
+    ],
+  },
+  { id: "docs", label: "docs", hasChildren: true },
+  { id: "README.md", label: "README.md" },
+  { id: "package.json", label: "package.json" },
+];
+
+// Imitates fetching a folder from the GitHub API.
+const loadFolder = () =>
+  new Promise<TreeItem[]>((resolve) =>
+    setTimeout(
+      () =>
+        resolve([
+          { id: "docs/theming.md", label: "theming.md" },
+          { id: "docs/testing.md", label: "testing.md" },
+        ]),
+      900,
+    ),
+  );
+
+function Files() {
+  const [opened, setOpened] = useState("src/index.ts");
+  return (
+    <div className="grid gap-4 sm:grid-cols-[16rem_1fr]">
+      <Tree
+        aria-label="Файлы cennge-ui"
+        items={repositoryFiles}
+        defaultExpandedKeys={["src", "src/components"]}
+        defaultSelectedKey="src/index.ts"
+        loadChildren={loadFolder}
+        onAction={(item) => setOpened(item.id)}
+        className="rounded-large bg-surface-1 p-1.5"
+      />
+      <div className="flex min-w-0 flex-col gap-2">
+        <p className="text-sm font-semibold">{opened}</p>
+        <Snippet symbol={false} copyLabel="Скопировать путь" copiedLabel="Путь скопирован" className="w-full">
+          {`https://github.com/Cennge/cennge-ui/blob/main/${opened}`}
+        </Snippet>
+        <p className="text-xs text-muted">
+          ↑/↓ — по файлам, → и ← — открыть и закрыть папку, буква — переход по имени, * — открыть все папки уровня.
+          Папка docs загружается при первом открытии.
+        </p>
+      </div>
+    </div>
+  );
+}
+
 export function DataDemo() {
   return (
-    <div className="grid gap-6 lg:grid-cols-[3fr_2fr]">
-      <Section title="Table">
-        <Repositories />
-      </Section>
-      <Section title="Table + TanStack Table">
-        <Services />
+    <div className="grid gap-6">
+      <div className="grid gap-6 lg:grid-cols-[3fr_2fr]">
+        <Section title="Table">
+          <Repositories />
+        </Section>
+        <Section title="Table + TanStack Table">
+          <Services />
+        </Section>
+      </div>
+      <Section title="Tree">
+        <Files />
       </Section>
     </div>
   );
