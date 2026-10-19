@@ -146,3 +146,57 @@ test.describe("Select", () => {
     });
   }
 });
+
+test.describe("thousands of options", () => {
+  const dependency = (page: import("@playwright/test").Page) => page.getByRole("combobox", { name: "Dependency" });
+
+  test("only the options in view are in the DOM, each with its place in the list", async ({ page }) => {
+    await dependency(page).focus();
+    await page.keyboard.press("ArrowDown");
+    const options = page.getByRole("listbox", { name: "Dependency" }).getByRole("option");
+    await expect(options.first()).toHaveAttribute("aria-setsize", "5000");
+    const count = await options.count();
+    expect(count).toBeGreaterThan(5);
+    expect(count).toBeLessThan(60);
+  });
+
+  test("End goes to the last option: it is rendered, active and in view", async ({ page }) => {
+    await dependency(page).focus();
+    await page.keyboard.press("ArrowDown");
+    await page.keyboard.press("End");
+    const last = page.getByRole("option", { name: "@cennge/package-5000" });
+    await expect(last).toHaveAttribute("aria-posinset", "5000");
+    await expect(dependency(page)).toHaveAttribute("aria-activedescendant", (await last.getAttribute("id"))!);
+    await expect(last).toBeInViewport();
+    await page.keyboard.press("Enter");
+    await expect(page.getByTestId("dependency")).toHaveText("@cennge/package-5000");
+  });
+
+  test("ArrowUp from the first option wraps to the last one", async ({ page }) => {
+    await dependency(page).focus();
+    await page.keyboard.press("ArrowDown");
+    await page.keyboard.press("ArrowDown");
+    await page.keyboard.press("ArrowUp");
+    await page.keyboard.press("ArrowUp");
+    await expect(page.getByRole("option", { name: "@cennge/package-5000" })).toBeInViewport();
+  });
+
+  test("typing filters as before; a short list is not virtual", async ({ page }) => {
+    await dependency(page).fill("package-420");
+    const options = page.getByRole("listbox", { name: "Dependency" }).getByRole("option");
+    await expect(options).toHaveCount(10); // 4200–4209
+    await expect(options.first()).not.toHaveAttribute("aria-setsize");
+  });
+
+  test("scrolling the list renders the options at the new place", async ({ page }) => {
+    await dependency(page).focus();
+    await page.keyboard.press("ArrowDown");
+    const listbox = page.getByRole("listbox", { name: "Dependency" });
+    await listbox.evaluate((node) => {
+      const scroller = node.parentElement!;
+      scroller.scrollTop = scroller.scrollHeight / 2;
+    });
+    // Half way down: rows from about 2,501 on are in view.
+    await expect(page.getByRole("option", { name: "@cennge/package-2503" })).toBeInViewport();
+  });
+});

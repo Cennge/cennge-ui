@@ -8,6 +8,10 @@ import { input, type InputVariant } from "../input/input.styles";
 import { CheckIcon, ChevronIcon, ClearIcon, optionCheckClass, optionClass, popoverClass } from "../listbox/styles";
 import { Tag } from "../listbox/tag";
 import { useFormField } from "../form/form";
+import { useVirtualizer, type VirtualItem } from "../virtual-list/use-virtualizer";
+
+/** Lists longer than this render only the options in view. */
+const VIRTUALIZE_AFTER = 100;
 
 export interface ComboboxItem {
   value: string;
@@ -210,12 +214,43 @@ export const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(functi
     inputRef.current?.focus();
   };
 
+  // Thousands of options: only those in view are in the DOM, plus the active one.
+  const [listScroller, setListScroller] = React.useState<HTMLDivElement | null>(null);
+  const isVirtual = visible.length > VIRTUALIZE_AFTER;
+  const virtualizer = useVirtualizer({
+    count: isVirtual ? visible.length : 0,
+    estimateSize: 36,
+    scrollElement: isVirtual ? listScroller : null,
+    initialHeight: 320,
+  });
+
   // Keep the active option in view while moving with the keyboard.
   React.useEffect(() => {
     if (!isOpen || activeIndex < 0) return;
+    if (isVirtual) return virtualizer.scrollToIndex(activeIndex);
     const node = optionId(activeIndex) ? document.getElementById(optionId(activeIndex)!) : null;
     node?.scrollIntoView?.({ block: "nearest" });
-  }, [activeIndex, isOpen]);
+  }, [activeIndex, isOpen, isVirtual]);
+
+  const placeAt = ({ start }: VirtualItem): React.CSSProperties => ({
+    position: "absolute",
+    top: 0,
+    left: 0,
+    width: "100%",
+    transform: `translateY(${start}px)`,
+  });
+  const renderedOptions = isVirtual
+    ? [
+        ...virtualizer.items,
+        // aria-activedescendant needs the active option in the DOM, also before it scrolls into view.
+        ...(activeIndex >= 0 && !virtualizer.items.some((entry) => entry.index === activeIndex)
+          ? [virtualizer.getItem(activeIndex)]
+          : []),
+      ].flatMap((entry) => {
+        const item = visible[entry.index];
+        return item ? [{ item, index: entry.index, placement: placeAt(entry) }] : [];
+      })
+    : visible.map((item, index) => ({ item, index, placement: undefined as React.CSSProperties | undefined }));
 
   const onKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     switch (event.key) {
@@ -400,9 +435,11 @@ export const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(functi
             onInteractOutside={(event) => {
               if (anchorRef.current?.contains(event.target as Node)) event.preventDefault();
             }}
+            ref={setListScroller}
             className={cn(
               popoverClass,
-              "max-h-[min(20rem,var(--radix-popover-content-available-height))] w-(--radix-popover-trigger-width) min-w-48",
+              // The fallback holds before Radix measures: an unbounded list would make every option "visible".
+              "max-h-[min(20rem,var(--radix-popover-content-available-height,20rem))] w-(--radix-popover-trigger-width) min-w-48",
               "origin-(--radix-popover-content-transform-origin)",
               classNames?.popover,
             )}
@@ -412,17 +449,24 @@ export const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(functi
               role="listbox"
               aria-multiselectable={isMultiple || undefined}
               aria-label={typeof label === "string" ? label : ariaLabel}
+              style={isVirtual ? { position: "relative", height: virtualizer.totalSize } : undefined}
             >
               {visible.length === 0 ? (
                 <div className="px-2.5 py-6 text-center text-sm text-muted">{emptyContent}</div>
               ) : (
-                visible.map((item, index) => {
+                renderedOptions.map(({ item, index, placement }) => {
                   const isSelected = selection.includes(item.value);
                   return (
                     <div
                       key={item.value}
                       id={optionId(index)}
                       role="option"
+                      // Out of thousands, only some are in the DOM: say where this one is.
+                      aria-setsize={isVirtual ? visible.length : undefined}
+                      aria-posinset={isVirtual ? index + 1 : undefined}
+                      data-index={isVirtual ? index : undefined}
+                      ref={isVirtual ? virtualizer.measureElement : undefined}
+                      style={placement}
                       aria-selected={isSelected}
                       aria-disabled={item.isDisabled || undefined}
                       data-active={index === activeIndex || undefined}

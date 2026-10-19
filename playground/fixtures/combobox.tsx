@@ -14,10 +14,17 @@ const topics: ComboboxItem[] = ["react", "typescript", "tailwindcss", "radix-ui"
   label: t,
 }));
 
+// Past 100 options the list renders only those in view.
+const dependencies: ComboboxItem[] = Array.from({ length: 5000 }, (_, i) => {
+  const name = `@cennge/package-${String(i + 1).padStart(4, "0")}`;
+  return { value: name, label: name };
+});
+
 export default function ComboboxFixture() {
   const [repo, setRepo] = useState<string | null>(null);
   const [selected, setSelected] = useState<string[]>(["react"]);
   const [language, setLanguage] = useState<string | null>(null);
+  const [dependency, setDependency] = useState<string | null>(null);
 
   return (
     <>
@@ -27,6 +34,10 @@ export default function ComboboxFixture() {
       </p>
 
       <Combobox selectionMode="multiple" label="Topics" items={topics} values={selected} onValuesChange={setSelected} />
+      <Combobox label="Dependency" items={dependencies} value={dependency} onValueChange={setDependency} />
+      <p>
+        dependency: <span data-testid="dependency">{dependency ?? "none"}</span>
+      </p>
       <p>
         topics: <span data-testid="topics">{selected.join("|")}</span>
       </p>

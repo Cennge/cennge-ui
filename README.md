@@ -422,6 +422,7 @@ list.current?.scrollToIndex(4811, { align: "center" });
 
 Only the rows in view are in the DOM; each still tells screen readers its place in the whole list, and
 rows of any height are measured as they appear. `useVirtualizer` is the same engine for your own markup.
+Combobox and MultiSelect switch to it by themselves past 100 options.
 
 ### Command palette and Sidebar
 
