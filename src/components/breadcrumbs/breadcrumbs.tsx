@@ -14,7 +14,7 @@ export interface BreadcrumbItemProps extends React.AnchorHTMLAttributes<HTMLAnch
 
 const linkClass = [
   "inline-flex items-center gap-1.5 rounded-small text-muted transition-colors duration-(--cennge-duration-fast)",
-  "hover:text-foreground outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
+  "hover:text-foreground outline-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-ring",
 ].join(" ");
 
 export const BreadcrumbItem = React.forwardRef<HTMLAnchorElement, BreadcrumbItemProps>(function BreadcrumbItem(

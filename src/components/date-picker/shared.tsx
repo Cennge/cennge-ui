@@ -12,7 +12,7 @@ export const calendarButtonClass = cn(
   "-mr-1.5 flex size-7 shrink-0 cursor-pointer items-center justify-center rounded-small text-muted",
   "transition-[background-color,color,transform] duration-(--cennge-duration-fast) ease-tactile motion-reduce:transition-none",
   "hover:bg-default-bg hover:text-foreground active:scale-90 data-[state=open]:bg-default-bg data-[state=open]:text-foreground",
-  "outline-none focus-visible:outline-2 focus-visible:outline-ring disabled:pointer-events-none disabled:opacity-50",
+  "outline-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-ring disabled:pointer-events-none disabled:opacity-50",
 );
 
 export function CalendarIcon() {

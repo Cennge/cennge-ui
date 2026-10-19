@@ -59,7 +59,7 @@ const item = tv({
   base: [
     "inline-flex cursor-pointer items-center justify-center gap-2 font-semibold whitespace-nowrap text-muted",
     "transition-[color,background-color,box-shadow] duration-(--cennge-duration-fast) ease-tactile motion-reduce:transition-none",
-    "hover:text-foreground outline-none focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
+    "hover:text-foreground outline-none focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-ring",
     "disabled:pointer-events-none disabled:opacity-(--cennge-disabled-opacity)",
   ],
   variants: {

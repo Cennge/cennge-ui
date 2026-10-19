@@ -51,7 +51,7 @@ const snippet = tv({
     base: "inline-flex max-w-full items-start gap-1 font-mono",
     pre: [
       "min-w-0 flex-1 overflow-x-auto rounded-small whitespace-pre",
-      "[scrollbar-width:thin] outline-none focus-visible:outline-2 focus-visible:outline-current",
+      "[scrollbar-width:thin] outline-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-current",
     ],
     line: "block",
     symbol: "mr-2 select-none",
@@ -60,7 +60,7 @@ const snippet = tv({
       "transition-[background-color,transform] duration-(--cennge-duration-fast) ease-tactile motion-reduce:transition-none",
       "hover:bg-current/10 active:scale-90",
       // The text colour stays visible on every variant, including solid fills in the accent colour.
-      "outline-none focus-visible:outline-2 focus-visible:outline-current",
+      "outline-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-current",
     ],
     copyIcon: "size-[1.15em] data-[copied]:animate-cennge-pop-in motion-reduce:animate-none",
   },

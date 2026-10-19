@@ -42,7 +42,7 @@ export const input = tv({
     clearButton: [
       "-mr-1 flex size-6 shrink-0 cursor-pointer items-center justify-center rounded-full text-muted",
       "transition-colors hover:bg-default-bg hover:text-foreground",
-      "outline-none focus-visible:outline-2 focus-visible:outline-ring",
+      "outline-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-ring",
     ],
     description: "text-xs text-muted",
     errorMessage: "text-xs text-danger-text",

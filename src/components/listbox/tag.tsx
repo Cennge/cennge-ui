@@ -59,7 +59,7 @@ export function Tag({
         className={cn(
           "flex size-4 shrink-0 cursor-pointer items-center justify-center rounded-full text-muted",
           "hover:bg-default-bg hover:text-foreground",
-          "outline-none focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-ring",
+          "outline-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-1 focus-visible:outline-ring",
         )}
       >
         <ClearIcon />

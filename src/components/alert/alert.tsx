@@ -54,7 +54,7 @@ const alert = tv({
     close: [
       "-mt-1 -mr-1 flex size-7 shrink-0 cursor-pointer items-center justify-center rounded-full",
       "opacity-70 transition hover:bg-black/10 hover:opacity-100 dark:hover:bg-white/10",
-      "outline-none focus-visible:opacity-100 focus-visible:outline-2 focus-visible:outline-ring",
+      "outline-none focus-visible:opacity-100 focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-ring",
     ],
   },
   variants: {

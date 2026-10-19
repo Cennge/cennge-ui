@@ -51,7 +51,7 @@ const timeline = tv({
         // Scrolls inside itself on narrow screens instead of scrolling the page.
         list: [
           "overflow-x-auto pb-2 [scrollbar-color:var(--cennge-border)_transparent] scrollbar-thin",
-          "rounded-small outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
+          "rounded-small outline-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-ring",
         ],
         item: "min-w-44 flex-1 flex-col gap-3 last:flex-none",
         rail: "flex-row",

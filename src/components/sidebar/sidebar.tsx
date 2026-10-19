@@ -220,7 +220,7 @@ export const SidebarItem = React.forwardRef<HTMLElement, SidebarItemProps>(funct
       className={cn(
         "flex h-9 w-full shrink-0 cursor-pointer items-center gap-2.5 rounded-medium px-2.5 text-left text-sm font-medium text-muted",
         "transition-colors duration-(--cennge-duration-fast) hover:bg-default-bg hover:text-foreground",
-        "outline-none focus-visible:outline-2 focus-visible:outline-ring",
+        "outline-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-ring",
         "data-[active]:bg-primary-bg data-[active]:text-primary-text",
         isCollapsed && "justify-center px-0",
         className,
@@ -267,7 +267,7 @@ function PanelIcon() {
 const triggerClass = cn(
   "size-9 shrink-0 cursor-pointer items-center justify-center rounded-medium text-muted",
   "transition-[background-color,color,transform] duration-(--cennge-duration-fast) hover:bg-default-bg hover:text-foreground active:scale-95",
-  "outline-none focus-visible:outline-2 focus-visible:outline-ring",
+  "outline-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-ring",
 );
 
 /**

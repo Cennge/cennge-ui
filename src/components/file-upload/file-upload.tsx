@@ -45,7 +45,7 @@ const fileUpload = tv({
     dropzone: [
       "flex w-full cursor-pointer flex-col items-center justify-center gap-2 text-sm text-muted",
       "transition-[border-color,background-color,transform] duration-(--cennge-duration) ease-tactile motion-reduce:transition-none",
-      "outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
+      "outline-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-ring",
       "group-data-[dragging]:border-primary group-data-[dragging]:bg-primary-bg group-data-[invalid]:border-danger",
       "disabled:cursor-not-allowed",
     ],
@@ -62,7 +62,7 @@ const fileUpload = tv({
     removeButton: [
       "flex size-7 shrink-0 cursor-pointer items-center justify-center rounded-full text-muted",
       "transition-colors hover:bg-default-bg hover:text-foreground",
-      "outline-none focus-visible:outline-2 focus-visible:outline-ring",
+      "outline-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-ring",
       "disabled:pointer-events-none disabled:opacity-(--cennge-disabled-opacity)",
     ],
     errors: "m-0 flex list-none flex-col gap-0.5 p-0 text-xs text-danger-text",

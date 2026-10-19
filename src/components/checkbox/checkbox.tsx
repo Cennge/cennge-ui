@@ -12,7 +12,7 @@ const checkbox = tv({
       "peer flex shrink-0 cursor-pointer items-center justify-center rounded-[0.375rem] border-2 border-default-400",
       "bg-transparent transition-[background-color,border-color,transform] duration-(--cennge-duration-fast) ease-tactile",
       "active:scale-90 motion-reduce:transition-none",
-      "outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
+      "outline-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-ring",
       "disabled:cursor-not-allowed",
     ],
     indicator: "flex items-center justify-center data-[state=checked]:animate-cennge-pop-in motion-reduce:animate-none",

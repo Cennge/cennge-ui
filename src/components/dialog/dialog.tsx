@@ -87,7 +87,7 @@ export const dialogStyles = tv({
     closeButton: [
       "absolute top-3 right-3 flex size-8 cursor-pointer items-center justify-center rounded-full text-muted",
       "transition-colors hover:bg-default-bg hover:text-foreground",
-      "outline-none focus-visible:outline-2 focus-visible:outline-ring",
+      "outline-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-ring",
     ],
   },
   variants: {

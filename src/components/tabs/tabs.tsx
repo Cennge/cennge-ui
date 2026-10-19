@@ -69,7 +69,7 @@ const trigger = tv({
   base: [
     "inline-flex cursor-pointer items-center justify-center gap-2 font-semibold whitespace-nowrap text-muted",
     "transition-[color,background-color,border-color,box-shadow] duration-(--cennge-duration-fast) ease-tactile motion-reduce:transition-none",
-    "outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
+    "outline-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-ring",
     "hover:text-foreground disabled:pointer-events-none disabled:opacity-(--cennge-disabled-opacity)",
   ],
   variants: {
@@ -175,7 +175,7 @@ export const TabsContent = React.forwardRef<HTMLDivElement, TabsContentProps>(fu
     <TabsPrimitive.Content
       ref={ref}
       className={cn(
-        "outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
+        "outline-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-ring",
         "data-[state=active]:animate-cennge-fade-in motion-reduce:animate-none",
         className,
       )}

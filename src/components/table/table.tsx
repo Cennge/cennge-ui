@@ -14,7 +14,7 @@ const table = tv({
     wrapper: [
       "relative w-full overflow-auto rounded-large border border-border bg-surface-2",
       "[scrollbar-color:var(--cennge-border)_transparent] [scrollbar-width:thin]",
-      "outline-none focus-visible:outline-2 focus-visible:outline-ring",
+      "outline-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-ring",
     ],
     table: "w-full border-separate border-spacing-0 text-foreground",
     column: [
@@ -24,7 +24,7 @@ const table = tv({
     sortButton: [
       "-mx-1.5 inline-flex cursor-pointer items-center gap-1 rounded-small px-1.5 py-1 font-semibold text-inherit",
       "transition-colors duration-(--cennge-duration-fast) hover:bg-default-bg hover:text-foreground",
-      "outline-none focus-visible:outline-2 focus-visible:outline-ring",
+      "outline-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-ring",
     ],
     row: "transition-colors duration-(--cennge-duration-fast) data-[selected]:bg-primary-bg",
     cell: [

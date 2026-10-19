@@ -19,6 +19,9 @@ pnpm dev     # playground at http://localhost:5173
 - **React 17+ compatible.** Do not call `useId`, `useTransition`, `useSyncExternalStore` or React 19 APIs directly.
 - **Motion:** animate only `transform` and `opacity`, and respect `prefers-reduced-motion`.
 - **Accessibility:** keyboard, focus ring and screen-reader names work before a component is merged.
+- **Focus rings:** write `outline-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-ring`.
+  In Tailwind v4 `outline-none` sets `--tw-outline-style: none`, and `outline-2` alone inherits it: no ring.
+  `e2e/focus-ring.spec.ts` tabs through every fixture and the playground and fails on an invisible focus.
 
 ## Tests for a new component
 

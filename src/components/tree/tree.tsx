@@ -35,7 +35,7 @@ const tree = tv({
     item: [
       "relative flex cursor-pointer items-center gap-1.5 rounded-medium pr-2 text-foreground",
       "transition-colors duration-(--cennge-duration-fast) hover:bg-default-bg",
-      "outline-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring",
+      "outline-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:-outline-offset-2 focus-visible:outline-ring",
       "data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50 data-[disabled]:hover:bg-transparent",
     ],
     chevron: [

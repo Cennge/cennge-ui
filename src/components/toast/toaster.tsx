@@ -50,12 +50,12 @@ const toastStyles = tv({
     action: [
       "mt-2 inline-flex h-7 cursor-pointer items-center rounded-small px-2.5 text-xs font-semibold",
       "bg-surface-4 inset-shadow-tactile transition-[filter,transform] hover:brightness-110 active:scale-[0.97]",
-      "outline-none focus-visible:outline-2 focus-visible:outline-ring",
+      "outline-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-ring",
     ],
     close: [
       "absolute top-3 right-3 flex size-6 cursor-pointer items-center justify-center rounded-full text-muted",
       "opacity-70 transition hover:bg-default-bg hover:text-foreground hover:opacity-100",
-      "outline-none focus-visible:opacity-100 focus-visible:outline-2 focus-visible:outline-ring",
+      "outline-none focus-visible:opacity-100 focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-ring",
     ],
   },
   variants: {

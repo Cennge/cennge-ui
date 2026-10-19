@@ -19,7 +19,7 @@ const radio = tv({
     control: [
       "flex shrink-0 cursor-pointer items-center justify-center rounded-full border-2 border-default-400 bg-transparent",
       "transition-[border-color,transform] duration-(--cennge-duration-fast) ease-tactile active:scale-90 motion-reduce:transition-none",
-      "outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
+      "outline-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-ring",
       "disabled:cursor-not-allowed",
     ],
     dot: "block rounded-full data-[state=checked]:animate-cennge-pop-in motion-reduce:animate-none",

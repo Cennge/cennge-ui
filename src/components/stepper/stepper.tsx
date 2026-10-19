@@ -74,7 +74,7 @@ const stepper = tv({
       true: {
         trigger: [
           "cursor-pointer -m-1 p-1 transition-colors hover:bg-default-bg",
-          "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
+          "focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-ring",
         ],
       },
     },

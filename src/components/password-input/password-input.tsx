@@ -22,7 +22,7 @@ const extras = tv({
       "-mr-1.5 flex shrink-0 cursor-pointer items-center justify-center rounded-small text-muted",
       "transition-[background-color,color,transform] duration-(--cennge-duration-fast) ease-tactile motion-reduce:transition-none",
       "hover:bg-default-bg hover:text-foreground active:scale-90",
-      "outline-none focus-visible:outline-2 focus-visible:outline-ring",
+      "outline-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-ring",
       "disabled:pointer-events-none",
     ],
     capsLock: "flex items-center gap-1.5 text-xs text-warning-text",

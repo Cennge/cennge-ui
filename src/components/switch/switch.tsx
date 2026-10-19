@@ -11,7 +11,7 @@ const switchStyles = tv({
     track: [
       "relative inline-flex shrink-0 cursor-pointer items-center rounded-full bg-surface-4 p-0.5",
       "inset-shadow-[inset_0_1px_2px_rgb(0_0_0/0.25)] transition-colors duration-(--cennge-duration) ease-tactile",
-      "outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
+      "outline-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-ring",
       "disabled:cursor-not-allowed motion-reduce:transition-none",
     ],
     thumb: [

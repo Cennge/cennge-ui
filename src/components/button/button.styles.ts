@@ -83,7 +83,7 @@ export const button = tv({
   base: [
     "relative inline-flex shrink-0 items-center justify-center gap-2 overflow-hidden",
     "font-semibold whitespace-nowrap select-none",
-    "outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
+    "outline-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-ring",
     // Tactile press. Only transform and colour transitions — no layout properties.
     "transition-[transform,color,background-color,border-color,box-shadow,filter]",
     "duration-(--cennge-duration-fast) ease-tactile motion-reduce:transition-none",
