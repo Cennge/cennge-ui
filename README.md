@@ -27,10 +27,10 @@ A regular npm package — `npm update` and every app gets the fix.
 - **Server Components ready.** `"use client"` ships in the build; helpers stay server-safe.
 
 > **Status:** early development (0.x).
-> **54 components.**
+> **55 components.**
 > Forms: Button · Input · PasswordInput · OtpInput · Textarea · NumberInput · DatePicker · DateRangePicker · TimeInput · Select · Combobox · MultiSelect · TagsInput · FileUpload · Checkbox · RadioGroup · Switch · Slider · Rating · ToggleGroup.
 > Overlays: Dialog · AlertDialog · Command · Drawer · Popover · Dropdown · ContextMenu · HoverCard · Tooltip · Toast.
-> Display: Table · Tree · Calendar · RangeCalendar · Card · Badge · Avatar · Indicator · Alert · Progress · CircularProgress · Skeleton · Spinner · EmptyState · Kbd · Snippet · Separator · Timeline.
+> Display: Table · Tree · Calendar · RangeCalendar · Card · Badge · Avatar · Indicator · Alert · Progress · CircularProgress · Skeleton · Spinner · EmptyState · Kbd · Snippet · Separator · Timeline · ScrollArea.
 > Navigation: Sidebar · Tabs · Accordion · Breadcrumbs · Pagination · Stepper.
 
 <details>
@@ -339,6 +339,13 @@ const selection = useTableSelection(sortedRows.map((repo) => repo.id));
 // Tree: the WAI-ARIA tree keyboard, type-ahead, and children fetched on first open.
 <Tree aria-label="Files" items={files} onAction={(file) => open(file.id)}
       loadChildren={(folder) => fetchFolder(folder.id)} />
+
+// ScrollArea: scrollbars in the theme's colours on every OS. Content that scrolls is a named region
+// the keyboard can reach; long lines still end in "…" (truncate works inside, radix-ui#926).
+<ScrollArea aria-label="Commits" fadeEdges className="h-64">
+  {commits.map((commit) => <p key={commit.sha} className="truncate">{commit.message}</p>)}
+</ScrollArea>
+<ScrollArea orientation="horizontal">…</ScrollArea>   // also "both"; type="hover" | "scroll" | "auto" | "always"
 ```
 
 ### Command palette and Sidebar

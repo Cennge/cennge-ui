@@ -17,6 +17,7 @@ import {
   EmptyState,
   Input,
   Pagination,
+  ScrollArea,
   Switch,
   Snippet,
   Table,
@@ -297,6 +298,62 @@ function Files() {
   );
 }
 
+const commits = [
+  ["862fa22", "test(e2e): one axe run per date-picker test"],
+  ["eb68ddf", "fix: keyboard focus rings were invisible"],
+  ["ac4f56f", "feat(rating): add Rating component"],
+  ["e7f7082", "fix(slider): name each thumb of a range after the slider's label"],
+  ["6d56f0d", "feat(slider): marks with labels, and restrictToMarks"],
+  ["0832c66", "fix(calendar): month and year grids instead of native selects"],
+  ["0bfff33", "test(e2e): no hot reload on the test server; steadier sidebar tests"],
+  ["42944c5", "fix(sidebar): icon, count and collapsed label inside asChild links"],
+  ["a10de9e", "docs: Command, Sidebar and the decisions behind dates and tables"],
+  ["0ca93d7", "docs: fix the encoding of DECISIONS.md"],
+  ["fae4f46", "feat(sidebar): add Sidebar component"],
+  ["284b6ef", "fix(dialog): return focus when a dialog opened from code closes"],
+  ["6b7e377", "feat(command): add Command and CommandDialog components"],
+  ["8929771", "docs: Table and Tree in the README"],
+  ["a46af05", "feat(tree): add Tree component"],
+  ["915a116", "feat(table): add Table component"],
+  ["b12f20a", "feat(time-input): add TimeInput component"],
+  ["9262c4d", "feat(date-range-picker): add DateRangePicker component"],
+  ["b2a673d", "feat(date-picker): add DatePicker component"],
+  ["90434f6", "feat(calendar): add Calendar component"],
+] as const;
+
+const branches = ["main", "feat/carousel", "feat/prose", "feat/scroll-area", "fix/focus-rings", "feat/rating", "feat/slider-marks", "docs/readme"];
+
+function History() {
+  return (
+    <div className="grid gap-4">
+      <ScrollArea
+        aria-label="История коммитов"
+        fadeEdges
+        className="h-64 rounded-large border border-border bg-surface-1"
+      >
+        <ol className="flex flex-col p-2">
+          {commits.map(([sha, message]) => (
+            <li key={sha} className="flex items-baseline gap-3 rounded-small px-2 py-1.5 text-sm hover:bg-surface-3">
+              <code className="shrink-0 text-xs text-muted">{sha}</code>
+              {/* Длинные сообщения обрезаются многоточием: содержимое не шире области. */}
+              <span className="truncate">{message}</span>
+            </li>
+          ))}
+        </ol>
+      </ScrollArea>
+      <ScrollArea aria-label="Ветки" orientation="horizontal" fadeEdges className="rounded-large border border-border">
+        <div className="flex w-max gap-2 p-3">
+          {branches.map((branch) => (
+            <Badge key={branch} variant="flat" color={branch === "main" ? "primary" : "default"}>
+              {branch}
+            </Badge>
+          ))}
+        </div>
+      </ScrollArea>
+    </div>
+  );
+}
+
 export function DataDemo() {
   return (
     <div className="grid gap-6">
@@ -308,9 +365,14 @@ export function DataDemo() {
           <Services />
         </Section>
       </div>
-      <Section title="Tree">
-        <Files />
-      </Section>
+      <div className="grid gap-6 lg:grid-cols-[3fr_2fr]">
+        <Section title="Tree">
+          <Files />
+        </Section>
+        <Section title="ScrollArea">
+          <History />
+        </Section>
+      </div>
     </div>
   );
 }

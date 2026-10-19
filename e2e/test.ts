@@ -8,6 +8,8 @@ import { expect, test as base, type Page } from "@playwright/test";
 const browserNotices = [
   // Firefox bounce-tracking protection reacts to the many navigations of a test run.
   /has been classified as a bounce tracker/,
+  // Firefox notes any element moved on scroll; a custom scrollbar's thumb (ScrollArea) is exactly that.
+  /appears to use a scroll-linked positioning effect/,
 ];
 
 /**

@@ -31,6 +31,7 @@ export * from "./components/popover";
 export * from "./components/progress";
 export * from "./components/radio";
 export * from "./components/rating";
+export * from "./components/scroll-area";
 export * from "./components/select";
 export * from "./components/separator";
 export * from "./components/sidebar";
