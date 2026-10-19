@@ -1,5 +1,5 @@
 import { useState, type ReactNode } from "react";
-import { Calendar, DatePicker, type DatePickerError } from "cennge-ui";
+import { Calendar, DatePicker, DateRangePicker, type DatePickerError, type DateRange, type DateRangePickerError } from "cennge-ui";
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
@@ -93,11 +93,55 @@ function DatePickers() {
   );
 }
 
+const rangeError = (error: DateRangePickerError) =>
+  error.type === "order" ? "Конец раньше начала" : dateError(error);
+
+const addDaysIso = (iso: string, days: number) => {
+  const date = new Date(`${iso}T00:00:00Z`);
+  date.setUTCDate(date.getUTCDate() + days);
+  return date.toISOString().slice(0, 10);
+};
+
+function RangePickers() {
+  const [sprint, setSprint] = useState<DateRange | null>(null);
+  const days = sprint
+    ? Math.round((Date.parse(`${sprint.end}T00:00:00Z`) - Date.parse(`${sprint.start}T00:00:00Z`)) / 86_400_000) + 1
+    : 0;
+  return (
+    <div className="grid gap-4 sm:grid-cols-2">
+      <DateRangePicker
+        label="Спринт"
+        value={sprint}
+        onValueChange={setSprint}
+        minValue={isoToday()}
+        maxValue={addDaysIso(isoToday(), 120)}
+        description={sprint ? `${days} дн., ${sprint.start} — ${sprint.end}` : "В ближайшие 120 дней"}
+        placeholder="ДД.ММ.ГГГГ"
+        formatError={rangeError}
+        labels={{ ...calendarLabels, chooseDates: "Выбрать даты", start: "Начало", end: "Конец" }}
+      />
+      <DateRangePicker
+        label="Отпуск"
+        variant="bordered"
+        color="success"
+        isDateUnavailable={(iso) => iso.endsWith("-12-31")}
+        description="Через 31 декабря не выбрать: офис закрыт"
+        placeholder="ДД.ММ.ГГГГ"
+        formatError={rangeError}
+        labels={{ ...calendarLabels, chooseDates: "Выбрать даты", start: "Начало", end: "Конец" }}
+      />
+    </div>
+  );
+}
+
 export function DatesDemo() {
   return (
     <div className="grid gap-6">
       <Section title="DatePicker">
         <DatePickers />
+      </Section>
+      <Section title="DateRangePicker">
+        <RangePickers />
       </Section>
       <Section title="Calendar">
         <Calendars />

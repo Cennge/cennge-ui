@@ -7,6 +7,7 @@ import { useCenngeDefaults } from "../../provider";
 import type { CenngeColor, CenngeRadius, CenngeSize } from "../../types";
 import { input, type InputVariant } from "../input/input.styles";
 import { popoverContentClass } from "../popover/popover";
+import { CalendarIcon, calendarButtonClass, defaultDateError, type DatePickerError } from "./shared";
 import { Calendar } from "../calendar/calendar";
 import { defaultCalendarLabels, type CalendarLabels } from "../calendar/calendar-view";
 import {
@@ -18,11 +19,6 @@ import {
   toIsoDate,
   type CalendarDate,
 } from "../calendar/date";
-
-export type DatePickerError =
-  | { type: "invalid"; pattern: string }
-  | { type: "outOfRange"; min?: string; max?: string }
-  | { type: "unavailable"; date: string };
 
 export interface DatePickerLabels extends CalendarLabels {
   /** Name of the calendar button and of the calendar popup. @default "Choose date" */
@@ -83,22 +79,6 @@ export interface DatePickerProps
   radius?: CenngeRadius;
   startContent?: React.ReactNode;
   classNames?: Partial<Record<DatePickerSlots, string>>;
-}
-
-const calendarButtonClass = cn(
-  "-mr-1.5 flex size-7 shrink-0 cursor-pointer items-center justify-center rounded-small text-muted",
-  "transition-[background-color,color,transform] duration-(--cennge-duration-fast) ease-tactile motion-reduce:transition-none",
-  "hover:bg-default-bg hover:text-foreground active:scale-90 data-[state=open]:bg-default-bg data-[state=open]:text-foreground",
-  "outline-none focus-visible:outline-2 focus-visible:outline-ring disabled:pointer-events-none disabled:opacity-50",
-);
-
-function CalendarIcon() {
-  return (
-    <svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-      <rect x="3.5" y="5" width="17" height="15.5" rx="3" />
-      <path d="M3.5 10h17M8 3v4M16 3v4" strokeLinecap="round" />
-    </svg>
-  );
 }
 
 /**
@@ -195,24 +175,9 @@ export const DatePicker = React.forwardRef<HTMLInputElement, DatePickerProps>(fu
     else commit(parsed);
   };
 
-  const defaultError = (problem: DatePickerError): string => {
-    switch (problem.type) {
-      case "invalid":
-        return `Enter a date as ${problem.pattern}`;
-      case "unavailable":
-        return "This date is not available";
-      case "outOfRange": {
-        const from = min ? formatDateField(min, locale) : null;
-        const to = max ? formatDateField(max, locale) : null;
-        if (from && to) return `Choose a date from ${from} to ${to}`;
-        return from ? `Choose a date from ${from}` : `Choose a date until ${to}`;
-      }
-    }
-  };
-
   const showInvalid = isInvalid || error !== null;
   const slots = input({ variant, color, size, radius, isInvalid: showInvalid });
-  const errorText = error ? (formatError ?? defaultError)(error) : isInvalid ? errorMessage : undefined;
+  const errorText = error ? (formatError ? formatError(error) : defaultDateError(error, locale)) : isInvalid ? errorMessage : undefined;
   const helper = errorText ?? description;
 
   return (

@@ -92,7 +92,7 @@ export const calendarStyles = tv({
     ],
     pickerIcon: "pointer-events-none absolute top-1/2 right-1.5 size-3.5 -translate-y-1/2 text-muted",
     monthTitle: "flex h-8 flex-1 items-center justify-center text-sm font-semibold",
-    months: "flex flex-wrap gap-4",
+    months: "flex flex-wrap justify-center gap-4",
     month: "flex flex-col gap-2",
     grid: "border-separate border-spacing-0",
     weekday: "pb-1 text-center text-xs font-medium text-muted",
