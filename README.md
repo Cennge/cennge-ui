@@ -316,6 +316,11 @@ Names, the first day of the week and the order of a typed date come from `Intl` 
 (set it once on `CenngeProvider`); there is no date library to ship. Combine a DatePicker and a
 TimeInput for a date and time: `` `${date}T${time}` ``.
 
+On a server-rendered page only the browser knows the user's today: the server renders in its own time
+zone, a static page on the day it was built. Calendars mark today once hydrated, and one without a value
+shows its month then, keeping its size until that moment. Limits counted from today, such as
+`minValue`, need the same care: set them after mount, as `playground/DatesDemo.tsx` does.
+
 ### Table and Tree
 
 ```tsx

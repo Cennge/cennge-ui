@@ -9,7 +9,7 @@ import {
   type CalendarLabels,
   type CalendarSlots,
 } from "./calendar-view";
-import { getFirstDayOfWeek, isOutOfRange, isSameDay, parseIsoDate, toIsoDate, today, type CalendarDate } from "./date";
+import { getFirstDayOfWeek, isOutOfRange, isSameDay, parseIsoDate, toIsoDate, type CalendarDate } from "./date";
 
 export interface CalendarProps extends Omit<React.HTMLAttributes<HTMLDivElement>, "defaultValue" | "onChange" | "color"> {
   /** Selected date as an ISO string, e.g. "2026-10-19". */
@@ -82,7 +82,7 @@ export const Calendar = React.forwardRef<HTMLDivElement, CalendarProps>(function
 
   const { focused, setFocused, view, setView } = useCalendarFocus({
     selected,
-    fallback: parseIsoDate(defaultFocusedValue) ?? today(),
+    defaultFocused: parseIsoDate(defaultFocusedValue),
     min,
     max,
     visibleMonths: 1,

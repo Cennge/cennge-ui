@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, type ReactElement } from "react";
+import { renderToString } from "react-dom/server";
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import { Calendar } from "./calendar";
 
@@ -180,5 +181,49 @@ describe("Calendar", () => {
     rerender(<Calendar defaultValue="2026-10-19" locale="en-US" isDisabled onValueChange={onValueChange} />);
     expect(screen.getByRole("button", { name: "Next month" })).toBeDisabled();
     expect(day("Tuesday, October 20, 2026")).toBeDisabled();
+  });
+
+  describe("rendered on a server", () => {
+    afterEach(() => {
+      vi.useRealTimers();
+      vi.restoreAllMocks();
+    });
+
+    // The server renders on October 31 and the browser hydrates on November 1: another time zone, or a
+    // static page built the day before. Whatever React finds amiss it reports on the console or as an error.
+    function hydrateNextDay(ui: ReactElement) {
+      vi.useFakeTimers({ toFake: ["Date"] });
+      vi.setSystemTime(new Date(2026, 9, 31, 23, 0));
+      const html = renderToString(ui);
+      vi.setSystemTime(new Date(2026, 10, 1, 9, 0));
+      const container = document.body.appendChild(document.createElement("div"));
+      container.innerHTML = html;
+      const problems = vi.spyOn(console, "error");
+      const uncaught = vi.fn();
+      window.addEventListener("error", uncaught);
+      render(ui, { container, hydrate: true });
+      window.removeEventListener("error", uncaught);
+      expect(problems).not.toHaveBeenCalled();
+      expect(uncaught).not.toHaveBeenCalled();
+      return html;
+    }
+
+    it("without a value: hydrates cleanly, then shows the browser's month with its today", () => {
+      const html = hydrateNextDay(<Calendar locale="en-US" />);
+      expect(html).not.toContain("aria-current");
+      expect(grid()).toHaveAccessibleName("November 2026");
+      const today = day("Sunday, November 1, 2026");
+      expect(today).toHaveAttribute("aria-current", "date");
+      expect(today).toHaveAttribute("tabindex", "0");
+    });
+
+    it("with a value: its month comes from the server, today is marked once hydrated", () => {
+      const html = hydrateNextDay(<Calendar value="2026-10-19" locale="en-US" />);
+      expect(html).toContain("October 2026");
+      expect(html).not.toContain("aria-current");
+      expect(grid()).toHaveAccessibleName("October 2026");
+      expect(day("Sunday, November 1, 2026")).toHaveAttribute("aria-current", "date");
+      expect(day("Monday, October 19, 2026")).toHaveAttribute("tabindex", "0");
+    });
   });
 });

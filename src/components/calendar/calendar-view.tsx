@@ -1,6 +1,7 @@
 import * as React from "react";
 import { tv } from "../../utils/tv";
 import { useId } from "../../utils/use-id";
+import { useIsHydrated } from "../../utils/use-is-hydrated";
 import type { CenngeColor, CenngeSize } from "../../types";
 import {
   addDays,
@@ -162,10 +163,11 @@ export interface DayState {
 }
 
 export interface CalendarViewProps {
-  focused: CalendarDate;
+  /** Null, like `view`, only while hydrating without a selection: see useCalendarFocus. */
+  focused: CalendarDate | null;
   onFocusedChange: (date: CalendarDate) => void;
   /** First visible month. */
-  view: CalendarDate;
+  view: CalendarDate | null;
   onViewChange: (view: CalendarDate) => void;
   visibleMonths: number;
   getDayState: (date: CalendarDate) => DayState;
@@ -205,17 +207,23 @@ function ChevronIcon({ direction }: { direction: "left" | "right" | "down" }) {
 /**
  * Focused day and first visible month. Follows `selected` when it changes from outside, e.g. a
  * date typed into a DatePicker's field.
+ *
+ * Without a selection they start at `defaultFocused`, else at today. Today is unknown while hydrating:
+ * the server renders in its own time zone, a static page on the day it was built. Both are null until
+ * then, and the calendar holds its place.
  */
 export function useCalendarFocus(options: {
   selected: CalendarDate | null;
-  fallback: CalendarDate;
+  defaultFocused: CalendarDate | null;
   min: CalendarDate | null;
   max: CalendarDate | null;
   visibleMonths: number;
 }) {
-  const { selected, fallback, min, max, visibleMonths } = options;
-  const [focused, setFocused] = React.useState(() => clampDate(selected ?? fallback, min, max));
-  const [view, setView] = React.useState(() => startOfMonth(clampDate(selected ?? fallback, min, max)));
+  const { selected, defaultFocused, min, max, visibleMonths } = options;
+  const isHydrated = useIsHydrated();
+  const start = selected ?? defaultFocused ?? (isHydrated ? today() : null);
+  const [focused, setFocused] = React.useState(() => start && clampDate(start, min, max));
+  const [view, setView] = React.useState(() => start && startOfMonth(clampDate(start, min, max)));
   const selectedIso = selected ? toIsoDate(selected) : null;
   React.useEffect(() => {
     if (!selected) return;
@@ -223,11 +231,15 @@ export function useCalendarFocus(options: {
     setFocused(next);
     setView((current) => viewFor(next, current, visibleMonths));
   }, [selectedIso]); // only when the selection itself changes
-  return { focused: clampDate(focused, min, max), setFocused, view, setView };
+  // Hydrated without a selection: today, now that it is known, until the user moves.
+  const current = focused ?? start;
+  const shownFocused = current && clampDate(current, min, max);
+  return { focused: shownFocused, setFocused, view: view ?? (shownFocused && startOfMonth(shownFocused)), setView };
 }
 
 /** Keeps the focused date inside the visible months by moving the view as little as possible. */
-export function viewFor(focused: CalendarDate, view: CalendarDate, visibleMonths: number): CalendarDate {
+export function viewFor(focused: CalendarDate, view: CalendarDate | null, visibleMonths: number): CalendarDate {
+  if (!view) return startOfMonth(focused);
   const first = startOfMonth(view);
   const last = addMonths(first, visibleMonths - 1);
   if (compareDates(focused, first) < 0) return startOfMonth(focused);
@@ -235,11 +247,14 @@ export function viewFor(focused: CalendarDate, view: CalendarDate, visibleMonths
   return first;
 }
 
+/** Holds the place of a month not known yet; never shown. */
+const PLACEHOLDER_MONTH: CalendarDate = { year: 2026, month: 10, day: 1 };
+
 export function CalendarView(props: CalendarViewProps) {
   const {
-    focused,
+    focused: focusedProp,
     onFocusedChange,
-    view,
+    view: viewProp,
     onViewChange,
     visibleMonths,
     getDayState,
@@ -263,8 +278,15 @@ export function CalendarView(props: CalendarViewProps) {
     rootProps,
   } = props;
 
+  // While hydrating without a selection the month is unknown (see useCalendarFocus): an arbitrary one
+  // holds the place, invisible, so the calendar keeps its size until today's month replaces it.
+  const isPlaceholder = viewProp === null || focusedProp === null;
+  const view = viewProp ?? PLACEHOLDER_MONTH;
+  const focused = focusedProp ?? PLACEHOLDER_MONTH;
+
   const focusAfterRender = React.useRef(autoFocus);
-  const now = today();
+  // Today in the user's time zone, unknown as well while hydrating: marked once it is known.
+  const now = useIsHydrated() ? today() : null;
 
   // The month or year grid shown over the days, if any.
   const [picker, setPicker] = React.useState<"days" | "months" | "years">("days");
@@ -286,7 +308,7 @@ export function CalendarView(props: CalendarViewProps) {
 
   // Moving with the keyboard re-renders the grid; then focus follows to the new day.
   React.useEffect(() => {
-    if (!focusAfterRender.current) return;
+    if (!focusAfterRender.current || isPlaceholder) return;
     focusAfterRender.current = false;
     rootRef.current
       ?.querySelector<HTMLButtonElement>(`[data-date="${toIsoDate(focused)}"]:not([data-outside])`)
@@ -362,8 +384,9 @@ export function CalendarView(props: CalendarViewProps) {
 
   // Years in the picker: a wide window around today, widened to reach the shown year, bounded by min/max.
   const shownYear = view.year;
-  const firstYear = min?.year ?? Math.min(now.year - 120, shownYear);
-  const lastYear = max?.year ?? Math.max(now.year + 30, shownYear);
+  const thisYear = now?.year ?? shownYear;
+  const firstYear = min?.year ?? Math.min(thisYear - 120, shownYear);
+  const lastYear = max?.year ?? Math.max(thisYear + 30, shownYear);
   const years = Array.from({ length: lastYear - firstYear + 1 }, (_, index) => firstYear + index);
 
   const previousButton = (
@@ -542,7 +565,7 @@ export function CalendarView(props: CalendarViewProps) {
           monthName,
           (month) => ({
             isSelected: month === view.month,
-            isToday: month === now.month && view.year === now.year,
+            isToday: month === now?.month && view.year === now.year,
             isDisabled: isMonthOutOfRange(month),
           }),
           chooseMonth,
@@ -554,7 +577,7 @@ export function CalendarView(props: CalendarViewProps) {
             years,
             4,
             (year) => numberFormat.format(year),
-            (year) => ({ isSelected: year === view.year, isToday: year === now.year, isDisabled: false }),
+            (year) => ({ isSelected: year === view.year, isToday: year === now?.year, isDisabled: false }),
             chooseYear,
             labels.year,
             // The long list fades out at its edges; the padding lets the first and last rows clear the fade.
@@ -674,18 +697,21 @@ export function CalendarView(props: CalendarViewProps) {
       data-disabled={isDisabled || undefined}
       // A popover around the calendar leaves the first Escape to an open month or year grid.
       data-picking={picker !== "days" || undefined}
+      aria-busy={isPlaceholder || undefined}
       onPointerLeave={onHover ? () => onHover(null) : undefined}
     >
-      {/* Read out when the shown month changes. */}
-      <div className="sr-only" aria-live="polite">
-        {months.map((month) => monthTitle(month)).join(" – ")}
-      </div>
+      {/* Read out when the shown month changes. Added with its first month, which is not read out. */}
+      {isPlaceholder ? null : (
+        <div className="sr-only" aria-live="polite">
+          {months.map((month) => monthTitle(month)).join(" – ")}
+        </div>
+      )}
       {announcement !== undefined ? (
         <div className="sr-only" aria-live="polite">
           {announcement}
         </div>
       ) : null}
-      <div className={slots.months({ class: ["relative", classNames?.months] })}>
+      <div className={slots.months({ class: ["relative", isPlaceholder && "invisible", classNames?.months] })}>
         {months.map(renderMonth)}
         {pickerPanel}
       </div>

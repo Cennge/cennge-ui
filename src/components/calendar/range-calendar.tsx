@@ -12,7 +12,6 @@ import {
   parseIsoDate,
   toIsoDate,
   toUtcDate,
-  today,
   type CalendarDate,
 } from "./date";
 
@@ -98,7 +97,7 @@ export const RangeCalendar = React.forwardRef<HTMLDivElement, RangeCalendarProps
 
   const { focused, setFocused, view, setView } = useCalendarFocus({
     selected: selected?.start ?? null,
-    fallback: parseIsoDate(defaultFocusedValue) ?? today(),
+    defaultFocused: parseIsoDate(defaultFocusedValue),
     min,
     max,
     visibleMonths,
@@ -124,7 +123,7 @@ export const RangeCalendar = React.forwardRef<HTMLDivElement, RangeCalendarProps
   };
 
   // While the second end is being chosen, show the range up to the pointer, or the keyboard focus.
-  const shown = anchor ? ordered(anchor, hovered ?? focused) : selected;
+  const shown = anchor ? ordered(anchor, hovered ?? focused ?? anchor) : selected;
 
   const getDayState = (date: CalendarDate): DayState => {
     if (!shown) return { isSelected: false };
