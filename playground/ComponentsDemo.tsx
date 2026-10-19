@@ -198,7 +198,7 @@ export function ComponentsDemo() {
                   <DialogTitle>Удалить проект?</DialogTitle>
                   <DialogDescription>Все версии и файлы будут удалены. Это нельзя отменить.</DialogDescription>
                 </DialogHeader>
-                <DialogFooter className="pt-4">
+                <DialogFooter>
                   <DialogClose>
                     <Button variant="flat">Отмена</Button>
                   </DialogClose>
@@ -225,7 +225,7 @@ export function ComponentsDemo() {
                     </p>
                   ))}
                 </DialogBody>
-                <DialogFooter className="pt-2">
+                <DialogFooter>
                   <DialogClose>
                     <Button color="primary">Принимаю</Button>
                   </DialogClose>

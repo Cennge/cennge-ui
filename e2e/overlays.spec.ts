@@ -1,4 +1,4 @@
-import { expect, expectAccessible, openFixture, test } from "./test";
+import { expect, expectAccessible, openFixture, settleAnimations, test } from "./test";
 import type { Locator, Page } from "@playwright/test";
 
 const button = (page: Page, name: string) => page.getByRole("button", { name, exact: true });
@@ -53,6 +53,20 @@ test.describe("Dialog", () => {
     await expect(button(page, "More")).toBeFocused();
     await page.keyboard.press("Escape");
     await expect(page.getByRole("dialog")).toBeHidden();
+  });
+
+  test("without a body, the buttons keep their distance from the description and the edge", async ({ page }) => {
+    await button(page, "Actions").click();
+    await page.getByRole("menuitem", { name: "Open settings" }).click();
+    const settings = page.getByRole("dialog", { name: "Settings" });
+    await expect(settings).toBeVisible();
+    await settleAnimations(page);
+    const description = await settings.getByText("Opened from a menu item.").boundingBox();
+    const done = await button(page, "Done").boundingBox();
+    const box = await settings.boundingBox();
+    if (!description || !done || !box) throw new Error("no box");
+    expect(done.y - (description.y + description.height)).toBeGreaterThanOrEqual(15);
+    expect(box.y + box.height - (done.y + done.height)).toBeGreaterThanOrEqual(23);
   });
 
   test("passes axe while open", async ({ page }) => {

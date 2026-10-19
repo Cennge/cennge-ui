@@ -33,7 +33,7 @@ const drawer = tv({
       "data-[state=open]:animate-cennge-fade-in data-[state=closed]:animate-cennge-fade-out motion-reduce:animate-none",
     ],
     content: [
-      "fixed z-50 flex flex-col border-border bg-surface-2 text-foreground shadow-floating outline-none",
+      "fixed z-50 flex flex-col border-border bg-surface-2 pb-6 text-foreground shadow-floating outline-none",
       "data-[state=open]:animate-cennge-slide-in data-[state=closed]:animate-cennge-slide-out motion-reduce:animate-none",
     ],
     closeButton: [

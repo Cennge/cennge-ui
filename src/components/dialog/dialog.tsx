@@ -56,7 +56,7 @@ const dialog = tv({
     content: [
       "fixed top-1/2 left-1/2 z-50 flex w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 flex-col",
       // Long content scrolls inside the body instead of overflowing the screen.
-      "max-h-[calc(100dvh-2rem)] border border-border bg-surface-2 text-foreground shadow-floating outline-none",
+      "max-h-[calc(100dvh-2rem)] border border-border bg-surface-2 pb-6 text-foreground shadow-floating outline-none",
       "data-[state=open]:animate-cennge-dialog-in data-[state=closed]:animate-cennge-dialog-out motion-reduce:animate-none",
     ],
     closeButton: [
@@ -170,7 +170,7 @@ export const DialogDescription = React.forwardRef<HTMLParagraphElement, React.HT
 export const DialogBody = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
   function DialogBody({ className, ...rest }, ref) {
     return <div ref={ref} className={cn(
-          "flex-1 overflow-y-auto px-6 py-4 text-sm",
+          "flex-1 overflow-y-auto px-6 pt-4 text-sm",
           "[scrollbar-color:var(--cennge-border)_transparent] scrollbar-thin",
           className,
         )} {...rest} />;
@@ -182,7 +182,7 @@ export const DialogFooter = React.forwardRef<HTMLDivElement, React.HTMLAttribute
     return (
       <div
         ref={ref}
-        className={cn("flex flex-col-reverse gap-2 px-6 pb-6 sm:flex-row sm:justify-end", className)}
+        className={cn("flex flex-col-reverse gap-2 px-6 pt-4 sm:flex-row sm:justify-end", className)}
         {...rest}
       />
     );
