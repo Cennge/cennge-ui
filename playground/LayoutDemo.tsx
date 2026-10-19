@@ -78,8 +78,23 @@ export function LayoutDemo() {
         <Section title="Slider">
           <div className="flex flex-col gap-6">
             <Slider label="Звёзды" value={stars} onValueChange={setStars} min={0} max={1000} step={10} />
-            <Slider label="Прозрачность" defaultValue={70} formatValue={(v) => `${v}%`} color="secondary" />
-            <Slider aria-label="Громкость" defaultValue={30} color="success" size="sm" />
+            <Slider
+              label="Порог покрытия"
+              defaultValue={80}
+              formatValue={(v) => `${v}%`}
+              marks={[0, 25, 50, 75, 100].map((value) => ({ value, label: `${value}%` }))}
+              color="secondary"
+            />
+            <Slider
+              label="Параллельные задачи CI"
+              defaultValue={4}
+              min={1}
+              max={16}
+              marks={[1, 2, 4, 8, 16].map((value) => ({ value, label: String(value) }))}
+              restrictToMarks
+              color="success"
+            />
+            <Slider aria-label="Громкость" defaultValue={30} color="warning" size="sm" />
           </div>
         </Section>
       </div>

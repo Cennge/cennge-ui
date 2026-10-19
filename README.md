@@ -206,6 +206,8 @@ const repos = [
 
 <Slider label="Stars" value={range} onValueChange={setRange} min={0} max={1000} />   // [from, to] → range
 <Slider label="Opacity" defaultValue={70} formatValue={(v) => `${v}%`} />
+<Slider label="Coverage" marks={[0, 50, 100].map((v) => ({ value: v, label: `${v}%` }))} />  // a click on a label moves the thumb
+<Slider label="Parallel jobs" min={1} max={16} marks={[1, 2, 4, 8, 16]} restrictToMarks />   // stops only on the marks
 ```
 
 ### Drawer, Popover, Accordion, Progress, Pagination
