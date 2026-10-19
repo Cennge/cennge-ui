@@ -57,7 +57,7 @@ function Calendars() {
       <div className="flex flex-col gap-3">
         <Calendar
           aria-label="День для созвона"
-          minValue={today ?? undefined}
+          minValue={today}
           isDateUnavailable={isWeekend}
           color="secondary"
           labels={calendarLabels}
@@ -94,7 +94,7 @@ function DatePickers() {
         label="Дедлайн релиза"
         value={deadline}
         onValueChange={setDeadline}
-        minValue={today ?? undefined}
+        minValue={today}
         isDateUnavailable={isWeekend}
         description={deadline ? `В формате ISO: ${deadline}` : "Только будни, начиная с сегодня"}
         placeholder="ДД.ММ.ГГГГ"
@@ -103,7 +103,7 @@ function DatePickers() {
       />
       <DatePicker
         label="Дата рождения"
-        maxValue={today ?? undefined}
+        maxValue={today}
         variant="bordered"
         description="Можно ввести 07031994 или выбрать год в календаре"
         placeholder="ДД.ММ.ГГГГ"
@@ -135,8 +135,8 @@ function RangePickers() {
         label="Спринт"
         value={sprint}
         onValueChange={setSprint}
-        minValue={today ?? undefined}
-        maxValue={today ? addDaysIso(today, 120) : undefined}
+        minValue={today}
+        maxValue={today && addDaysIso(today, 120)}
         description={sprint ? `${days} дн., ${sprint.start} — ${sprint.end}` : "В ближайшие 120 дней"}
         placeholder="ДД.ММ.ГГГГ"
         formatError={rangeError}

@@ -54,8 +54,10 @@ export interface DateRangePickerProps
   value?: DateRange | null;
   defaultValue?: DateRange | null;
   onValueChange?: (range: DateRange | null) => void;
-  minValue?: string;
-  maxValue?: string;
+  /** Earliest date of the range, ISO. null: no limit, e.g. while today is not known yet. */
+  minValue?: string | null;
+  /** Latest date of the range, ISO. null: no limit, e.g. while today is not known yet. */
+  maxValue?: string | null;
   /** Return true for dates that cannot be chosen. A range cannot run across them. */
   isDateUnavailable?: (date: string) => boolean;
   /** @default the provider's locale, else "en-US" */
@@ -191,7 +193,7 @@ export const DateRangePicker = React.forwardRef<HTMLDivElement, DateRangePickerP
       return;
     }
     if (isOutOfRange(start, min, max) || isOutOfRange(end, min, max)) {
-      setError({ type: "outOfRange", min: minValue, max: maxValue });
+      setError({ type: "outOfRange", min: minValue ?? undefined, max: maxValue ?? undefined });
       return;
     }
     if (compareDates(end, start) < 0) {

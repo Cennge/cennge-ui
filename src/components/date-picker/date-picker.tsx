@@ -49,10 +49,10 @@ export interface DatePickerProps
   value?: string | null;
   defaultValue?: string | null;
   onValueChange?: (value: string | null) => void;
-  /** Earliest date that can be chosen or typed, ISO. */
-  minValue?: string;
-  /** Latest date that can be chosen or typed, ISO. */
-  maxValue?: string;
+  /** Earliest date that can be chosen or typed, ISO. null: no limit, e.g. while today is not known yet. */
+  minValue?: string | null;
+  /** Latest date that can be chosen or typed, ISO. null: no limit, e.g. while today is not known yet. */
+  maxValue?: string | null;
   /** Return true for dates that cannot be chosen, e.g. fully booked days. */
   isDateUnavailable?: (date: string) => boolean;
   /** BCP 47 tag: the typed format, month and weekday names. @default the provider's locale, else "en-US" */
@@ -177,7 +177,7 @@ export const DatePicker = React.forwardRef<HTMLInputElement, DatePickerProps>(fu
     }
     const parsed = parseDateField(trimmed, locale);
     if (!parsed) setError({ type: "invalid", pattern });
-    else if (isOutOfRange(parsed, min, max)) setError({ type: "outOfRange", min: minValue, max: maxValue });
+    else if (isOutOfRange(parsed, min, max)) setError({ type: "outOfRange", min: minValue ?? undefined, max: maxValue ?? undefined });
     else if (isUnavailable(parsed)) setError({ type: "unavailable", date: toIsoDate(parsed) });
     else commit(parsed);
   };

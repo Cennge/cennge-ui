@@ -16,10 +16,10 @@ export interface CalendarProps extends Omit<React.HTMLAttributes<HTMLDivElement>
   value?: string | null;
   defaultValue?: string | null;
   onValueChange?: (value: string) => void;
-  /** Earliest date that can be chosen, ISO. Also limits the year picker. */
-  minValue?: string;
-  /** Latest date that can be chosen, ISO. */
-  maxValue?: string;
+  /** Earliest date that can be chosen, ISO. Also limits the year picker. null: no limit, e.g. while today is not known yet. */
+  minValue?: string | null;
+  /** Latest date that can be chosen, ISO. null: no limit, e.g. while today is not known yet. */
+  maxValue?: string | null;
   /** Return true for dates that cannot be chosen, e.g. fully booked days. They stay focusable. */
   isDateUnavailable?: (date: string) => boolean;
   /** Month to show while nothing is selected, as any ISO date in it. @default today */

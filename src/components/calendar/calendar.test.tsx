@@ -67,6 +67,14 @@ describe("Calendar", () => {
     expect(focusedDay()).toHaveAccessibleName("Sunday, October 25, 2026");
   });
 
+  it("a null limit is no limit, so one can arrive after mount", () => {
+    const { rerender } = render(<Calendar value="2026-10-19" locale="en-US" minValue={null} maxValue={null} />);
+    expect(day("Thursday, October 1, 2026")).toBeEnabled();
+    rerender(<Calendar value="2026-10-19" locale="en-US" minValue="2026-10-10" maxValue={null} />);
+    expect(day("Thursday, October 1, 2026")).toBeDisabled();
+    expect(day("Saturday, October 31, 2026")).toBeEnabled();
+  });
+
   it("unavailable days stay focusable but cannot be chosen", () => {
     const onValueChange = vi.fn();
     render(
