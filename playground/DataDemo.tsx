@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from "react";
+import { useRef, useState, type ReactNode } from "react";
 import {
   createColumnHelper,
   createPaginatedRowModel,
@@ -28,7 +28,9 @@ import {
   TableRow,
   toast,
   Tree,
+  VirtualList,
   type TreeItem,
+  type Virtualizer,
   useTableSelection,
   useTableSort,
 } from "cennge-ui";
@@ -354,6 +356,52 @@ function History() {
   );
 }
 
+const authors = ["Cennge", "dependabot", "renovate", "github-actions"];
+const history = Array.from({ length: 10_000 }, (_, i) => ({
+  id: i,
+  sha: ((i + 1) * 2654435761).toString(16).padStart(8, "0").slice(-7),
+  message: `${["feat", "fix", "docs", "test", "chore"][i % 5]}: изменение №${10_000 - i}`,
+  author: authors[i % authors.length]!,
+  // У каждого девятого коммита есть описание: строки разной высоты.
+  body: i % 9 === 0 ? "Подробности: что изменилось, почему и как проверить. Вторая строка делает этот коммит выше." : undefined,
+}));
+
+function LongHistory() {
+  const list = useRef<Pick<Virtualizer, "scrollToIndex">>(null);
+  const [target, setTarget] = useState("5000");
+  return (
+    <div className="flex flex-col gap-3">
+      <VirtualList
+        items={history}
+        getKey={(commit) => commit.id}
+        estimateSize={52}
+        aria-label="Все коммиты"
+        fadeEdges
+        listRef={list}
+        className="h-80 rounded-large border border-border bg-surface-1"
+      >
+        {(commit) => (
+          <div className="flex flex-col gap-0.5 border-b border-border px-4 py-2.5 text-sm">
+            <span className="flex min-w-0 items-baseline gap-3">
+              <code className="shrink-0 text-xs text-muted">{commit.sha}</code>
+              <span className="truncate">{commit.message}</span>
+              <span className="ml-auto shrink-0 text-xs text-muted">{commit.author}</span>
+            </span>
+            {commit.body ? <span className="text-xs text-muted">{commit.body}</span> : null}
+          </div>
+        )}
+      </VirtualList>
+      <div className="flex items-end gap-2">
+        <Input label="Перейти к коммиту" value={target} onValueChange={setTarget} size="sm" className="max-w-40" />
+        <Button size="sm" onClick={() => list.current?.scrollToIndex(10_000 - Number(target), { align: "center" })}>
+          Перейти
+        </Button>
+        <p className="pb-2 text-xs text-muted">10 000 строк, в DOM — только видимые</p>
+      </div>
+    </div>
+  );
+}
+
 export function DataDemo() {
   return (
     <div className="grid gap-6">
@@ -373,6 +421,9 @@ export function DataDemo() {
           <History />
         </Section>
       </div>
+      <Section title="VirtualList">
+        <LongHistory />
+      </Section>
     </div>
   );
 }

@@ -27,10 +27,10 @@ A regular npm package — `npm update` and every app gets the fix.
 - **Server Components ready.** `"use client"` ships in the build; helpers stay server-safe.
 
 > **Status:** early development (0.x).
-> **59 components.**
+> **60 components.**
 > Forms: Form · Button · Input · PasswordInput · OtpInput · Textarea · NumberInput · DatePicker · DateRangePicker · TimeInput · Select · Combobox · MultiSelect · TagsInput · FileUpload · Checkbox · RadioGroup · Switch · Slider · Rating · ToggleGroup.
 > Overlays: Dialog · AlertDialog · Command · Drawer · Popover · Dropdown · ContextMenu · HoverCard · Tooltip · Toast.
-> Display: Table · Tree · Calendar · RangeCalendar · Card · Badge · Avatar · Indicator · Alert · Progress · CircularProgress · Skeleton · Spinner · EmptyState · Kbd · Snippet · Separator · Timeline · ScrollArea · Prose · Carousel.
+> Display: Table · Tree · Calendar · RangeCalendar · Card · Badge · Avatar · Indicator · Alert · Progress · CircularProgress · Skeleton · Spinner · EmptyState · Kbd · Snippet · Separator · Timeline · ScrollArea · Prose · Carousel · VirtualList.
 > Navigation: NavigationMenu · Sidebar · Tabs · Accordion · Breadcrumbs · Pagination · Stepper.
 
 <details>
@@ -410,6 +410,18 @@ with `keepMounted` the links of closed panels stay in the HTML for search engine
   </NavigationMenuList>
 </NavigationMenu>
 ```
+
+### VirtualList: thousands of rows
+
+```tsx
+<VirtualList items={commits} getKey={(c) => c.sha} aria-label="Commits" className="h-96" listRef={list}>
+  {(commit) => <CommitRow commit={commit} />}               {/* rows may differ in height */}
+</VirtualList>
+list.current?.scrollToIndex(4811, { align: "center" });
+```
+
+Only the rows in view are in the DOM; each still tells screen readers its place in the whole list, and
+rows of any height are measured as they appear. `useVirtualizer` is the same engine for your own markup.
 
 ### Command palette and Sidebar
 

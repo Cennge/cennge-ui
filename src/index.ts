@@ -55,5 +55,6 @@ export * from "./components/toast";
 export * from "./components/toggle-group";
 export * from "./components/tooltip";
 export * from "./components/tree";
+export * from "./components/virtual-list";
 export * from "./provider";
 export type { CenngeColor, CenngeRadius, CenngeSize, CenngeVariant } from "./types";
