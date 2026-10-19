@@ -12,6 +12,7 @@ import {
   AlertDialogTrigger,
   Button,
   Input,
+  Prose,
   Rating,
   Snippet,
   Switch,
@@ -202,6 +203,57 @@ function Reviews() {
   );
 }
 
+/** README репозитория так, как его выдаёт рендер Markdown: обычные h2, p, ul, pre, table. */
+function Readme() {
+  return (
+    <Prose className="max-w-prose">
+      <h2>cennge-ui</h2>
+      <p className="lead">Тактильные React-компоненты в тёмной теме на Radix UI и Tailwind CSS v4.</p>
+      <h3>Установка</h3>
+      <p>
+        Пакет ставится одной командой, стили подключаются одной строкой. Цвета меняются{" "}
+        <a href="#theming">атрибутом data-accent</a> или своими переменными <code>--cennge-*</code>.
+      </p>
+      <pre>
+        <code>{["pnpm add cennge-ui", "", '@import "tailwindcss";', '@import "cennge-ui/styles.css";'].join("\n")}</code>
+      </pre>
+      <ul>
+        <li>
+          React 18 и 19, <strong>17 тоже работает</strong>.
+        </li>
+        <li>
+          Next.js App Router: <code>"use client"</code> уже в сборке.
+        </li>
+      </ul>
+      <blockquote>
+        <p>Обновления вместо копирования: баг исправляется один раз, во всех проектах.</p>
+      </blockquote>
+      <table>
+        <thead>
+          <tr>
+            <th>Команда</th>
+            <th>Что делает</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <code>pnpm test</code>
+            </td>
+            <td>Модульные тесты Vitest</td>
+          </tr>
+          <tr>
+            <td>
+              <code>pnpm test:e2e</code>
+            </td>
+            <td>Playwright в Chromium, Firefox и WebKit</td>
+          </tr>
+        </tbody>
+      </table>
+    </Prose>
+  );
+}
+
 export function RepositoryDemo() {
   return (
     <div className="flex flex-col gap-6">
@@ -215,6 +267,9 @@ export function RepositoryDemo() {
       </div>
       <Section title="Rating">
         <Reviews />
+      </Section>
+      <Section title="Prose">
+        <Readme />
       </Section>
     </div>
   );

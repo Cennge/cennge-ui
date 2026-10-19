@@ -578,3 +578,281 @@
   --font-cennge: var(--cennge-font-sans);
   --ease-tactile: var(--cennge-ease-out);
 }
+
+/* ----------------------------------------------------------------- prose */
+/*
+ * <Prose> or class="cennge-prose": rendered Markdown, MDX or CMS HTML in the theme's colours.
+ * It sits in the components layer, so a utility class on any element inside wins over it,
+ * and `not-prose` switches it off for a subtree. Spacing is in em: sizes only change the font size.
+ */
+@layer components {
+  .cennge-prose {
+    color: var(--cennge-foreground);
+    font-size: 1rem;
+    line-height: 1.75;
+    overflow-wrap: break-word;
+  }
+  .cennge-prose-sm {
+    font-size: 0.875rem;
+    line-height: 1.7;
+  }
+  .cennge-prose-lg {
+    font-size: 1.125rem;
+    line-height: 1.75;
+  }
+
+  /* Rhythm */
+  .cennge-prose :where(p, ul, ol, dl, blockquote, pre, table, figure, details):not(:where(.not-prose, .not-prose *)) {
+    margin-block: 1.25em;
+  }
+  .cennge-prose :where(p):not(:where(.not-prose, .not-prose *)) {
+    text-wrap: pretty;
+  }
+  .cennge-prose :where(.lead):not(:where(.not-prose, .not-prose *)) {
+    color: var(--cennge-muted);
+    font-size: 1.2em;
+    line-height: 1.6;
+  }
+
+  /* Headings */
+  .cennge-prose :where(h1, h2, h3, h4, h5, h6):not(:where(.not-prose, .not-prose *)) {
+    color: var(--cennge-foreground);
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    line-height: 1.25;
+    scroll-margin-top: var(--cennge-prose-scroll-margin, 1.5rem);
+    text-wrap: balance;
+  }
+  .cennge-prose :where(h1):not(:where(.not-prose, .not-prose *)) {
+    font-size: 2.25em;
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    margin: 0 0 0.8em;
+  }
+  .cennge-prose :where(h2):not(:where(.not-prose, .not-prose *)) {
+    border-bottom: 1px solid var(--cennge-border);
+    font-size: 1.5em;
+    margin: 2em 0 0.75em;
+    padding-bottom: 0.3em;
+  }
+  .cennge-prose :where(h3):not(:where(.not-prose, .not-prose *)) {
+    font-size: 1.25em;
+    font-weight: 600;
+    margin: 1.6em 0 0.6em;
+  }
+  .cennge-prose :where(h4, h5, h6):not(:where(.not-prose, .not-prose *)) {
+    font-size: 1em;
+    font-weight: 600;
+    margin: 1.5em 0 0.5em;
+  }
+  .cennge-prose :where(h6):not(:where(.not-prose, .not-prose *)) {
+    color: var(--cennge-muted);
+  }
+  /* Anchor links that wrap a heading keep the heading's look. */
+  .cennge-prose :where(h1, h2, h3, h4, h5, h6) :where(a):not(:where(.not-prose, .not-prose *)) {
+    color: inherit;
+    font-weight: inherit;
+    text-decoration: none;
+  }
+
+  /* Inline text */
+  .cennge-prose :where(a):not(:where(.not-prose, .not-prose *)) {
+    border-radius: 0.125em;
+    color: var(--cennge-primary-text);
+    font-weight: 500;
+    text-decoration-line: underline;
+    text-decoration-color: color-mix(in oklab, currentColor 40%, transparent);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+    transition: text-decoration-color var(--cennge-duration-fast);
+  }
+  .cennge-prose :where(a:hover):not(:where(.not-prose, .not-prose *)) {
+    text-decoration-color: currentColor;
+  }
+  .cennge-prose :where(a, pre, summary):focus-visible:not(:where(.not-prose, .not-prose *)) {
+    outline: 2px solid var(--cennge-ring);
+    outline-offset: 2px;
+  }
+  .cennge-prose :where(strong, b):not(:where(.not-prose, .not-prose *)) {
+    color: var(--cennge-foreground);
+    font-weight: 600;
+  }
+  .cennge-prose :where(mark):not(:where(.not-prose, .not-prose *)) {
+    background: color-mix(in oklab, var(--cennge-warning) 30%, transparent);
+    border-radius: 0.2em;
+    color: var(--cennge-foreground); /* muted text (e.g. in a quote) is too faint on the tint */
+    padding: 0.05em 0.2em;
+  }
+  .cennge-prose :where(del, s):not(:where(.not-prose, .not-prose *)) {
+    color: var(--cennge-muted);
+  }
+  .cennge-prose :where(abbr[title]):not(:where(.not-prose, .not-prose *)) {
+    cursor: help;
+    text-decoration: underline dotted;
+  }
+  .cennge-prose :where(kbd):not(:where(.not-prose, .not-prose *)) {
+    background: var(--cennge-surface-3);
+    border: 1px solid var(--cennge-border);
+    border-bottom-width: 2px;
+    border-radius: 0.3em;
+    font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace);
+    font-size: 0.8em;
+    padding: 0.1em 0.4em;
+  }
+
+  /* Code */
+  .cennge-prose :where(code):not(:where(pre code, .not-prose, .not-prose *)) {
+    background: var(--cennge-surface-3);
+    border: 1px solid var(--cennge-border);
+    border-radius: 0.375em;
+    color: var(--cennge-foreground);
+    font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace);
+    font-size: 0.875em;
+    padding: 0.125em 0.375em;
+  }
+  .cennge-prose :where(a code, h1 code, h2 code, h3 code, h4 code):not(:where(.not-prose, .not-prose *)) {
+    color: inherit;
+  }
+  .cennge-prose :where(pre):not(:where(.not-prose, .not-prose *)) {
+    background: var(--cennge-surface-2);
+    border: 1px solid var(--cennge-border);
+    border-radius: var(--cennge-radius-medium);
+    color: var(--cennge-foreground);
+    font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace);
+    font-size: 0.875em;
+    line-height: 1.7;
+    overflow-x: auto;
+    padding: 1em 1.25em;
+    tab-size: 2;
+  }
+  .cennge-prose :where(pre code):not(:where(.not-prose, .not-prose *)) {
+    background: none;
+    border: 0;
+    color: inherit;
+    font-size: inherit;
+    padding: 0;
+  }
+
+  /* Lists */
+  .cennge-prose :where(ul):not(:where(.not-prose, .not-prose *)) {
+    list-style: disc;
+    padding-inline-start: 1.5em;
+  }
+  .cennge-prose :where(ol):not(:where(.not-prose, .not-prose *)) {
+    list-style: decimal;
+    padding-inline-start: 1.5em;
+  }
+  .cennge-prose :where(li):not(:where(.not-prose, .not-prose *)) {
+    margin-block: 0.4em;
+    padding-inline-start: 0.25em;
+  }
+  .cennge-prose :where(li):not(:where(.not-prose, .not-prose *))::marker {
+    color: var(--cennge-muted);
+  }
+  .cennge-prose :where(li > ul, li > ol, li > p):not(:where(.not-prose, .not-prose *)) {
+    margin-block: 0.5em;
+  }
+  /* GitHub task lists: "- [x] Done" */
+  .cennge-prose :where(li.task-list-item, li:has(> input[type="checkbox"])):not(:where(.not-prose, .not-prose *)) {
+    list-style: none;
+  }
+  .cennge-prose :where(li > input[type="checkbox"]):not(:where(.not-prose, .not-prose *)) {
+    accent-color: var(--cennge-primary);
+    margin: 0 0.5em 0 -1.4em;
+    vertical-align: -0.1em;
+  }
+  .cennge-prose :where(dt):not(:where(.not-prose, .not-prose *)) {
+    font-weight: 600;
+    margin-top: 1em;
+  }
+  .cennge-prose :where(dd):not(:where(.not-prose, .not-prose *)) {
+    margin: 0.25em 0 0;
+    padding-inline-start: 1.5em;
+  }
+
+  /* Blocks */
+  .cennge-prose :where(blockquote):not(:where(.not-prose, .not-prose *)) {
+    background: var(--cennge-surface-2);
+    border-inline-start: 3px solid var(--cennge-primary);
+    border-radius: 0 var(--cennge-radius-small) var(--cennge-radius-small) 0;
+    color: var(--cennge-muted);
+    padding: 0.75em 1em;
+  }
+  .cennge-prose :where(blockquote > :first-child):not(:where(.not-prose, .not-prose *)) {
+    margin-top: 0;
+  }
+  .cennge-prose :where(blockquote > :last-child):not(:where(.not-prose, .not-prose *)) {
+    margin-bottom: 0;
+  }
+  .cennge-prose :where(hr):not(:where(.not-prose, .not-prose *)) {
+    border: 0;
+    border-top: 1px solid var(--cennge-border);
+    margin-block: 2.5em;
+  }
+  .cennge-prose :where(details):not(:where(.not-prose, .not-prose *)) {
+    border: 1px solid var(--cennge-border);
+    border-radius: var(--cennge-radius-medium);
+    padding: 0.5em 1em;
+  }
+  .cennge-prose :where(summary):not(:where(.not-prose, .not-prose *)) {
+    border-radius: 0.25em;
+    cursor: pointer;
+    font-weight: 600;
+  }
+  .cennge-prose :where(details[open] > summary):not(:where(.not-prose, .not-prose *)) {
+    margin-bottom: 0.5em;
+  }
+
+  /* Tables: rows separated by lines; text wraps instead of pushing the page sideways. */
+  .cennge-prose :where(table):not(:where(.not-prose, .not-prose *)) {
+    border-collapse: collapse;
+    font-size: 0.875em;
+    line-height: 1.6;
+    width: 100%;
+  }
+  .cennge-prose :where(th, td):not(:where(.not-prose, .not-prose *)) {
+    border-bottom: 1px solid var(--cennge-border);
+    overflow-wrap: anywhere;
+    padding: 0.6em 0.75em;
+    vertical-align: top;
+  }
+  /* `align` from Markdown (| :-: |) still wins: only cells without it are set. */
+  .cennge-prose :where(th:not([align])):not(:where(.not-prose, .not-prose *)) {
+    text-align: start;
+  }
+  .cennge-prose :where(th):not(:where(.not-prose, .not-prose *)) {
+    color: var(--cennge-foreground);
+    font-weight: 600;
+  }
+  .cennge-prose :where(tbody tr:last-child td):not(:where(.not-prose, .not-prose *)) {
+    border-bottom: 0;
+  }
+
+  /* Media */
+  .cennge-prose :where(img, video):not(:where(.not-prose, .not-prose *)) {
+    border-radius: var(--cennge-radius-medium);
+    height: auto;
+    max-width: 100%;
+  }
+  /* Badges and icons inside a line stay in the line (Tailwind's preflight makes images blocks). */
+  .cennge-prose :where(p img, p video, td img):not(:where(.not-prose, .not-prose *)) {
+    display: inline-block;
+    vertical-align: middle;
+  }
+  .cennge-prose :where(figure > img, figure > video):not(:where(.not-prose, .not-prose *)) {
+    margin: 0;
+  }
+  .cennge-prose :where(figcaption):not(:where(.not-prose, .not-prose *)) {
+    color: var(--cennge-muted);
+    font-size: 0.875em;
+    margin-top: 0.75em;
+  }
+
+  /* Last, so it beats the margins above: the first and last blocks sit flush with the container. */
+  .cennge-prose > :where(:first-child) {
+    margin-top: 0;
+  }
+  .cennge-prose > :where(:last-child) {
+    margin-bottom: 0;
+  }
+}

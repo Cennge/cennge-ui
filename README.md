@@ -27,10 +27,10 @@ A regular npm package — `npm update` and every app gets the fix.
 - **Server Components ready.** `"use client"` ships in the build; helpers stay server-safe.
 
 > **Status:** early development (0.x).
-> **55 components.**
+> **56 components.**
 > Forms: Button · Input · PasswordInput · OtpInput · Textarea · NumberInput · DatePicker · DateRangePicker · TimeInput · Select · Combobox · MultiSelect · TagsInput · FileUpload · Checkbox · RadioGroup · Switch · Slider · Rating · ToggleGroup.
 > Overlays: Dialog · AlertDialog · Command · Drawer · Popover · Dropdown · ContextMenu · HoverCard · Tooltip · Toast.
-> Display: Table · Tree · Calendar · RangeCalendar · Card · Badge · Avatar · Indicator · Alert · Progress · CircularProgress · Skeleton · Spinner · EmptyState · Kbd · Snippet · Separator · Timeline · ScrollArea.
+> Display: Table · Tree · Calendar · RangeCalendar · Card · Badge · Avatar · Indicator · Alert · Progress · CircularProgress · Skeleton · Spinner · EmptyState · Kbd · Snippet · Separator · Timeline · ScrollArea · Prose.
 > Navigation: Sidebar · Tabs · Accordion · Breadcrumbs · Pagination · Stepper.
 
 <details>
@@ -347,6 +347,24 @@ const selection = useTableSelection(sortedRows.map((repo) => repo.id));
 </ScrollArea>
 <ScrollArea orientation="horizontal">…</ScrollArea>   // also "both"; type="hover" | "scroll" | "auto" | "always"
 ```
+
+### Prose
+
+Rendered Markdown, MDX or CMS HTML in the theme's colours: headings, lists, links, quotes, code blocks,
+tables, task lists and images. Spacing is in `em`, so `size` scales everything.
+
+```tsx
+<Prose className="max-w-prose">
+  <MDXContent />                       {/* or dangerouslySetInnerHTML={{ __html: html }} */}
+</Prose>
+
+<Prose size="sm" asChild><article>…</article></Prose>
+```
+
+The styles are the `cennge-prose` class in `cennge-ui/styles.css`, so plain HTML can use it too:
+`<article class="cennge-prose">`. They sit in the `components` layer: a utility on any element inside
+wins (`<h2 className="text-xl">`), and `not-prose` switches them off for a subtree. Code blocks that
+scroll sideways become keyboard-focusable.
 
 ### Command palette and Sidebar
 
