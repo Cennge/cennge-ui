@@ -53,6 +53,13 @@ export interface PopoverContentProps extends React.HTMLAttributes<HTMLDivElement
   container?: HTMLElement | null;
 }
 
+/** Shared with DatePicker. Internal: not re-exported from the package. */
+export const popoverContentClass = cn(
+  "z-50 max-w-[calc(100vw-1rem)] rounded-large border border-border bg-surface-3 p-4 text-sm text-foreground",
+  "shadow-floating outline-none origin-(--radix-popover-content-transform-origin)",
+  "data-[state=open]:animate-cennge-pop-in data-[state=closed]:animate-cennge-pop-out motion-reduce:animate-none",
+);
+
 export const PopoverContent = React.forwardRef<HTMLDivElement, PopoverContentProps>(function PopoverContent(
   { placement = "bottom", align = "center", offset = 8, showArrow = false, container, className, children, ...rest },
   ref,
@@ -65,12 +72,7 @@ export const PopoverContent = React.forwardRef<HTMLDivElement, PopoverContentPro
         align={align}
         sideOffset={offset}
         collisionPadding={8}
-        className={cn(
-          "z-50 max-w-[calc(100vw-1rem)] rounded-large border border-border bg-surface-3 p-4 text-sm text-foreground",
-          "shadow-floating outline-none origin-(--radix-popover-content-transform-origin)",
-          "data-[state=open]:animate-cennge-pop-in data-[state=closed]:animate-cennge-pop-out motion-reduce:animate-none",
-          className,
-        )}
+        className={cn(popoverContentClass, className)}
         {...rest}
       >
         {children}

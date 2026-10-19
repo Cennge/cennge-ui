@@ -11,6 +11,7 @@ export * from "./components/card";
 export * from "./components/checkbox";
 export * from "./components/combobox";
 export * from "./components/context-menu";
+export * from "./components/date-picker";
 export * from "./components/dialog";
 export * from "./components/drawer";
 export * from "./components/dropdown";

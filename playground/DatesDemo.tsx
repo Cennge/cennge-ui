@@ -1,5 +1,5 @@
 import { useState, type ReactNode } from "react";
-import { Calendar } from "cennge-ui";
+import { Calendar, DatePicker, type DatePickerError } from "cennge-ui";
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
@@ -48,10 +48,60 @@ function Calendars() {
   );
 }
 
+const ruDate = (iso: string) =>
+  new Intl.DateTimeFormat("ru-RU", { timeZone: "UTC" }).format(new Date(`${iso}T00:00:00Z`));
+
+const dateError = (error: DatePickerError) => {
+  switch (error.type) {
+    case "invalid":
+      return "Введите дату в формате ДД.ММ.ГГГГ";
+    case "unavailable":
+      return "В этот день нельзя";
+    case "outOfRange":
+      if (error.min && error.max) return `Выберите дату с ${ruDate(error.min)} по ${ruDate(error.max)}`;
+      return error.min ? `Не раньше ${ruDate(error.min)}` : `Не позже ${ruDate(error.max ?? "")}`;
+  }
+};
+
+const pickerLabels = { ...calendarLabels, chooseDate: "Выбрать дату" };
+
+function DatePickers() {
+  const [deadline, setDeadline] = useState<string | null>(null);
+  return (
+    <div className="grid gap-4 sm:grid-cols-2">
+      <DatePicker
+        label="Дедлайн релиза"
+        value={deadline}
+        onValueChange={setDeadline}
+        minValue={isoToday()}
+        isDateUnavailable={isWeekend}
+        description={deadline ? `В формате ISO: ${deadline}` : "Только будни, начиная с сегодня"}
+        placeholder="ДД.ММ.ГГГГ"
+        formatError={dateError}
+        labels={pickerLabels}
+      />
+      <DatePicker
+        label="Дата рождения"
+        maxValue={isoToday()}
+        variant="bordered"
+        description="Можно ввести 07031994 или выбрать год в календаре"
+        placeholder="ДД.ММ.ГГГГ"
+        formatError={dateError}
+        labels={pickerLabels}
+      />
+    </div>
+  );
+}
+
 export function DatesDemo() {
   return (
-    <Section title="Calendar">
-      <Calendars />
-    </Section>
+    <div className="grid gap-6">
+      <Section title="DatePicker">
+        <DatePickers />
+      </Section>
+      <Section title="Calendar">
+        <Calendars />
+      </Section>
+    </div>
   );
 }
