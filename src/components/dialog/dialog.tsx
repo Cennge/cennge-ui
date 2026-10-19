@@ -47,7 +47,8 @@ export const DialogClose = React.forwardRef<HTMLButtonElement, { children: React
 
 /* --------------------------------------------------------------- content */
 
-const dialog = tv({
+/** Shared with AlertDialog. Internal: not re-exported from the package. */
+export const dialogStyles = tv({
   slots: {
     overlay: [
       "fixed inset-0 z-50 bg-black/55 backdrop-blur-[2px]",
@@ -124,7 +125,7 @@ export const DialogContent = React.forwardRef<HTMLDivElement, DialogContentProps
   },
   ref,
 ) {
-  const slots = dialog({ size, radius });
+  const slots = dialogStyles({ size, radius });
   return (
     <DialogPrimitive.Portal container={container}>
       <DialogPrimitive.Overlay className={slots.overlay({ class: classNames?.overlay })} />
