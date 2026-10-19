@@ -81,10 +81,27 @@ describe("Slider", () => {
     expect(screen.getByText("40%")).toBeInTheDocument();
   });
 
-  it("a range gets two named thumbs", () => {
+  it("a range names each thumb after the label", () => {
     render(<Slider label="Stars" defaultValue={[10, 90]} />);
-    expect(screen.getByRole("slider", { name: "Minimum" })).toBeInTheDocument();
-    expect(screen.getByRole("slider", { name: "Maximum" })).toBeInTheDocument();
+    expect(screen.getByRole("slider", { name: "Stars Minimum" })).toBeInTheDocument();
+    expect(screen.getByRole("slider", { name: "Stars Maximum" })).toBeInTheDocument();
+  });
+
+  it("thumb names can be translated; aria-label works for ranges too", () => {
+    render(
+      <>
+        <Slider label="Звёзды" defaultValue={[10, 90]} thumbLabels={["от", "до"]} />
+        <Slider aria-label="Price" defaultValue={[10, 90]} />
+      </>,
+    );
+    expect(screen.getByRole("slider", { name: "Звёзды от" })).toBeInTheDocument();
+    expect(screen.getByRole("slider", { name: "Звёзды до" })).toBeInTheDocument();
+    expect(screen.getByRole("slider", { name: "Price Maximum" })).toBeInTheDocument();
+  });
+
+  it("a one-item array is a single thumb named by the label", () => {
+    render(<Slider label="Opacity" defaultValue={[40]} />);
+    expect(screen.getByRole("slider", { name: "Opacity" })).toBeInTheDocument();
   });
 });
 

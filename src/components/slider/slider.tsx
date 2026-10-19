@@ -118,6 +118,11 @@ export interface SliderProps<V extends SliderValue = SliderValue> {
   showValue?: boolean;
   /** Format the shown value, e.g. `(v) => `${v}%``. */
   formatValue?: (value: number) => string;
+  /**
+   * Names of a range's thumbs, read after the label: "Deploy window Minimum".
+   * @default ["Minimum", "Maximum"]
+   */
+  thumbLabels?: string[];
   /** @default "primary" */
   color?: CenngeColor;
   /** @default "md" */
@@ -165,6 +170,7 @@ export function Slider<V extends SliderValue = SliderValue>({
   restrictToMarks = false,
   showValue,
   formatValue,
+  thumbLabels,
   color,
   size,
   isDisabled = false,
@@ -189,6 +195,9 @@ export function Slider<V extends SliderValue = SliderValue>({
     isDisabled,
   });
   const labelId = id ? `${id}-label` : undefined;
+  const thumbName = (index: number) =>
+    thumbLabels?.[index] ??
+    (current.length === 2 ? (index === 0 ? "Minimum" : "Maximum") : `Value ${index + 1} of ${current.length}`);
   const span = max - min;
   const fraction = (v: number) => (span > 0 ? (v - min) / span : 0);
   // Labels name the values only when all of them have one, so the readout never mixes "Info" and "2".
@@ -298,19 +307,32 @@ export function Slider<V extends SliderValue = SliderValue>({
             />
           ))}
         </SliderPrimitive.Track>
-        {current.map((thumbValue, index) => (
-          <SliderPrimitive.Thumb
-            key={index}
-            ref={(node: HTMLSpanElement | null) => {
-              thumbs.current[index] = node;
-            }}
-            data-thumb={index}
-            className={slots.thumb()}
-            aria-label={ariaLabel ?? (isRange ? (index === 0 ? "Minimum" : "Maximum") : undefined)}
-            aria-labelledby={!ariaLabel && !isRange && label ? labelId : undefined}
-            aria-valuetext={describe(thumbValue)}
-          />
-        ))}
+        {current.map((thumbValue, index) => {
+          const thumbId = id ? `${id}-thumb-${index}` : undefined;
+          // One thumb takes the slider's name; each thumb of a range adds its own: "Deploy window Minimum".
+          const naming =
+            current.length === 1
+              ? { "aria-label": ariaLabel, "aria-labelledby": !ariaLabel && label ? labelId : undefined }
+              : ariaLabel
+                ? { "aria-label": `${ariaLabel} ${thumbName(index)}` }
+                : {
+                    "aria-label": thumbName(index),
+                    "aria-labelledby": label && labelId && thumbId ? `${labelId} ${thumbId}` : undefined,
+                  };
+          return (
+            <SliderPrimitive.Thumb
+              key={index}
+              id={thumbId}
+              ref={(node: HTMLSpanElement | null) => {
+                thumbs.current[index] = node;
+              }}
+              data-thumb={index}
+              className={slots.thumb()}
+              {...naming}
+              aria-valuetext={describe(thumbValue)}
+            />
+          );
+        })}
       </SliderPrimitive.Root>
       {markList.some((mark) => mark.label !== undefined) ? (
         // Visual scale only: the thumbs already speak their values, and arrow keys reach every mark.

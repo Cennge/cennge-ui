@@ -36,7 +36,7 @@ test("in a range, the label moves the nearest thumb", async ({ page, isMobile })
   await expect(page.getByTestId("window")).toHaveText("6–18");
   await press(page.getByText("24:00"), isMobile);
   await expect(page.getByTestId("window")).toHaveText("6–24");
-  await expect(thumb(page, "Maximum")).toBeFocused();
+  await expect(thumb(page, "Deploy window Maximum")).toBeFocused();
 });
 
 test("restrictToMarks: the keyboard goes mark to mark", async ({ page }) => {
@@ -128,7 +128,7 @@ test("labels name the values when every value has one", async ({ page }) => {
 });
 
 test("dots on the filled part of the track follow the value", async ({ page }) => {
-  const ticks = sliderOf(thumb(page, "Maximum")).locator('[data-slot="tick"]');
+  const ticks = sliderOf(thumb(page, "Deploy window Maximum")).locator('[data-slot="tick"]');
   // 9–18: only 12 and 18 are inside.
   await expect(ticks.and(page.locator("[data-in-range]"))).toHaveCount(2);
   const inside = await ticks.nth(2).evaluate((node) => getComputedStyle(node).backgroundColor);

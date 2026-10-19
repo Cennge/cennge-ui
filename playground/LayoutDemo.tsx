@@ -77,7 +77,15 @@ export function LayoutDemo() {
 
         <Section title="Slider">
           <div className="flex flex-col gap-6">
-            <Slider label="Звёзды" value={stars} onValueChange={setStars} min={0} max={1000} step={10} />
+            <Slider
+              label="Звёзды"
+              value={stars}
+              onValueChange={setStars}
+              min={0}
+              max={1000}
+              step={10}
+              thumbLabels={["от", "до"]}
+            />
             <Slider
               label="Порог покрытия"
               defaultValue={80}

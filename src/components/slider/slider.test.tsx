@@ -39,7 +39,7 @@ describe("Slider marks", () => {
     expect(onValueChange).toHaveBeenLastCalledWith([25, 100]);
     fireEvent.click(screen.getByText("0%"));
     expect(onValueChange).toHaveBeenLastCalledWith([0, 100]);
-    expect(screen.getByRole("slider", { name: "Minimum" })).toHaveFocus();
+    expect(screen.getByRole("slider", { name: "Window Minimum" })).toHaveFocus();
   });
 
   it("restrictToMarks: arrows go mark to mark, Home and End to the first and last", () => {
