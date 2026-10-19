@@ -21,6 +21,7 @@ export * from "./components/input";
 export * from "./components/kbd";
 export * from "./components/number-input";
 export * from "./components/pagination";
+export * from "./components/password-input";
 export * from "./components/popover";
 export * from "./components/progress";
 export * from "./components/radio";
