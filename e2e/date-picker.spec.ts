@@ -107,10 +107,15 @@ test("Russian: day-month-year order and a birth date in the past only", async ({
   await expect(birthday).toHaveAccessibleDescription("Choose a date until 19.10.2026");
 });
 
+// One axe run per test: two in a row overran the timeout in WebKit during a full parallel run.
 for (const theme of ["dark", "light"] as const) {
-  test(`passes axe in the ${theme} theme, with the calendar open`, async ({ page }) => {
+  test(`passes axe in the ${theme} theme`, async ({ page }) => {
     await openFixture(page, "date-picker", theme);
     await expectAccessible(page);
+  });
+
+  test(`passes axe in the ${theme} theme, with the calendar open`, async ({ page }) => {
+    await openFixture(page, "date-picker", theme);
     await chooseButton(page).click();
     await expect(popup(page)).toBeVisible();
     await expectAccessible(page);
