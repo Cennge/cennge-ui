@@ -46,6 +46,17 @@ test("keyboard: the calendar opens on the selected day; Enter picks, closes and 
   await expect(chooseButton(page)).toBeFocused();
 });
 
+test("the first Escape closes the year grid, the second the calendar", async ({ page }) => {
+  await chooseButton(page).click();
+  await popup(page).getByRole("button", { name: "Year: 2026" }).click();
+  await expect(popup(page).getByRole("grid", { name: "Year" })).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(popup(page).getByRole("grid", { name: "Year" })).toBeHidden();
+  await expect(popup(page)).toHaveAttribute("data-state", "open");
+  await page.keyboard.press("Escape");
+  await expect(popup(page)).toBeHidden();
+});
+
 test("Escape closes the calendar without a change; Alt+ArrowDown in the field opens it", async ({ page }) => {
   await release(page).focus();
   await page.keyboard.press("Alt+ArrowDown");
@@ -59,7 +70,8 @@ test("Escape closes the calendar without a change; Alt+ArrowDown in the field op
 test("click or tap: open, jump to another year, pick a day; a click outside closes", async ({ page, isMobile }) => {
   const tap = async (locator: ReturnType<Page["locator"]>) => (isMobile ? locator.tap() : locator.click());
   await tap(chooseButton(page));
-  await popup(page).getByRole("combobox", { name: "Year" }).selectOption("1990");
+  await tap(popup(page).getByRole("button", { name: "Year: 2026" }));
+  await tap(popup(page).getByRole("grid", { name: "Year" }).getByRole("button", { name: "1990" }));
   await tap(popup(page).getByRole("button", { name: "Friday, October 19, 1990" }));
   await expect(popup(page)).toBeHidden();
   await expect(release(page)).toHaveValue("10/19/1990");

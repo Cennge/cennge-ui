@@ -45,13 +45,54 @@ test("a click or tap picks a day; a day of the next month opens that month", asy
   await expect(calendar.getByRole("grid")).toHaveAccessibleName("November 2026");
 });
 
-test("the month and year pickers jump far away, e.g. to a birth year", async ({ page }) => {
+test("the year and month grids jump far away, e.g. to a birth year", async ({ page, isMobile }) => {
   const calendar = release(page);
-  await calendar.getByRole("combobox", { name: "Year" }).selectOption("1990");
-  await calendar.getByRole("combobox", { name: "Month" }).selectOption("3");
+  const press = (locator: ReturnType<Page["locator"]>) => (isMobile ? locator.tap() : locator.click());
+  await press(calendar.getByRole("button", { name: "Year: 2026" }));
+  const years = calendar.getByRole("grid", { name: "Year" });
+  await press(years.getByRole("button", { name: "1990" }));
+  await press(calendar.getByRole("button", { name: "Month: October" }));
+  await press(calendar.getByRole("grid", { name: "Month" }).getByRole("button", { name: "March" }));
   await expect(calendar.getByRole("grid")).toHaveAccessibleName("March 1990");
-  await calendar.getByRole("button", { name: "Monday, March 19, 1990" }).click();
+  await press(calendar.getByRole("button", { name: "Monday, March 19, 1990" }));
   await expect(value(page)).toHaveText("1990-03-19");
+});
+
+test("the year grid stays inside the calendar: same size, scrolls itself, current year in view", async ({ page }) => {
+  const calendar = release(page);
+  const before = await calendar.boundingBox();
+  const pageScroll = await page.evaluate(() => window.scrollY);
+  await calendar.getByRole("button", { name: "Year: 2026" }).click();
+  const years = calendar.getByRole("grid", { name: "Year" });
+  await expect(years).toBeVisible();
+  const [after, panel] = [await calendar.boundingBox(), await years.boundingBox()];
+  if (!before || !after || !panel) throw new Error("no box");
+  expect(after.height).toBeCloseTo(before.height, 0); // the calendar does not grow
+  expect(panel.y + panel.height).toBeLessThanOrEqual(after.y + after.height + 1); // the list stays inside
+  expect(await years.evaluate((node) => node.scrollHeight > node.clientHeight)).toBe(true); // it scrolls
+  const current = years.getByRole("button", { name: "2026" });
+  await expect(current).toBeFocused();
+  await expect(current).toBeInViewport();
+  const currentBox = await current.boundingBox();
+  expect(currentBox && currentBox.y >= panel.y && currentBox.y + currentBox.height <= panel.y + panel.height).toBe(true);
+  expect(await page.evaluate(() => window.scrollY)).toBe(pageScroll); // the page did not jump
+});
+
+test("keyboard in the year grid: arrows move, Enter picks; Escape goes back to the year button", async ({ page }) => {
+  const calendar = release(page);
+  const yearButton = calendar.getByRole("button", { name: "Year: 2026" });
+  await yearButton.focus();
+  await page.keyboard.press("Enter");
+  await expect(calendar.getByRole("grid", { name: "Year" }).getByRole("button", { name: "2026" })).toBeFocused();
+  await page.keyboard.press("Escape");
+  await expect(calendar.getByRole("grid", { name: "Year" })).toBeHidden();
+  await expect(yearButton).toBeFocused();
+  await page.keyboard.press("Enter");
+  await page.keyboard.press("PageUp"); // four rows back: 16 years
+  await page.keyboard.press("ArrowRight");
+  await page.keyboard.press("Enter");
+  await expect(calendar.getByRole("grid")).toHaveAccessibleName("October 2011");
+  await expect(calendar.getByRole("button", { name: "Wednesday, October 19, 2011" })).toBeFocused();
 });
 
 test("limits: days outside are disabled, unavailable days cannot be picked, the keyboard stops at the edge", async ({ page }) => {
@@ -136,6 +177,14 @@ for (const theme of ["dark", "light"] as const) {
   test(`passes axe in the ${theme} theme`, async ({ page }) => {
     await openFixture(page, "calendar", theme);
     await release(page).getByRole("button", { name: "Thursday, October 22, 2026" }).hover();
+    await expectAccessible(page);
+  });
+
+  test(`passes axe with the year and month grids open in the ${theme} theme`, async ({ page }) => {
+    await openFixture(page, "calendar", theme);
+    await release(page).getByRole("button", { name: "Year: 2026" }).click();
+    await expectAccessible(page);
+    await release(page).getByRole("button", { name: "Month: October" }).click();
     await expectAccessible(page);
   });
 }

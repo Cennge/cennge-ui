@@ -293,8 +293,9 @@ export const DateRangePicker = React.forwardRef<HTMLDivElement, DateRangePickerP
             collisionPadding={8}
             onOpenAutoFocus={(event) => event.preventDefault()}
             onEscapeKeyDown={(event) => {
-              // The first Escape drops a half-chosen range; the next one closes the calendar.
-              if (contentRef.current?.querySelector("[data-selecting]")) event.preventDefault();
+              // The first Escape drops a half-chosen range or closes a month or year grid; the next one
+              // closes the calendar.
+              if (contentRef.current?.querySelector("[data-selecting], [data-picking]")) event.preventDefault();
             }}
             className={cn(
               popoverContentClass,

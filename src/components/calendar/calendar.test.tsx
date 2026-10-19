@@ -83,12 +83,49 @@ describe("Calendar", () => {
     expect(onValueChange).not.toHaveBeenCalled();
   });
 
-  it("month and year pickers jump anywhere, e.g. to a birth year", () => {
+  it("the year and month grids jump anywhere, e.g. to a birth year", () => {
     render(<Calendar defaultValue="2026-10-19" locale="en-US" />);
-    fireEvent.change(screen.getByRole("combobox", { name: "Year" }), { target: { value: "1990" } });
-    fireEvent.change(screen.getByRole("combobox", { name: "Month" }), { target: { value: "3" } });
+    fireEvent.click(screen.getByRole("button", { name: "Year: 2026" }));
+    const years = screen.getByRole("grid", { name: "Year" });
+    expect(within(years).getByRole("button", { name: "2026" })).toHaveFocus();
+    fireEvent.click(within(years).getByRole("button", { name: "1990" }));
+    expect(screen.queryByRole("grid", { name: "Year" })).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: "Month: October" }));
+    fireEvent.click(within(screen.getByRole("grid", { name: "Month" })).getByRole("button", { name: "March" }));
     expect(grid()).toHaveAccessibleName("March 1990");
     expect(day("Monday, March 19, 1990")).toHaveAttribute("tabindex", "0");
+  });
+
+  it("year grid keyboard: arrows move, Enter picks and returns to the days; Escape goes back unchanged", () => {
+    render(<Calendar defaultValue="2026-10-19" locale="en-US" />);
+    const yearButton = screen.getByRole("button", { name: "Year: 2026" });
+    fireEvent.click(yearButton);
+    expect(yearButton).toHaveAttribute("aria-expanded", "true");
+    fireEvent.keyDown(focusedDay(), { key: "ArrowDown" }); // a row of four
+    expect(focusedDay()).toHaveTextContent("2030");
+    fireEvent.keyDown(focusedDay(), { key: "ArrowLeft" });
+    expect(focusedDay()).toHaveTextContent("2029");
+    fireEvent.click(focusedDay()); // Enter on a button is a click
+    expect(grid()).toHaveAccessibleName("October 2029");
+    expect(focusedDay()).toHaveAccessibleName("Friday, October 19, 2029");
+
+    const monthButton = screen.getByRole("button", { name: "Month: October" });
+    fireEvent.click(monthButton);
+    fireEvent.keyDown(focusedDay(), { key: "Escape" });
+    expect(screen.queryByRole("grid", { name: "Month" })).toBeNull();
+    expect(monthButton).toHaveFocus();
+    expect(grid()).toHaveAccessibleName("October 2029");
+  });
+
+  it("months outside the limits cannot be picked; years stop at them", () => {
+    render(<Calendar defaultValue="2026-10-19" minValue="2026-03-15" maxValue="2027-06-01" locale="en-US" />);
+    fireEvent.click(screen.getByRole("button", { name: "Month: October" }));
+    const months = screen.getByRole("grid", { name: "Month" });
+    expect(within(months).getByRole("button", { name: "February" })).toBeDisabled();
+    expect(within(months).getByRole("button", { name: "March" })).toBeEnabled();
+    fireEvent.click(screen.getByRole("button", { name: "Year: 2026" }));
+    const years = within(screen.getByRole("grid", { name: "Year" })).getAllByRole("button");
+    expect(years.map((button) => button.textContent)).toEqual(["2026", "2027"]);
   });
 
   it("previous and next buttons move by a month", () => {
@@ -129,7 +166,7 @@ describe("Calendar", () => {
     const now = new Date();
     render(<Calendar labels={{ previousMonth: "Предыдущий месяц", nextMonth: "Следующий месяц", month: "Месяц", year: "Год" }} />);
     expect(screen.getByRole("button", { name: "Предыдущий месяц" })).toBeInTheDocument();
-    expect(screen.getByRole("combobox", { name: "Год" })).toHaveValue(String(now.getFullYear()));
+    expect(screen.getByRole("button", { name: `Год: ${now.getFullYear()}` })).toBeInTheDocument();
     const todayButton = document.querySelector('[aria-current="date"]');
     expect(todayButton).toHaveTextContent(String(now.getDate()));
   });

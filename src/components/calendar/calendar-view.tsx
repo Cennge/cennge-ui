@@ -1,5 +1,6 @@
 import * as React from "react";
 import { tv } from "../../utils/tv";
+import { useId } from "../../utils/use-id";
 import type { CenngeColor, CenngeSize } from "../../types";
 import {
   addDays,
@@ -31,9 +32,9 @@ export interface CalendarLabels {
   previousMonth: string;
   /** @default "Next month" */
   nextMonth: string;
-  /** Name of the month picker. @default "Month" */
+  /** Name of the month button and the month grid. @default "Month" */
   month: string;
-  /** Name of the year picker. @default "Year" */
+  /** Name of the year button and the year grid. @default "Year" */
   year: string;
 }
 
@@ -84,13 +85,29 @@ export const calendarStyles = tv({
       "disabled:pointer-events-none disabled:opacity-35",
     ],
     pickers: "flex min-w-0 flex-1 items-center justify-center gap-0.5",
-    pickerWrapper: "relative",
     picker: [
-      "h-8 cursor-pointer appearance-none rounded-medium bg-transparent py-0 pr-6 pl-2 text-sm font-semibold text-foreground",
-      "transition-colors duration-(--cennge-duration-fast) hover:bg-default-bg",
+      "inline-flex h-8 cursor-pointer items-center gap-1 rounded-medium px-2 text-sm font-semibold text-foreground",
+      "transition-colors duration-(--cennge-duration-fast) hover:bg-default-bg aria-expanded:bg-default-bg",
       "outline-none focus-visible:outline-2 focus-visible:outline-ring disabled:pointer-events-none",
     ],
-    pickerIcon: "pointer-events-none absolute top-1/2 right-1.5 size-3.5 -translate-y-1/2 text-muted",
+    pickerIcon: [
+      "flex size-3.5 text-muted transition-transform duration-(--cennge-duration-fast) motion-reduce:transition-none",
+      "[[aria-expanded=true]>&]:rotate-180",
+    ],
+    // The month or year grid: over the days, the same size, scrolling when it is longer.
+    panel: [
+      "absolute inset-x-0 top-10 bottom-0 z-10 flex flex-col gap-1 overflow-y-auto overscroll-contain p-0.5",
+      "[scrollbar-color:var(--cennge-border)_transparent] [scrollbar-width:thin]",
+    ],
+    panelRow: "grid gap-1",
+    option: [
+      "relative flex w-full cursor-pointer items-center justify-center rounded-medium px-1 text-foreground tabular-nums",
+      "transition-[background-color,color,transform] duration-(--cennge-duration-fast) ease-tactile motion-reduce:transition-none",
+      "hover:bg-default-bg active:scale-95",
+      "outline-none focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-ring",
+      "data-[selected]:inset-shadow-tactile data-[today]:font-bold",
+      "disabled:cursor-not-allowed disabled:opacity-35 disabled:hover:bg-transparent",
+    ],
     monthTitle: "flex h-8 flex-1 items-center justify-center text-sm font-semibold",
     months: "flex flex-wrap justify-center gap-4",
     month: "flex flex-col gap-2",
@@ -119,18 +136,18 @@ export const calendarStyles = tv({
   },
   variants: {
     size: {
-      sm: { day: "size-8 text-xs", weekday: "w-8" },
-      md: { day: "size-9 text-sm", weekday: "w-9" },
-      lg: { day: "size-11 text-base", weekday: "w-11" },
+      sm: { day: "size-8 text-xs", weekday: "w-8", option: "h-8 text-xs" },
+      md: { day: "size-9 text-sm", weekday: "w-9", option: "h-9 text-sm" },
+      lg: { day: "size-11 text-base", weekday: "w-11", option: "h-11 text-base" },
     },
     color: {
-      default: { base: "[--cennge-range-band:color-mix(in_oklab,var(--cennge-default-500)_14%,transparent)]", day: selectedDay.default },
-      primary: { base: "[--cennge-range-band:color-mix(in_oklab,var(--cennge-primary)_14%,transparent)]", day: selectedDay.primary },
-      secondary: { base: "[--cennge-range-band:color-mix(in_oklab,var(--cennge-secondary)_14%,transparent)]", day: selectedDay.secondary },
-      success: { base: "[--cennge-range-band:color-mix(in_oklab,var(--cennge-success)_14%,transparent)]", day: selectedDay.success },
-      warning: { base: "[--cennge-range-band:color-mix(in_oklab,var(--cennge-warning)_14%,transparent)]", day: selectedDay.warning },
-      danger: { base: "[--cennge-range-band:color-mix(in_oklab,var(--cennge-danger)_14%,transparent)]", day: selectedDay.danger },
-      info: { base: "[--cennge-range-band:color-mix(in_oklab,var(--cennge-info)_14%,transparent)]", day: selectedDay.info },
+      default: { base: "[--cennge-range-band:color-mix(in_oklab,var(--cennge-default-500)_14%,transparent)]", day: selectedDay.default, option: selectedDay.default },
+      primary: { base: "[--cennge-range-band:color-mix(in_oklab,var(--cennge-primary)_14%,transparent)]", day: selectedDay.primary, option: selectedDay.primary },
+      secondary: { base: "[--cennge-range-band:color-mix(in_oklab,var(--cennge-secondary)_14%,transparent)]", day: selectedDay.secondary, option: selectedDay.secondary },
+      success: { base: "[--cennge-range-band:color-mix(in_oklab,var(--cennge-success)_14%,transparent)]", day: selectedDay.success, option: selectedDay.success },
+      warning: { base: "[--cennge-range-band:color-mix(in_oklab,var(--cennge-warning)_14%,transparent)]", day: selectedDay.warning, option: selectedDay.warning },
+      danger: { base: "[--cennge-range-band:color-mix(in_oklab,var(--cennge-danger)_14%,transparent)]", day: selectedDay.danger, option: selectedDay.danger },
+      info: { base: "[--cennge-range-band:color-mix(in_oklab,var(--cennge-info)_14%,transparent)]", day: selectedDay.info, option: selectedDay.info },
     },
   },
   defaultVariants: { size: "md", color: "primary" },
@@ -249,6 +266,24 @@ export function CalendarView(props: CalendarViewProps) {
   const focusAfterRender = React.useRef(autoFocus);
   const now = today();
 
+  // The month or year grid shown over the days, if any.
+  const [picker, setPicker] = React.useState<"days" | "months" | "years">("days");
+  const panelId = useId();
+  const panelRef = React.useRef<HTMLDivElement>(null);
+  const monthButtonRef = React.useRef<HTMLButtonElement>(null);
+  const yearButtonRef = React.useRef<HTMLButtonElement>(null);
+
+  // On opening: the current month or year in the middle of the grid, with focus on it. scrollTop
+  // rather than scrollIntoView, which would also scroll the page.
+  React.useEffect(() => {
+    const panel = panelRef.current;
+    if (picker === "days" || !panel) return;
+    const current = panel.querySelector<HTMLButtonElement>('[tabindex="0"]');
+    if (!current) return;
+    panel.scrollTop = current.offsetTop - panel.clientHeight / 2 + current.offsetHeight / 2;
+    current.focus({ preventScroll: true });
+  }, [picker]);
+
   // Moving with the keyboard re-renders the grid; then focus follows to the new day.
   React.useEffect(() => {
     if (!focusAfterRender.current) return;
@@ -337,7 +372,7 @@ export function CalendarView(props: CalendarViewProps) {
       aria-label={labels.previousMonth}
       disabled={isDisabled || !canGoBack}
       onClick={() => showMonth(addMonths(view, -1))}
-      className={slots.navButton({ class: classNames?.navButton })}
+      className={slots.navButton({ class: [picker !== "days" && "invisible", classNames?.navButton] })}
     >
       <ChevronIcon direction="left" />
     </button>
@@ -348,57 +383,184 @@ export function CalendarView(props: CalendarViewProps) {
       aria-label={labels.nextMonth}
       disabled={isDisabled || !canGoForward}
       onClick={() => showMonth(addMonths(view, 1))}
-      className={slots.navButton({ class: classNames?.navButton })}
+      className={slots.navButton({ class: [picker !== "days" && "invisible", classNames?.navButton] })}
     >
       <ChevronIcon direction="right" />
     </button>
   );
+  const togglePicker = (next: "months" | "years") => setPicker((current) => (current === next ? "days" : next));
+
+  // Leaves a month or year grid: on Escape back to the button that opened it, after a choice into the days.
+  const closePicker = (returnTo: "button" | "days") => {
+    const opener = picker === "months" ? monthButtonRef.current : yearButtonRef.current;
+    setPicker("days");
+    if (returnTo === "days") focusAfterRender.current = true;
+    else opener?.focus();
+  };
+
+  const chooseMonth = (month: number) => {
+    showMonth({ ...view, month, day: 1 });
+    closePicker("days");
+  };
+  const chooseYear = (year: number) => {
+    showMonth(clampDate({ ...view, year, day: 1 }, min ? startOfMonth(min) : null, max));
+    closePicker("days");
+  };
+
+  // Arrows, Home/End and Page Up/Down move over the grid; Escape goes back to the days unchanged.
+  const handlePanelKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>, columns: number) => {
+    const options = Array.from(panelRef.current?.querySelectorAll<HTMLButtonElement>("button:not(:disabled)") ?? []);
+    const index = options.indexOf(event.currentTarget);
+    let next = index;
+    switch (event.key) {
+      case "ArrowLeft":
+        next = index - 1;
+        break;
+      case "ArrowRight":
+        next = index + 1;
+        break;
+      case "ArrowUp":
+        next = index - columns;
+        break;
+      case "ArrowDown":
+        next = index + columns;
+        break;
+      case "Home":
+        next = 0;
+        break;
+      case "End":
+        next = options.length - 1;
+        break;
+      case "PageUp":
+        next = index - columns * 4;
+        break;
+      case "PageDown":
+        next = index + columns * 4;
+        break;
+      case "Escape":
+        event.preventDefault();
+        closePicker("button");
+        return;
+      default:
+        return; // Enter and Space reach the button as a click.
+    }
+    event.preventDefault();
+    options[Math.max(0, Math.min(options.length - 1, next))]?.focus();
+  };
+
+  const monthsInPicker = Array.from({ length: 12 }, (_, index) => index + 1);
+  const isMonthOutOfRange = (month: number) =>
+    isOutOfRange({ year: view.year, month, day: 1 }, min ? startOfMonth(min) : null, max);
+
   const pickers = (
     <div className={slots.pickers()}>
-      <div className={slots.pickerWrapper()}>
-        <select
-          aria-label={labels.month}
-          value={view.month}
-          disabled={isDisabled}
-          onChange={(event) => showMonth({ ...view, month: Number(event.target.value), day: 1 })}
-          className={slots.picker({ class: classNames?.picker })}
-        >
-          {Array.from({ length: 12 }, (_, index) => index + 1).map((month) => (
-            <option
-              key={month}
-              value={month}
-              disabled={isOutOfRange({ year: view.year, month, day: 1 }, min ? startOfMonth(min) : null, max)}
-            >
-              {monthName(month)}
-            </option>
-          ))}
-        </select>
+      <button
+        ref={monthButtonRef}
+        type="button"
+        aria-label={`${labels.month}: ${monthName(view.month)}`}
+        aria-expanded={picker === "months"}
+        aria-controls={picker === "months" ? panelId : undefined}
+        disabled={isDisabled}
+        onClick={() => togglePicker("months")}
+        className={slots.picker({ class: classNames?.picker })}
+      >
+        {monthName(view.month)}
         <span className={slots.pickerIcon()}>
           <ChevronIcon direction="down" />
         </span>
-      </div>
-      <div className={slots.pickerWrapper()}>
-        <select
-          aria-label={labels.year}
-          value={view.year}
-          disabled={isDisabled}
-          onChange={(event) =>
-            showMonth(clampDate({ ...view, year: Number(event.target.value), day: 1 }, min ? startOfMonth(min) : null, max))
-          }
-          className={slots.picker({ class: classNames?.picker })}
-        >
-          {years.map((year) => (
-            <option key={year} value={year}>
-              {numberFormat.format(year)}
-            </option>
-          ))}
-        </select>
+      </button>
+      <button
+        ref={yearButtonRef}
+        type="button"
+        aria-label={`${labels.year}: ${numberFormat.format(view.year)}`}
+        aria-expanded={picker === "years"}
+        aria-controls={picker === "years" ? panelId : undefined}
+        disabled={isDisabled}
+        onClick={() => togglePicker("years")}
+        className={slots.picker({ class: classNames?.picker })}
+      >
+        {numberFormat.format(view.year)}
         <span className={slots.pickerIcon()}>
           <ChevronIcon direction="down" />
         </span>
-      </div>
+      </button>
     </div>
   );
+
+  // Rows of a picker grid, `columns` options each.
+  const renderPanel = (
+    values: number[],
+    columns: number,
+    label: (value: number) => string,
+    state: (value: number) => { isSelected: boolean; isToday: boolean; isDisabled: boolean },
+    choose: (value: number) => void,
+    name: string,
+    className: string,
+  ) => {
+    const rows: number[][] = [];
+    for (let index = 0; index < values.length; index += columns) rows.push(values.slice(index, index + columns));
+    return (
+      <div ref={panelRef} id={panelId} role="grid" aria-label={name} className={slots.panel({ class: className })}>
+        {rows.map((row) => (
+          <div
+            key={row[0]}
+            role="row"
+            className={slots.panelRow()}
+            style={{ gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` }}
+          >
+            {row.map((value) => {
+              const option = state(value);
+              return (
+                <div key={value} role="gridcell" aria-selected={option.isSelected}>
+                  <button
+                    type="button"
+                    tabIndex={option.isSelected ? 0 : -1}
+                    disabled={isDisabled || option.isDisabled}
+                    aria-current={option.isToday ? "date" : undefined}
+                    data-selected={option.isSelected || undefined}
+                    data-today={option.isToday || undefined}
+                    onClick={() => choose(value)}
+                    onKeyDown={(event) => handlePanelKeyDown(event, columns)}
+                    className={slots.option()}
+                  >
+                    {label(value)}
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+        ))}
+      </div>
+    );
+  };
+
+  const pickerPanel =
+    picker === "months"
+      ? renderPanel(
+          monthsInPicker,
+          3,
+          monthName,
+          (month) => ({
+            isSelected: month === view.month,
+            isToday: month === now.month && view.year === now.year,
+            isDisabled: isMonthOutOfRange(month),
+          }),
+          chooseMonth,
+          labels.month,
+          "justify-center",
+        )
+      : picker === "years"
+        ? renderPanel(
+            years,
+            4,
+            (year) => numberFormat.format(year),
+            (year) => ({ isSelected: year === view.year, isToday: year === now.year, isDisabled: false }),
+            chooseYear,
+            labels.year,
+            // The long list fades out at its edges; the padding lets the first and last rows clear the fade.
+            "py-5 [mask-image:linear-gradient(to_bottom,transparent,#000_1.25rem,#000_calc(100%-1.25rem),transparent)]",
+          )
+        : null;
   // Keeps a header's middle centred when it has a button on one side only.
   const spacer = <span aria-hidden="true" className="size-8 shrink-0" />;
 
@@ -409,7 +571,7 @@ export function CalendarView(props: CalendarViewProps) {
     );
     return (
       <div key={toIsoDate(monthStart)} className={slots.month()}>
-        <div className={slots.header({ class: classNames?.header })}>
+        <div className={slots.header({ class: [index > 0 && picker !== "days" && "invisible", classNames?.header] })}>
           {index === 0 ? previousButton : spacer}
           {index === 0 ? (
             pickers
@@ -425,7 +587,7 @@ export function CalendarView(props: CalendarViewProps) {
           aria-label={monthTitle(monthStart)}
           aria-disabled={isDisabled || undefined}
           aria-readonly={isReadOnly || undefined}
-          className={slots.grid({ class: classNames?.grid })}
+          className={slots.grid({ class: [picker !== "days" && "invisible", classNames?.grid] })}
         >
           <thead>
             <tr>
@@ -510,6 +672,8 @@ export function CalendarView(props: CalendarViewProps) {
       ref={rootRef}
       className={slots.base({ class: [classNames?.base, rootClassName] })}
       data-disabled={isDisabled || undefined}
+      // A popover around the calendar leaves the first Escape to an open month or year grid.
+      data-picking={picker !== "days" || undefined}
       onPointerLeave={onHover ? () => onHover(null) : undefined}
     >
       {/* Read out when the shown month changes. */}
@@ -521,7 +685,10 @@ export function CalendarView(props: CalendarViewProps) {
           {announcement}
         </div>
       ) : null}
-      <div className={slots.months({ class: classNames?.months })}>{months.map(renderMonth)}</div>
+      <div className={slots.months({ class: ["relative", classNames?.months] })}>
+        {months.map(renderMonth)}
+        {pickerPanel}
+      </div>
     </div>
   );
 }

@@ -143,6 +143,7 @@ export const DatePicker = React.forwardRef<HTMLInputElement, DatePickerProps>(fu
   const [error, setError] = React.useState<DatePickerError | null>(null);
   const [isOpen, setOpen] = React.useState(false);
   const inputRef = React.useRef<HTMLInputElement>(null);
+  const contentRef = React.useRef<HTMLDivElement>(null);
   React.useImperativeHandle(ref, () => inputRef.current as HTMLInputElement);
 
   // The field shows the value in the locale's format whenever the value changes.
@@ -255,6 +256,7 @@ export const DatePicker = React.forwardRef<HTMLInputElement, DatePickerProps>(fu
         </PopoverPrimitive.Anchor>
         <PopoverPrimitive.Portal>
           <PopoverPrimitive.Content
+            ref={contentRef}
             aria-label={labels.chooseDate}
             side="bottom"
             align="start"
@@ -262,6 +264,10 @@ export const DatePicker = React.forwardRef<HTMLInputElement, DatePickerProps>(fu
             collisionPadding={8}
             // The calendar puts focus on the selected day itself.
             onOpenAutoFocus={(event) => event.preventDefault()}
+            onEscapeKeyDown={(event) => {
+              // The first Escape closes an open month or year grid; the next one the calendar.
+              if (contentRef.current?.querySelector("[data-picking]")) event.preventDefault();
+            }}
             className={cn(popoverContentClass, "p-3", classNames?.popover)}
           >
             <Calendar

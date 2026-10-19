@@ -94,6 +94,17 @@ describe("DatePicker", () => {
     expect(field()).toHaveValue("10/23/2026");
   });
 
+  it("Escape in the year grid goes back to the days and keeps the calendar open", () => {
+    render(<DatePicker label="Release" defaultValue="2026-10-19" locale="en-US" />);
+    fireEvent.click(screen.getByRole("button", { name: "Choose date" }));
+    fireEvent.click(screen.getByRole("button", { name: "Year: 2026" }));
+    fireEvent.keyDown(document.activeElement as HTMLElement, { key: "Escape" });
+    expect(screen.queryByRole("grid", { name: "Year" })).toBeNull();
+    expect(screen.getByRole("dialog", { name: "Choose date" })).toBeInTheDocument();
+    fireEvent.keyDown(document.activeElement as HTMLElement, { key: "Escape" });
+    expect(screen.queryByRole("dialog", { name: "Choose date" })).toBeNull();
+  });
+
   it("Alt+ArrowDown in the field opens the calendar", () => {
     render(<DatePicker label="Release" locale="en-US" />);
     fireEvent.keyDown(field(), { key: "ArrowDown", altKey: true });
