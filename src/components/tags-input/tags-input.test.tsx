@@ -30,6 +30,31 @@ describe("TagsInput", () => {
     expect(field()).toHaveValue("react");
     expect(document.querySelector('[data-slot="tag"]')).toHaveAttribute("data-highlighted", "true");
     expect(announced()).toBe("react is already added");
+    expect(field()).toHaveAccessibleDescription("react is already added");
+  });
+
+  it("shows why a tag was refused under the field until the text changes", () => {
+    render(<TagsInput label="Topics" description="Latin letters only" validate={(t) => /^[a-z-]+$/.test(t)} />);
+    type("привет");
+    press("Enter");
+    expect(tagNames()).toEqual([]);
+    expect(field()).toHaveValue("привет");
+    expect(field()).toBeInvalid();
+    expect(field()).toHaveAccessibleDescription("привет is not allowed");
+    type("приве");
+    expect(field()).not.toBeInvalid();
+    expect(field()).toHaveAccessibleDescription("Latin letters only");
+  });
+
+  it("accepts any script when nothing restricts it", () => {
+    render(<TagsInput label="Topics" />);
+    for (const t of ["привет", "東京", "café"]) {
+      type(t);
+      press("Enter");
+    }
+    type("мир, ");
+    expect(tagNames()).toEqual(["привет", "東京", "café", "мир"]);
+    expect(field()).not.toBeInvalid();
   });
 
   it("allows duplicates when asked", () => {
@@ -74,6 +99,12 @@ describe("TagsInput", () => {
     }
     expect(tagNames()).toEqual(["a", "b"]);
     expect(announced()).toBe("Tag limit reached");
+    expect(field()).toHaveAccessibleDescription("Tag limit reached");
+    // Making room clears the reason; the kept text can then be added.
+    fireEvent.click(screen.getByRole("button", { name: "Remove a" }), { detail: 1 });
+    expect(field()).not.toBeInvalid();
+    press("Enter");
+    expect(tagNames()).toEqual(["b", "c"]);
   });
 
   it("adds leftover text on blur unless disabled", () => {

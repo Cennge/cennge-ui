@@ -1,5 +1,5 @@
 import { expect, expectAccessible, openFixture, test } from "./test";
-import type { Page } from "@playwright/test";
+import type { Locator, Page } from "@playwright/test";
 
 const topics = (page: Page) => page.getByRole("textbox", { name: "Topics" });
 const topicsValue = (page: Page) => page.getByTestId("topics");
@@ -27,6 +27,43 @@ test("a duplicate is refused, keeps the text and briefly flags the existing tag"
   await expect(existing).toHaveAttribute("data-highlighted", "true");
   await expect(existing).not.toHaveAttribute("data-highlighted", /.*/, { timeout: 2000 });
   await expect(page.locator('[aria-live="polite"]').first()).toHaveText("React is already added");
+});
+
+test("Cyrillic and other scripts become tags", async ({ page }) => {
+  await topics(page).click();
+  await page.keyboard.type("привет");
+  await page.keyboard.press("Enter");
+  await page.keyboard.type("東京,");
+  await page.keyboard.type("café");
+  await page.keyboard.press("Enter");
+  await expect(topicsValue(page)).toHaveText("react|привет|東京|café");
+  await expect(topics(page)).toHaveValue("");
+});
+
+test("a refused tag says why under the field until the text is edited", async ({ page }) => {
+  const labels = page.getByRole("textbox", { name: "Labels" });
+  const label = page.locator("label", { hasText: /^Labels$/ });
+  const colorOf = (locator: Locator) => locator.evaluate((node) => getComputedStyle(node).color);
+  const normalColor = await colorOf(label);
+
+  await labels.fill("привет");
+  await labels.press("Enter");
+  await expect(labels).toHaveValue("привет");
+  await expect(labels).toHaveAttribute("aria-invalid", "true");
+  await expect(labels).toHaveAccessibleDescription("привет is not allowed");
+
+  // Shown on the page, not only to screen readers, and the field turns to the danger colour.
+  const reason = page.locator(`[id="${await labels.getAttribute("aria-describedby")}"]`);
+  await expect(reason).toHaveText("привет is not allowed");
+  expect((await reason.boundingBox())?.height ?? 0).toBeGreaterThan(10);
+  const dangerColor = await colorOf(reason);
+  expect(dangerColor).not.toBe(normalColor);
+  await expect.poll(() => colorOf(label)).toBe(dangerColor);
+
+  await labels.press("Backspace");
+  await expect(labels).not.toHaveAttribute("aria-invalid");
+  await expect(labels).toHaveAccessibleDescription("Lowercase, up to 3");
+  await expect.poll(() => colorOf(label)).toBe(normalColor);
 });
 
 test("Backspace in an empty field removes the last tag", async ({ page }) => {
@@ -108,8 +145,13 @@ test("clear removes every tag", async ({ page }) => {
 });
 
 for (const theme of ["dark", "light"] as const) {
-  test(`passes axe in the ${theme} theme`, async ({ page }) => {
+  test(`passes axe in the ${theme} theme, with a refused tag on screen`, async ({ page }) => {
     await openFixture(page, "tags-input", theme);
+    await expectAccessible(page);
+    const labels = page.getByRole("textbox", { name: "Labels" });
+    await labels.fill("Not Valid");
+    await labels.press("Enter");
+    await expect(labels).toHaveAttribute("aria-invalid", "true");
     await expectAccessible(page);
   });
 }

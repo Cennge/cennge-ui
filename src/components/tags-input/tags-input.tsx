@@ -47,7 +47,10 @@ export interface TagsInputProps
   validate?: (tag: string) => boolean;
   /** Turn leftover text into a tag when the field loses focus. @default true */
   addOnBlur?: boolean;
-  /** What screen readers hear after a change. Override to translate. */
+  /**
+   * Text for changes and refusals. Screen readers hear every message; refusals (invalid,
+   * duplicate, limit) are also shown under the field. Override to translate.
+   */
   formatAnnouncement?: (event: TagsInputEvent) => string;
   /** Accessible name of a tag's remove button. @default (tag) => `Remove ${tag}` */
   removeLabel?: (tag: string) => string;
@@ -124,6 +127,8 @@ export const TagsInput = React.forwardRef<HTMLInputElement, TagsInputProps>(func
   latestTags.current = tags;
   const [text, setText] = React.useState("");
   const [announcement, setAnnouncement] = React.useState("");
+  // Why the last attempt was refused, shown under the field until the text changes.
+  const [refusal, setRefusal] = React.useState<string | null>(null);
   const [highlighted, setHighlighted] = React.useState<string | null>(null);
   const [pendingFocus, setPendingFocus] = React.useState<number | "input" | null>(null);
 
@@ -160,22 +165,25 @@ export const TagsInput = React.forwardRef<HTMLInputElement, TagsInputProps>(func
     const next = [...latestTags.current];
     const refused: string[] = [];
     let message = "";
+    let refusalMessage: string | null = null;
+    const refuse = (candidate: string, event: TagsInputEvent) => {
+      refused.push(candidate);
+      message = formatAnnouncement(event);
+      refusalMessage = message;
+    };
     for (const candidate of candidates.map((c) => c.trim()).filter(Boolean)) {
       if (maxTags !== undefined && next.length >= maxTags) {
-        refused.push(candidate);
-        message = formatAnnouncement({ type: "limit", tag: candidate });
+        refuse(candidate, { type: "limit", tag: candidate });
         continue;
       }
       const existing = next.find((tag) => isSame(tag, candidate));
       if (existing !== undefined && !allowDuplicates) {
-        refused.push(candidate);
         flash(existing);
-        message = formatAnnouncement({ type: "duplicate", tag: candidate });
+        refuse(candidate, { type: "duplicate", tag: candidate });
         continue;
       }
       if (validate && !validate(candidate)) {
-        refused.push(candidate);
-        message = formatAnnouncement({ type: "invalid", tag: candidate });
+        refuse(candidate, { type: "invalid", tag: candidate });
         continue;
       }
       next.push(candidate);
@@ -183,6 +191,7 @@ export const TagsInput = React.forwardRef<HTMLInputElement, TagsInputProps>(func
     }
     if (next.length !== latestTags.current.length) commit(next);
     if (message) setAnnouncement(message);
+    setRefusal(refusalMessage);
     return refused;
   };
 
@@ -194,6 +203,7 @@ export const TagsInput = React.forwardRef<HTMLInputElement, TagsInputProps>(func
     if (tag === undefined || isDisabled || isReadOnly) return;
     commit(latestTags.current.filter((_, i) => i !== index));
     setAnnouncement(formatAnnouncement({ type: "removed", tag }));
+    setRefusal(null);
     if (focus !== null) setPendingFocus(focus);
   };
 
@@ -210,6 +220,7 @@ export const TagsInput = React.forwardRef<HTMLInputElement, TagsInputProps>(func
   const handleChange = (value: string) => {
     if (!splitter.test(value)) {
       setText(value);
+      setRefusal(null); // the user is fixing the text
       return;
     }
     const parts = value.split(splitter);
@@ -280,14 +291,17 @@ export const TagsInput = React.forwardRef<HTMLInputElement, TagsInputProps>(func
   };
 
   /* ------------------------------------------------------------ styles */
+  const showInvalid = isInvalid || refusal !== null;
   const slots = input({
     variant,
     color: color ?? (defaults.color && defaults.color !== "default" ? defaults.color : "primary"),
     size: sizeValue,
     radius: radius ?? defaults.radius ?? "md",
-    isInvalid,
+    isInvalid: showInvalid,
   });
-  const helper = isInvalid && errorMessage ? errorMessage : description;
+  // A refusal reason takes the place of the description until the text changes.
+  const errorText = refusal ?? (isInvalid ? errorMessage : undefined);
+  const helper = errorText ?? description;
   const showClear = isClearable && (tags.length > 0 || text !== "") && !isDisabled && !isReadOnly;
   const minHeight = sizeValue === "sm" ? "2rem" : sizeValue === "lg" ? "3rem" : "2.5rem";
 
@@ -296,7 +310,7 @@ export const TagsInput = React.forwardRef<HTMLInputElement, TagsInputProps>(func
       className={slots.base({ class: [classNames?.base, className] })}
       data-disabled={isDisabled || undefined}
       data-required={isRequired || Boolean(required) || undefined}
-      data-invalid={isInvalid || undefined}
+      data-invalid={showInvalid || undefined}
     >
       {label ? (
         <label htmlFor={id} className={slots.label({ class: classNames?.label })}>
@@ -346,7 +360,7 @@ export const TagsInput = React.forwardRef<HTMLInputElement, TagsInputProps>(func
             readOnly={isReadOnly}
             // Native "required" only while there is nothing yet: tags count as a value.
             required={(isRequired || Boolean(required)) && tags.length === 0}
-            aria-invalid={isInvalid || undefined}
+            aria-invalid={showInvalid || undefined}
             aria-describedby={helper ? helperId : undefined}
             onChange={(event) => handleChange(event.target.value)}
             onKeyDown={handleKeyDown}
@@ -366,6 +380,7 @@ export const TagsInput = React.forwardRef<HTMLInputElement, TagsInputProps>(func
             onClick={() => {
               commit([]);
               setText("");
+              setRefusal(null);
               setAnnouncement(formatAnnouncement({ type: "removed", tag: tags.join(", ") }));
               inputRef.current?.focus();
             }}
@@ -384,7 +399,7 @@ export const TagsInput = React.forwardRef<HTMLInputElement, TagsInputProps>(func
         <div
           id={helperId}
           className={
-            isInvalid && errorMessage
+            errorText
               ? slots.errorMessage({ class: classNames?.errorMessage })
               : slots.description({ class: classNames?.description })
           }
