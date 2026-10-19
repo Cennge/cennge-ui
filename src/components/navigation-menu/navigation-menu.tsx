@@ -23,10 +23,17 @@ const navigationMenu = tv({
       "aria-[current=page]:text-primary-text",
       "outline-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-ring",
     ],
-    content: "p-2 data-[motion^=from-]:animate-cennge-fade-in data-[motion^=to-]:animate-cennge-fade-out motion-reduce:animate-none",
+    // Radix sizes the panel from the content, so the content must not size itself from the panel: absolute
+    // and as wide as what is in it. As a block it took the panel's width minus the border, and the panel
+    // shrank by 2px a frame to nothing.
+    content: [
+      "absolute top-0 left-0 w-max max-w-[calc(100vw-1rem)] p-2",
+      "data-[motion^=from-]:animate-cennge-fade-in data-[motion^=to-]:animate-cennge-fade-out motion-reduce:animate-none",
+    ],
     viewportPosition: "absolute top-full left-0 pt-2",
     viewport: [
-      "relative h-(--radix-navigation-menu-viewport-height) w-(--radix-navigation-menu-viewport-width) max-w-[calc(100vw-1rem)] overflow-hidden",
+      // box-content: the border goes outside the measured size of the content.
+      "relative box-content h-(--radix-navigation-menu-viewport-height) w-(--radix-navigation-menu-viewport-width) max-w-[calc(100vw-1rem)] overflow-hidden",
       "rounded-large border border-border bg-surface-3 shadow-floating",
       "data-[state=open]:animate-cennge-pop-in data-[state=closed]:animate-cennge-pop-out motion-reduce:animate-none",
     ],

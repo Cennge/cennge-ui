@@ -44,6 +44,23 @@ test("hover opens the panel under its trigger; moving on moves the panel", async
     .toBeLessThan(2);
 });
 
+test("an open panel keeps its size: it does not shrink frame by frame", async ({ page, isMobile }) => {
+  const nav = menu(page, "Main");
+  await press(trigger(nav, "Components"), isMobile);
+  await expect(nav.getByRole("link", { name: /Carousel/ })).toBeVisible();
+  await page.waitForTimeout(300);
+  const before = await panel(nav).boundingBox();
+  await page.waitForTimeout(1500);
+  const after = await panel(nav).boundingBox();
+  if (!before || !after) throw new Error("no panel");
+  expect(Math.abs(after.width - before.width)).toBeLessThan(1);
+  expect(Math.abs(after.height - before.height)).toBeLessThan(1);
+  // As wide as its content: every link fits, none is cut.
+  const link = await nav.getByRole("link", { name: /ScrollArea/ }).boundingBox();
+  if (!link) throw new Error("no link");
+  expect(link.x + link.width).toBeLessThanOrEqual(after.x + after.width + 0.5);
+});
+
 test("a tap or click opens and closes a panel", async ({ page, isMobile }) => {
   const nav = menu(page, "Main");
   await press(trigger(nav, "Repositories"), isMobile);
