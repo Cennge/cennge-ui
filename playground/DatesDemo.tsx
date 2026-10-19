@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import {
   Calendar,
   DatePicker,
@@ -26,12 +26,23 @@ const isoToday = () => {
   return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
 };
 
+/**
+ * Today, once in the browser. A server renders in its own time zone (a static page, on the day it was
+ * built), so rendering with its date would not match the user's.
+ */
+function useIsoToday() {
+  const [today, setToday] = useState<string | null>(null);
+  useEffect(() => setToday(isoToday()), []);
+  return today;
+}
+
 const isWeekend = (iso: string) => {
   const day = new Date(`${iso}T00:00:00Z`).getUTCDay();
   return day === 0 || day === 6;
 };
 
 function Calendars() {
+  const today = useIsoToday();
   const [release, setRelease] = useState<string | null>(null);
   const formatted = release
     ? new Intl.DateTimeFormat("ru-RU", { dateStyle: "long", timeZone: "UTC" }).format(new Date(`${release}T00:00:00Z`))
@@ -46,7 +57,7 @@ function Calendars() {
       <div className="flex flex-col gap-3">
         <Calendar
           aria-label="День для созвона"
-          minValue={isoToday()}
+          minValue={today ?? undefined}
           isDateUnavailable={isWeekend}
           color="secondary"
           labels={calendarLabels}
@@ -75,6 +86,7 @@ const dateError = (error: DatePickerError) => {
 const pickerLabels = { ...calendarLabels, chooseDate: "Выбрать дату" };
 
 function DatePickers() {
+  const today = useIsoToday();
   const [deadline, setDeadline] = useState<string | null>(null);
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -82,7 +94,7 @@ function DatePickers() {
         label="Дедлайн релиза"
         value={deadline}
         onValueChange={setDeadline}
-        minValue={isoToday()}
+        minValue={today ?? undefined}
         isDateUnavailable={isWeekend}
         description={deadline ? `В формате ISO: ${deadline}` : "Только будни, начиная с сегодня"}
         placeholder="ДД.ММ.ГГГГ"
@@ -91,7 +103,7 @@ function DatePickers() {
       />
       <DatePicker
         label="Дата рождения"
-        maxValue={isoToday()}
+        maxValue={today ?? undefined}
         variant="bordered"
         description="Можно ввести 07031994 или выбрать год в календаре"
         placeholder="ДД.ММ.ГГГГ"
@@ -112,6 +124,7 @@ const addDaysIso = (iso: string, days: number) => {
 };
 
 function RangePickers() {
+  const today = useIsoToday();
   const [sprint, setSprint] = useState<DateRange | null>(null);
   const days = sprint
     ? Math.round((Date.parse(`${sprint.end}T00:00:00Z`) - Date.parse(`${sprint.start}T00:00:00Z`)) / 86_400_000) + 1
@@ -122,8 +135,8 @@ function RangePickers() {
         label="Спринт"
         value={sprint}
         onValueChange={setSprint}
-        minValue={isoToday()}
-        maxValue={addDaysIso(isoToday(), 120)}
+        minValue={today ?? undefined}
+        maxValue={today ? addDaysIso(today, 120) : undefined}
         description={sprint ? `${days} дн., ${sprint.start} — ${sprint.end}` : "В ближайшие 120 дней"}
         placeholder="ДД.ММ.ГГГГ"
         formatError={rangeError}
@@ -147,7 +160,8 @@ const timeError = (error: TimeInputError) =>
   error.type === "invalid" ? "Введите время в формате ЧЧ:ММ" : "Созвоны только с 09:00 до 18:00";
 
 function Times() {
-  const [date, setDate] = useState<string | null>(isoToday());
+  const [date, setDate] = useState<string | null>(null);
+  useEffect(() => setDate((current) => current ?? isoToday()), []);
   const [time, setTime] = useState<string | null>("12:00");
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
