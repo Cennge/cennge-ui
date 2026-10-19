@@ -203,7 +203,9 @@ export const DialogDescription = React.forwardRef<HTMLParagraphElement, React.HT
 export const DialogBody = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
   function DialogBody({ className, ...rest }, ref) {
     return <div ref={ref} className={cn(
-          "flex-1 overflow-y-auto px-6 pt-4 text-sm",
+          // A scrolling body clips at its padding edge: pb-1 leaves room for the focus ring of a field at
+          // the bottom, and -mb-1 keeps the space to the footer as it was.
+          "-mb-1 flex-1 overflow-y-auto px-6 pt-4 pb-1 text-sm",
           "[scrollbar-color:var(--cennge-border)_transparent] scrollbar-thin",
           className,
         )} {...rest} />;

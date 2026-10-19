@@ -29,6 +29,23 @@ test("opens with focus on Cancel, keeps focus inside, Escape returns it to the t
   await expect(button(page, "Delete repository")).toBeFocused();
 });
 
+test("the focus ring of the field at the bottom of the body is drawn in full", async ({ page }) => {
+  await openDelete(page);
+  await confirmField(page).focus();
+  // The body scrolls, so it clips whatever reaches past its padding edge.
+  const measure = () =>
+    confirmField(page).evaluate((input) => {
+      const field = input.parentElement!;
+      const body = input.closest(".overflow-y-auto")!;
+      // Tailwind's ring is one of several layered shadows; its spread is the largest length among them.
+      const spreads = Array.from(getComputedStyle(field).boxShadow.matchAll(/(\d+(?:\.\d+)?)px/g), (m) => Number(m[1]));
+      return { space: body.getBoundingClientRect().bottom - field.getBoundingClientRect().bottom, ring: Math.max(0, ...spreads) };
+    });
+  await expect.poll(async () => (await measure()).ring).toBe(2); // after the focus transition
+  const { space, ring } = await measure();
+  expect(space).toBeGreaterThanOrEqual(ring);
+});
+
 test("a click or tap outside does not close it; Cancel does", async ({ page, isMobile }) => {
   await openDelete(page);
   if (isMobile) await page.touchscreen.tap(5, 5);
