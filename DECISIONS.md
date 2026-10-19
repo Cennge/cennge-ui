@@ -59,7 +59,10 @@
 - git + GitHub + Actions, pnpm.
 - Тесты: Vitest + Testing Library; Playwright (оверлеи, axe, скриншоты 7×7 комбинаций в light/dark).
 - CI: typecheck, lint, тесты, publint, arethetypeswrong, матрица React 17/18/19. Публикация changesets с provenance.
-- `playground/` на Vite — песочница и стенд для Playwright. Первый реальный проект — Next.js App Router через `npm link`/`pnpm link`.
+- `playground/` на Vite — песочница и стенд для Playwright.
+- Next.js App Router в CI (`tests/next`, `pnpm check:next`): приложение ставит пакет из `pnpm pack` и собирается вне
+  репозитория, так что видит только объявленные зависимости. Страница рендерит весь playground на сервере;
+  браузеры гидратируют её из часового пояса, где уже другой день, и с третьей локалью, в production и в dev.
 
 ## Даты, таблицы и клавиатура (2026-10-19)
 - Даты и время — ISO-строки без часового пояса: `"2026-10-19"`, `"14:30"`, как у `<input type="date">`. Переживают

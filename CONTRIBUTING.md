@@ -17,6 +17,9 @@ pnpm dev     # playground at http://localhost:5173
   dynamically (`bg-${color}`). Write every variant out, as in `button.styles.ts`.
 - **No Radix types in the public API.** Props are our own types from `src/types.ts`.
 - **React 17+ compatible.** Do not call `useId`, `useTransition`, `useSyncExternalStore` or React 19 APIs directly.
+- **Server rendering.** Nothing from the clock, `Math.random`, `window` or the default locale while rendering:
+  the server's answer differs from the browser's. What only the browser knows waits for `useIsHydrated`
+  (`src/utils/use-is-hydrated.ts`). `pnpm check:next` hydrates the playground from another day and locale.
 - **Motion:** animate only `transform` and `opacity`, and respect `prefers-reduced-motion`.
 - **Accessibility:** keyboard, focus ring and screen-reader names work before a component is merged.
 - **Focus rings:** write `outline-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-ring`.
@@ -40,5 +43,6 @@ pnpm test
 pnpm test:e2e    # first run: pnpm exec playwright install chromium firefox webkit
                  # one engine: pnpm test:e2e --project=firefox
 pnpm build && pnpm check:package
+pnpm check:next  # after build: Next.js server rendering and hydration
 pnpm changeset   # if the change affects the published package
 ```

@@ -582,6 +582,7 @@ pnpm test:e2e       # Playwright: Chromium, Firefox, WebKit; desktop, Pixel and 
 pnpm typecheck
 pnpm build          # tsup → dist/
 pnpm check:package  # publint + are-the-types-wrong
+pnpm check:next     # after build: a Next.js app on the packed package, server-rendered and hydrated
 pnpm size           # what typical imports cost after tree shaking (Button alone: ~2 KB gzip)
 pnpm changeset      # describe a change for the next release
 ```
@@ -595,6 +596,11 @@ pnpm changeset      # describe a change for the next release
 - **Accessibility:** every fixture runs through axe-core against WCAG 2.2 AA in the dark and the light theme,
   and so does the whole playground.
 - **Clean console:** any error or warning in the browser console fails the test.
+- **Next.js:** an App Router app, built on the packed package, renders the whole playground on the
+  server. Every browser hydrates it from a time zone where it is another day and with a third locale,
+  in production and in development, where React also reports mismatched attributes.
+- **React 17 and 18:** CI runs the unit tests on each and compiles an app against their types; the
+  regular jobs run React 19.
 
 Contributions are welcome — see [CONTRIBUTING.md](CONTRIBUTING.md).
 

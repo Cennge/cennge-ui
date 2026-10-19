@@ -1,0 +1,7 @@
+/* The setup from the README, nothing more. */
+@import "tailwindcss";
+@import "cennge-ui/styles.css";
+
+body {
+  @apply bg-background font-cennge text-foreground antialiased;
+}

@@ -11,3 +11,7 @@ playwright-report
 .vscode
 .playwright-mcp
 replica
+
+# Next.js, if tests/next/app is run in place
+.next
+next-env.d.ts

@@ -59,6 +59,30 @@ jobs:
       # The published declarations, compiled the way an app on this React would.
       - run: pnpm exec tsc -p tests/types
 
+  next:
+    name: Next.js · server rendering and hydration
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - run: pnpm exec playwright install --with-deps chromium firefox webkit
+      # Packs the package, builds tests/next/app on it outside the repository, checks it in every browser.
+      - run: pnpm check:next
+      - uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: playwright-report-next
+          path: |
+            tests/next/playwright-report
+            tests/next/test-results
+          retention-days: 7
+
   e2e:
     name: Playwright · ${{ matrix.engine }}
     runs-on: ubuntu-latest

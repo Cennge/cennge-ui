@@ -17,5 +17,7 @@
       "cennge-ui/utils": ["./src/utils/index.ts"]
     }
   },
-  "include": ["src", "playground", "tests", "e2e", "*.config.ts"]
+  "include": ["src", "playground", "tests", "e2e", "*.config.ts"],
+  // Built on its own, against the packed package: see scripts/check-next.mjs.
+  "exclude": ["tests/next/app"]
 }
