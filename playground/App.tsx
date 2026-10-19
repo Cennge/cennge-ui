@@ -8,6 +8,7 @@ import { BasicsDemo } from "./BasicsDemo";
 import { AdvancedDemo } from "./AdvancedDemo";
 import { RepositoryDemo } from "./RepositoryDemo";
 import { AccountDemo } from "./AccountDemo";
+import { DatesDemo } from "./DatesDemo";
 
 const colors: CenngeColor[] = ["default", "primary", "secondary", "success", "warning", "danger", "info"];
 const variants: CenngeVariant[] = ["solid", "shadow", "bordered", "flat", "faded", "light", "ghost"];
@@ -74,6 +75,7 @@ export function App() {
       <AdvancedDemo />
       <RepositoryDemo />
       <AccountDemo />
+      <DatesDemo />
 
       <Section title="Button: цвета × варианты">
         <div className="overflow-x-auto">

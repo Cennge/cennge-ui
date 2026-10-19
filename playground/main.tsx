@@ -7,7 +7,8 @@ import "./styles.css";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <CenngeProvider>
+    {/* The playground is in Russian: dates and numbers too. */}
+    <CenngeProvider locale="ru-RU">
       <App />
       <Toaster />
     </CenngeProvider>
