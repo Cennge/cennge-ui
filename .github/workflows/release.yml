@@ -1,0 +1,42 @@
+name: Release
+
+# After CI passes on main. With changesets waiting, opens (or updates) the "Version Packages" pull
+# request; once that is merged, publishes the new version to npm and tags it. Versions already on npm
+# are skipped, so a run with nothing to release does nothing.
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Version pull request or publish
+    if: github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # the version commit and tags
+      pull-requests: write # the "Version Packages" pull request
+      id-token: write # npm trusted publishing: no token, and provenance comes with it
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          # The commit CI passed on, not whatever main is by now.
+          ref: ${{ github.event.workflow_run.head_sha }}
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - uses: changesets/action@v2
+        with:
+          publish: pnpm release
+          title: "chore: release"
+          commit: "chore: release"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

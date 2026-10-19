@@ -46,3 +46,12 @@ pnpm build && pnpm check:package
 pnpm check:next  # after build: Next.js server rendering and hydration
 pnpm changeset   # if the change affects the published package
 ```
+
+## Releases
+
+1. A change to the published package comes with a changeset (`pnpm changeset`): patch, minor or major,
+   and a line for the changelog.
+2. After CI passes on `main`, `.github/workflows/release.yml` opens or updates the "Version Packages"
+   pull request, which bumps the version and writes `CHANGELOG.md`.
+3. Merging it publishes to npm from GitHub Actions through trusted publishing (no token, with
+   provenance) and tags the release.
