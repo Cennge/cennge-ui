@@ -189,6 +189,22 @@ export const SidebarItem = React.forwardRef<HTMLElement, SidebarItemProps>(funct
 ) {
   const { isCollapsed, isInDrawer, setMobileOpen } = useSidebarContext("SidebarItem");
   const Comp: React.ElementType = asChild ? Slot.Root : href ? "a" : "button";
+  // With asChild the label is the child link's own content; the item's layout goes inside that link.
+  const link = asChild ? (React.Children.only(children) as React.ReactElement<{ children?: React.ReactNode }>) : null;
+  const label = link ? link.props.children : children;
+  const content = (
+    <>
+      {icon ? <span className="flex size-4 shrink-0 items-center justify-center">{icon}</span> : null}
+      <span className={cn("min-w-0 flex-1 truncate", isCollapsed && "sr-only")}>{label}</span>
+      {endContent ? (
+        <>
+          {/* Keeps the name "cennge-ui 12" rather than "cennge-ui12"; flex layout does not draw it. */}{" "}
+          {/* Collapsed to icons there is no room, but screen readers still hear the count. */}
+          <span className={cn("shrink-0 text-xs text-muted", isCollapsed && "sr-only")}>{endContent}</span>
+        </>
+      ) : null}
+    </>
+  );
   const item = (
     <Comp
       ref={ref}
@@ -211,26 +227,12 @@ export const SidebarItem = React.forwardRef<HTMLElement, SidebarItemProps>(funct
       )}
       {...rest}
     >
-      {asChild ? (
-        <Slot.Slottable>{children}</Slot.Slottable>
-      ) : (
-        <>
-          {icon ? <span className="flex size-4 shrink-0 items-center justify-center">{icon}</span> : null}
-          <span className={cn("min-w-0 flex-1 truncate", isCollapsed && "sr-only")}>{children}</span>
-          {endContent ? (
-            <>
-              {/* Keeps the name "cennge-ui 12" rather than "cennge-ui12"; flex layout does not draw it. */}{" "}
-              {/* Collapsed to icons there is no room, but screen readers still hear the count. */}
-              <span className={cn("shrink-0 text-xs text-muted", isCollapsed && "sr-only")}>{endContent}</span>
-            </>
-          ) : null}
-        </>
-      )}
+      {link ? React.cloneElement(link, undefined, content) : content}
     </Comp>
   );
   // Collapsed to icons: the label shows on hover and focus; screen readers read it either way.
-  return isCollapsed && !asChild ? (
-    <Tooltip content={children} placement="right">
+  return isCollapsed ? (
+    <Tooltip content={label} placement="right">
       {item}
     </Tooltip>
   ) : (

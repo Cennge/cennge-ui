@@ -31,7 +31,7 @@ function Shell({ onCollapsedChange }: { onCollapsedChange?: (collapsed: boolean)
               cennge-ui
             </SidebarItem>
             <SidebarItem href="/ai-niche-scout">ai-niche-scout</SidebarItem>
-            <SidebarItem asChild>
+            <SidebarItem asChild icon={<svg aria-hidden="true" data-testid="dotfiles-icon" />} endContent="3">
               <RouterLink to="/dotfiles">dotfiles</RouterLink>
             </SidebarItem>
           </SidebarGroup>
@@ -59,12 +59,13 @@ describe("Sidebar", () => {
     expect(within(column()).getByRole("button", { name: "Sign out" })).toBeInTheDocument();
   });
 
-  it("asChild renders your own link with the item's styles", () => {
+  it("asChild renders your own link with the item's styles, icon and count inside it", () => {
     render(<Shell />);
-    const link = within(column()).getByRole("link", { name: "dotfiles" });
+    const link = within(column()).getByRole("link", { name: "dotfiles 3" });
     expect(link).toHaveAttribute("data-router-link");
     expect(link).toHaveAttribute("href", "/dotfiles");
     expect(link.className).toContain("rounded-medium");
+    expect(within(link).getByTestId("dotfiles-icon")).toBeInTheDocument();
   });
 
   it("desktop: the trigger collapses the column to icons; names stay for screen readers", () => {
@@ -77,6 +78,7 @@ describe("Sidebar", () => {
     expect(onCollapsedChange).toHaveBeenCalledWith(true);
     expect(within(column()).getByRole("link", { name: "ai-niche-scout" })).toBeInTheDocument();
     expect(within(column()).getByRole("link", { name: "cennge-ui 12" })).toBeInTheDocument(); // the count too
+    expect(within(column()).getByRole("link", { name: "dotfiles 3" })).toBeInTheDocument(); // asChild too
     expect(screen.getByRole("button", { name: "Expand sidebar" })).toHaveAttribute("aria-expanded", "false");
   });
 
