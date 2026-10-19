@@ -11,6 +11,10 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
   Button,
+  Carousel,
+  CarouselContent,
+  CarouselControls,
+  CarouselItem,
   Input,
   Prose,
   Rating,
@@ -254,6 +258,53 @@ function Readme() {
   );
 }
 
+const highlights = [
+  { title: "Carousel", text: "Нативная прокрутка со снапом: палец, трекпад, клавиатура и перетаскивание мышью.", tone: "bg-primary-bg" },
+  { title: "ScrollArea", text: "Полосы прокрутки в цветах темы и затухание у краёв.", tone: "bg-secondary-bg" },
+  { title: "Rating", text: "Звёзды как радиогруппа, половинки как слайдер, среднее как картинка.", tone: "bg-warning-bg" },
+  { title: "Slider marks", text: "Подписи под дорожкой, клик по подписи и остановка только на метках.", tone: "bg-success-bg" },
+  { title: "Prose", text: "README и MDX в цветах темы, без плагина typography.", tone: "bg-info-bg" },
+  { title: "Фокус", text: "Кольцо фокуса снова видно у всех элементов, это проверяет e2e.", tone: "bg-danger-bg" },
+];
+
+function Highlights() {
+  return (
+    <Carousel
+      aria-label="Что нового"
+      labels={{
+        carousel: "карусель",
+        slide: "слайд",
+        slideName: (index, count) => `${index} из ${count}`,
+        slides: "Слайды",
+        pageName: (index, count) => `Страница ${index} из ${count}`,
+        previous: "Назад",
+        next: "Вперёд",
+        pagination: "Выбор слайда",
+        goToSlide: (index) => `Слайд ${index}`,
+        goToPage: (index) => `Страница ${index}`,
+        pause: "Остановить показ",
+        play: "Запустить показ",
+      }}
+      autoplay
+      loop
+      // Один слайд на телефоне, два на планшете, три на компьютере — обычными классами.
+      className="md:[--carousel-per-view:2] xl:[--carousel-per-view:3]"
+    >
+      <CarouselContent>
+        {highlights.map((item) => (
+          <CarouselItem key={item.title}>
+            <div className={`flex h-40 flex-col gap-2 rounded-large p-5 ${item.tone}`}>
+              <h3 className="text-lg font-semibold">{item.title}</h3>
+              <p className="text-sm text-muted">{item.text}</p>
+            </div>
+          </CarouselItem>
+        ))}
+      </CarouselContent>
+      <CarouselControls />
+    </Carousel>
+  );
+}
+
 export function RepositoryDemo() {
   return (
     <div className="flex flex-col gap-6">
@@ -265,6 +316,9 @@ export function RepositoryDemo() {
           <DangerZone />
         </Section>
       </div>
+      <Section title="Carousel">
+        <Highlights />
+      </Section>
       <Section title="Rating">
         <Reviews />
       </Section>

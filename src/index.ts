@@ -8,6 +8,7 @@ export * from "./components/breadcrumbs";
 export * from "./components/button";
 export * from "./components/calendar";
 export * from "./components/card";
+export * from "./components/carousel";
 export * from "./components/checkbox";
 export * from "./components/combobox";
 export * from "./components/command";

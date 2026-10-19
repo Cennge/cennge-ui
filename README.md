@@ -27,10 +27,10 @@ A regular npm package — `npm update` and every app gets the fix.
 - **Server Components ready.** `"use client"` ships in the build; helpers stay server-safe.
 
 > **Status:** early development (0.x).
-> **56 components.**
+> **57 components.**
 > Forms: Button · Input · PasswordInput · OtpInput · Textarea · NumberInput · DatePicker · DateRangePicker · TimeInput · Select · Combobox · MultiSelect · TagsInput · FileUpload · Checkbox · RadioGroup · Switch · Slider · Rating · ToggleGroup.
 > Overlays: Dialog · AlertDialog · Command · Drawer · Popover · Dropdown · ContextMenu · HoverCard · Tooltip · Toast.
-> Display: Table · Tree · Calendar · RangeCalendar · Card · Badge · Avatar · Indicator · Alert · Progress · CircularProgress · Skeleton · Spinner · EmptyState · Kbd · Snippet · Separator · Timeline · ScrollArea · Prose.
+> Display: Table · Tree · Calendar · RangeCalendar · Card · Badge · Avatar · Indicator · Alert · Progress · CircularProgress · Skeleton · Spinner · EmptyState · Kbd · Snippet · Separator · Timeline · ScrollArea · Prose · Carousel.
 > Navigation: Sidebar · Tabs · Accordion · Breadcrumbs · Pagination · Stepper.
 
 <details>
@@ -347,6 +347,29 @@ const selection = useTableSelection(sortedRows.map((repo) => repo.id));
 </ScrollArea>
 <ScrollArea orientation="horizontal">…</ScrollArea>   // also "both"; type="hover" | "scroll" | "auto" | "always"
 ```
+
+### Carousel
+
+Native scroll snapping, no carousel library: a finger, a trackpad and the keyboard scroll it as usual,
+and a mouse can drag it. Follows the WAI-ARIA carousel pattern: slides are named "3 of 8", moves are
+announced, autoplay pauses under the mouse, stops when focus comes in, always has a pause button and
+never starts on its own with reduced motion.
+
+```tsx
+<Carousel aria-label="Releases" autoplay loop className="md:[--carousel-per-view:2]">   {/* responsive with classes */}
+  <CarouselContent>
+    {releases.map((release) => <CarouselItem key={release.tag}>…</CarouselItem>)}
+  </CarouselContent>
+  <CarouselControls />                     {/* ‹  ⏸ • • •  › under the slides */}
+</Carousel>
+
+<Carousel aria-label="Screenshots" slidesPerView={1.2} align="center">
+  <CarouselContent arrows>…</CarouselContent>   {/* arrows over the slides, for images */}
+  <CarouselDots />
+</Carousel>
+```
+
+`useCarousel()` gives custom controls (thumbnails, counters) the index, `scrollTo`, `scrollPrev` and `scrollNext`.
 
 ### Prose
 
