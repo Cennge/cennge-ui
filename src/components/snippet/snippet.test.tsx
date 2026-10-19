@@ -25,7 +25,8 @@ describe("Snippet", () => {
   it("copies the text without the symbol, shows a check and announces it", async () => {
     const onCopy = vi.fn();
     render(
-      <Snippet onCopy={onCopy} timeout={60}>
+      // Long enough for waitFor (it polls every 50 ms) to see the check under a loaded test run.
+      <Snippet onCopy={onCopy} timeout={400}>
         pnpm add cennge-ui
       </Snippet>,
     );
