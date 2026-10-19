@@ -27,11 +27,11 @@ A regular npm package — `npm update` and every app gets the fix.
 - **Server Components ready.** `"use client"` ships in the build; helpers stay server-safe.
 
 > **Status:** early development (0.x).
-> **51 components.**
+> **53 components.**
 > Forms: Button · Input · PasswordInput · OtpInput · Textarea · NumberInput · DatePicker · DateRangePicker · TimeInput · Select · Combobox · MultiSelect · TagsInput · FileUpload · Checkbox · RadioGroup · Switch · Slider · ToggleGroup.
-> Overlays: Dialog · AlertDialog · Drawer · Popover · Dropdown · ContextMenu · HoverCard · Tooltip · Toast.
+> Overlays: Dialog · AlertDialog · Command · Drawer · Popover · Dropdown · ContextMenu · HoverCard · Tooltip · Toast.
 > Display: Table · Tree · Calendar · RangeCalendar · Card · Badge · Avatar · Indicator · Alert · Progress · CircularProgress · Skeleton · Spinner · EmptyState · Kbd · Snippet · Separator · Timeline.
-> Navigation: Tabs · Accordion · Breadcrumbs · Pagination · Stepper.
+> Navigation: Sidebar · Tabs · Accordion · Breadcrumbs · Pagination · Stepper.
 
 <details>
 <summary>Light theme with the blue accent preset</summary>
@@ -333,6 +333,36 @@ const selection = useTableSelection(sortedRows.map((repo) => repo.id));
 // Tree: the WAI-ARIA tree keyboard, type-ahead, and children fetched on first open.
 <Tree aria-label="Files" items={files} onAction={(file) => open(file.id)}
       loadChildren={(folder) => fetchFolder(folder.id)} />
+```
+
+### Command palette and Sidebar
+
+```tsx
+// ⌘K / Ctrl+K from anywhere. Focus stays in the search; every typed word must match the text or
+// keywords, ignoring case and accents. Escape clears the query first, then closes.
+<CommandDialog label="Commands">
+  <CommandGroup heading="Repositories">
+    <CommandItem onAction={() => router.push("/cennge-ui")} keywords={["ui", "components"]}>cennge-ui</CommandItem>
+  </CommandGroup>
+  <CommandSeparator />
+  <CommandGroup heading="Actions">
+    <CommandItem onAction={createRepository} shortcut={<Kbd keys="command">N</Kbd>}>New repository</CommandItem>
+  </CommandGroup>
+</CommandDialog>
+
+// App shell: a column that collapses to icons on desktop, a drawer on phones that closes once a
+// page is chosen, also with Next.js Link.
+<SidebarLayout>
+  <Sidebar label="Repository">
+    <SidebarHeader>cennge-ui</SidebarHeader>
+    <SidebarNav>
+      <SidebarItem asChild isActive={pathname === "/issues"} icon={<IssueIcon />} endContent="12">
+        <Link href="/issues">Issues</Link>
+      </SidebarItem>
+    </SidebarNav>
+  </Sidebar>
+  <main><SidebarTrigger /> …</main>
+</SidebarLayout>
 ```
 
 ### Stepper and Timeline
