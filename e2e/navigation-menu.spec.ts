@@ -44,12 +44,18 @@ test("hover opens the panel under its trigger; moving on moves the panel", async
     .toBeLessThan(2);
 });
 
-test("two quick clicks open and close a panel, and it stays closed", async ({ page }) => {
-  // Radix's delayed open from resting the pointer used to fire after the second click and reopen it.
+test("mouse with hover opening: a click opens, a click on the open trigger keeps it open", async ({ page, isMobile }) => {
+  test.skip(isMobile, "no mouse on touch screens");
   const nav = menu(page, "Main");
+  await trigger(nav, "Components").hover();
+  await expect(trigger(nav, "Components")).toHaveAttribute("aria-expanded", "true");
+  await trigger(nav, "Repositories").hover(); // switches at once while a panel is open
+  await trigger(nav, "Repositories").click(); // Radix would toggle it shut
   await trigger(nav, "Repositories").click();
-  await trigger(nav, "Repositories").click();
-  await page.waitForTimeout(600);
+  await page.waitForTimeout(500); // nothing pending reopens or closes it
+  await expect(trigger(nav, "Repositories")).toHaveAttribute("aria-expanded", "true");
+  // Escape or a click elsewhere closes it.
+  await page.keyboard.press("Escape");
   await expect(trigger(nav, "Repositories")).toHaveAttribute("aria-expanded", "false");
 });
 
@@ -70,13 +76,27 @@ test("an open panel keeps its size: it does not shrink frame by frame", async ({
   expect(link.x + link.width).toBeLessThanOrEqual(after.x + after.width + 0.5);
 });
 
-test("a tap or click opens and closes a panel", async ({ page, isMobile }) => {
-  const nav = menu(page, "Main");
-  await press(trigger(nav, "Repositories"), isMobile);
-  await expect(trigger(nav, "Repositories")).toHaveAttribute("aria-expanded", "true");
-  await expect(nav.getByRole("link", { name: /cennge-ui/ })).toBeVisible();
-  await press(trigger(nav, "Repositories"), isMobile);
-  await expect(trigger(nav, "Repositories")).toHaveAttribute("aria-expanded", "false");
+test("a tap, Enter or a click in click mode toggles a panel", async ({ page, isMobile }) => {
+  if (isMobile) {
+    const nav = menu(page, "Main");
+    await trigger(nav, "Repositories").tap();
+    await expect(trigger(nav, "Repositories")).toHaveAttribute("aria-expanded", "true");
+    await trigger(nav, "Repositories").tap();
+    await expect(trigger(nav, "Repositories")).toHaveAttribute("aria-expanded", "false");
+    return;
+  }
+  const main = menu(page, "Main");
+  await trigger(main, "Repositories").focus();
+  await page.keyboard.press("Enter");
+  await expect(trigger(main, "Repositories")).toHaveAttribute("aria-expanded", "true");
+  await page.keyboard.press("Enter");
+  await expect(trigger(main, "Repositories")).toHaveAttribute("aria-expanded", "false");
+  const clicks = menu(page, "Click menu");
+  await trigger(clicks, "Repositories").click();
+  await expect(trigger(clicks, "Repositories")).toHaveAttribute("aria-expanded", "true");
+  await trigger(clicks, "Repositories").click();
+  await page.waitForTimeout(400);
+  await expect(trigger(clicks, "Repositories")).toHaveAttribute("aria-expanded", "false");
 });
 
 test("the panel stays inside the window, also from a trigger at the right edge", async ({ page, isMobile }) => {
