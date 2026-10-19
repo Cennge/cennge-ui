@@ -12,6 +12,7 @@ import {
   AlertDialogTrigger,
   Button,
   Input,
+  Snippet,
   Switch,
   toast,
 } from "cennge-ui";
@@ -116,9 +117,43 @@ function DangerZone() {
   );
 }
 
+function Commands() {
+  const labels = { copyLabel: "Скопировать", copiedLabel: "Скопировано" };
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-1.5">
+        <p className="text-sm font-medium">Установка</p>
+        <Snippet {...labels}>pnpm add cennge-ui</Snippet>
+      </div>
+      <div className="flex flex-col gap-1.5">
+        <p className="text-sm font-medium">Запуск {repository} локально</p>
+        <Snippet {...labels} variant="bordered">
+          {`git clone https://github.com/${repository}.git
+cd ai-niche-scout
+pnpm install && pnpm dev`}
+        </Snippet>
+      </div>
+      <div className="flex flex-wrap gap-2">
+        <Snippet {...labels} variant="solid" color="primary" size="sm">
+          pnpm dev
+        </Snippet>
+        <Snippet {...labels} color="success" size="sm">
+          pnpm test
+        </Snippet>
+        <Snippet {...labels} variant="faded" size="sm" symbol=">">
+          pnpm changeset
+        </Snippet>
+      </div>
+    </div>
+  );
+}
+
 export function RepositoryDemo() {
   return (
     <div className="grid gap-6 md:grid-cols-2">
+      <Section title="Snippet">
+        <Commands />
+      </Section>
       <Section title="AlertDialog">
         <DangerZone />
       </Section>
