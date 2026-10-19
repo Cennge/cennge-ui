@@ -27,10 +27,10 @@ A regular npm package — `npm update` and every app gets the fix.
 - **Server Components ready.** `"use client"` ships in the build; helpers stay server-safe.
 
 > **Status:** early development (0.x).
-> **40 components.**
-> Forms: Button · Input · Textarea · NumberInput · Select · Combobox · MultiSelect · TagsInput · FileUpload · Checkbox · RadioGroup · Switch · Slider · ToggleGroup.
-> Overlays: Dialog · Drawer · Popover · Dropdown · ContextMenu · HoverCard · Tooltip · Toast.
-> Display: Card · Badge · Avatar · Indicator · Alert · Progress · CircularProgress · Skeleton · Spinner · EmptyState · Kbd · Separator · Timeline.
+> **44 components.**
+> Forms: Button · Input · PasswordInput · OtpInput · Textarea · NumberInput · Select · Combobox · MultiSelect · TagsInput · FileUpload · Checkbox · RadioGroup · Switch · Slider · ToggleGroup.
+> Overlays: Dialog · AlertDialog · Drawer · Popover · Dropdown · ContextMenu · HoverCard · Tooltip · Toast.
+> Display: Card · Badge · Avatar · Indicator · Alert · Progress · CircularProgress · Skeleton · Spinner · EmptyState · Kbd · Snippet · Separator · Timeline.
 > Navigation: Tabs · Accordion · Breadcrumbs · Pagination · Stepper.
 
 <details>
@@ -249,6 +249,39 @@ const repos = [
 ```
 
 Pass `locale` to `CenngeProvider` once to format numbers and file sizes for your language.
+
+### AlertDialog, Snippet, PasswordInput, OtpInput
+
+```tsx
+// AlertDialog: a click outside does not close it, focus starts on Cancel. Return a promise from
+// onAction to keep it open with a spinner: it closes on success and stays open for a retry on failure.
+<AlertDialog>
+  <AlertDialogTrigger><Button color="danger" variant="flat">Delete repository</Button></AlertDialogTrigger>
+  <AlertDialogContent>
+    <AlertDialogHeader>
+      <AlertDialogTitle>Delete Cennge/ai-niche-scout?</AlertDialogTitle>
+      <AlertDialogDescription>Issues, releases and the wiki go with it.</AlertDialogDescription>
+    </AlertDialogHeader>
+    <AlertDialogFooter>
+      <AlertDialogCancel>Cancel</AlertDialogCancel>
+      <AlertDialogAction color="danger" onAction={() => deleteRepository()}>Delete</AlertDialogAction>
+    </AlertDialogFooter>
+  </AlertDialogContent>
+</AlertDialog>
+
+// Snippet: a copy button; the "$" is never copied. A line break gives one row per command.
+<Snippet>pnpm add cennge-ui</Snippet>
+<Snippet variant="bordered">{"git clone https://github.com/Cennge/ai-niche-scout.git
+cd ai-niche-scout"}</Snippet>
+
+// PasswordInput: show/hide keeps the caret in place, a form submit hides it again, Caps Lock hint.
+<PasswordInput label="New password" autoComplete="new-password" description="At least 12 characters" />
+
+// OtpInput: SMS autofill and paste fill every slot, one Tab stop, arrows move between slots.
+<OtpInput label="Verification code" groupSize={3} onComplete={verify} />
+```
+
+Snippet falls back to a selected textarea where the Clipboard API is missing, e.g. a dev server opened over plain http.
 
 ### Stepper and Timeline
 
