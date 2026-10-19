@@ -55,6 +55,17 @@ test.describe("Dialog", () => {
     await expect(page.getByRole("dialog")).toBeHidden();
   });
 
+  test("opened from code, it returns focus to what had it on close", async ({ page }) => {
+    const opener = button(page, "Settings from code");
+    await opener.focus();
+    await page.keyboard.press("Enter");
+    const settings = page.getByRole("dialog", { name: "Settings" });
+    await expect(settings).toBeVisible();
+    await page.keyboard.press("Escape");
+    await expect(settings).toBeHidden();
+    await expect(opener).toBeFocused();
+  });
+
   test("without a body, the buttons keep their distance from the description and the edge", async ({ page }) => {
     await button(page, "Actions").click();
     await page.getByRole("menuitem", { name: "Open settings" }).click();

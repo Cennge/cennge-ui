@@ -10,6 +10,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  useFocusReturn,
   type DialogProps,
 } from "../dialog/dialog";
 
@@ -70,17 +71,38 @@ export interface DrawerContentProps extends React.HTMLAttributes<HTMLDivElement>
   hideCloseButton?: boolean;
   classNames?: Partial<Record<DrawerSlots, string>>;
   container?: HTMLElement | null;
+  /** Runs as the drawer opens and moves focus inside; `event.preventDefault()` to focus something else. */
+  onOpenAutoFocus?: (event: Event) => void;
+  /** Runs as the drawer closes and returns focus; `event.preventDefault()` to send focus elsewhere. */
+  onCloseAutoFocus?: (event: Event) => void;
 }
 
 export const DrawerContent = React.forwardRef<HTMLDivElement, DrawerContentProps>(function DrawerContent(
-  { placement = "right", size = "md", hideCloseButton = false, classNames, className, container, children, ...rest },
+  {
+    placement = "right",
+    size = "md",
+    hideCloseButton = false,
+    classNames,
+    className,
+    container,
+    onOpenAutoFocus,
+    onCloseAutoFocus,
+    children,
+    ...rest
+  },
   ref,
 ) {
   const slots = drawer({ placement, size });
+  const focusReturn = useFocusReturn(onOpenAutoFocus, onCloseAutoFocus);
   return (
     <DialogPrimitive.Portal container={container}>
       <DialogPrimitive.Overlay className={slots.overlay({ class: classNames?.overlay })} />
-      <DialogPrimitive.Content ref={ref} className={slots.content({ class: [classNames?.content, className] })} {...rest}>
+      <DialogPrimitive.Content
+        ref={ref}
+        {...focusReturn}
+        className={slots.content({ class: [classNames?.content, className] })}
+        {...rest}
+      >
         {placement === "bottom" ? <div aria-hidden="true" className={slots.handle()} /> : null}
         {children}
         {hideCloseButton ? null : (

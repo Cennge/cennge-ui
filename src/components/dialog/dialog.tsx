@@ -45,6 +45,30 @@ export const DialogClose = React.forwardRef<HTMLButtonElement, { children: React
   },
 );
 
+/*
+ * Radix returns focus on close only to a Dialog.Trigger. A dialog opened from code (a menu item, a
+ * shortcut, a menu button elsewhere) has none, and focus would fall to the page. Remember what had
+ * focus on open and go back to it; with a trigger, Radix then moves focus there as before.
+ * Internal: used by Dialog, Drawer and AlertDialog.
+ */
+export function useFocusReturn(
+  onOpenAutoFocus?: (event: Event) => void,
+  onCloseAutoFocus?: (event: Event) => void,
+) {
+  const previous = React.useRef<HTMLElement | null>(null);
+  return {
+    onOpenAutoFocus: (event: Event) => {
+      const active = document.activeElement;
+      previous.current = active instanceof HTMLElement && active !== document.body ? active : null;
+      onOpenAutoFocus?.(event);
+    },
+    onCloseAutoFocus: (event: Event) => {
+      onCloseAutoFocus?.(event);
+      if (!event.defaultPrevented && previous.current?.isConnected) previous.current.focus();
+    },
+  };
+}
+
 /* --------------------------------------------------------------- content */
 
 /** Shared with AlertDialog. Internal: not re-exported from the package. */
@@ -100,6 +124,10 @@ export interface DialogContentProps extends React.HTMLAttributes<HTMLDivElement>
   classNames?: Partial<Record<DialogSlots, string>>;
   /** Mount the portal elsewhere (default: document.body). */
   container?: HTMLElement | null;
+  /** Runs as the dialog opens and moves focus inside; `event.preventDefault()` to focus something else. */
+  onOpenAutoFocus?: (event: Event) => void;
+  /** Runs as the dialog closes and returns focus; `event.preventDefault()` to send focus elsewhere. */
+  onCloseAutoFocus?: (event: Event) => void;
 }
 
 function CloseIcon() {
@@ -120,17 +148,21 @@ export const DialogContent = React.forwardRef<HTMLDivElement, DialogContentProps
     classNames,
     className,
     container,
+    onOpenAutoFocus,
+    onCloseAutoFocus,
     children,
     ...rest
   },
   ref,
 ) {
   const slots = dialogStyles({ size, radius });
+  const focusReturn = useFocusReturn(onOpenAutoFocus, onCloseAutoFocus);
   return (
     <DialogPrimitive.Portal container={container}>
       <DialogPrimitive.Overlay className={slots.overlay({ class: classNames?.overlay })} />
       <DialogPrimitive.Content
         ref={ref}
+        {...focusReturn}
         className={slots.content({ class: [classNames?.content, className] })}
         onPointerDownOutside={isDismissable ? undefined : (event) => event.preventDefault()}
         onEscapeKeyDown={isKeyboardDismissDisabled ? (event) => event.preventDefault() : undefined}

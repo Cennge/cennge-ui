@@ -5,7 +5,7 @@ import { useCenngeDefaults } from "../../provider";
 import type { CenngeRadius } from "../../types";
 import { Button, type ButtonProps } from "../button";
 import { Spinner } from "../spinner";
-import { DialogBody, DialogFooter, dialogStyles } from "../dialog/dialog";
+import { DialogBody, DialogFooter, dialogStyles, useFocusReturn } from "../dialog/dialog";
 
 /* ------------------------------------------------------------------ root */
 
@@ -127,21 +127,25 @@ export interface AlertDialogContentProps extends React.HTMLAttributes<HTMLDivEle
    * another element to start elsewhere, e.g. a confirmation field.
    */
   onOpenAutoFocus?: (event: Event) => void;
+  /** Runs as the dialog closes and returns focus; `event.preventDefault()` to send focus elsewhere. */
+  onCloseAutoFocus?: (event: Event) => void;
   classNames?: Partial<Record<AlertDialogSlots, string>>;
   /** Mount the portal elsewhere (default: document.body). */
   container?: HTMLElement | null;
 }
 
 export const AlertDialogContent = React.forwardRef<HTMLDivElement, AlertDialogContentProps>(function AlertDialogContent(
-  { size = "md", radius = "lg", classNames, className, container, children, ...rest },
+  { size = "md", radius = "lg", classNames, className, container, onOpenAutoFocus, onCloseAutoFocus, children, ...rest },
   ref,
 ) {
   const slots = dialogStyles({ size, radius });
+  const focusReturn = useFocusReturn(onOpenAutoFocus, onCloseAutoFocus);
   return (
     <AlertDialogPrimitive.Portal container={container}>
       <AlertDialogPrimitive.Overlay className={slots.overlay({ class: classNames?.overlay })} />
       <AlertDialogPrimitive.Content
         ref={ref}
+        {...focusReturn}
         className={slots.content({ class: [classNames?.content, className] })}
         {...rest}
       >

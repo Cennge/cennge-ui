@@ -100,6 +100,9 @@ export default function OverlaysFixture() {
           <Button>Copy</Button>
         </Tooltip>
 
+        {/* Opens the Settings dialog from code: no Radix trigger to return focus to. */}
+        <Button onClick={() => setSettingsOpen(true)}>Settings from code</Button>
+
         <Drawer>
           <DrawerTrigger>
             <Button>Open drawer</Button>
