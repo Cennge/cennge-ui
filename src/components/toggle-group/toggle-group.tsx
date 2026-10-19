@@ -27,7 +27,8 @@ const root = tv({
     variant: {
       // Translucent track: reads as sunken on any surface, in both themes.
       segmented: "gap-1 rounded-medium bg-default-bg p-1 inset-shadow-[inset_0_1px_2px_rgb(0_0_0/0.18)]",
-      bordered: "overflow-hidden rounded-medium border border-border",
+      // No overflow clipping (it cut the focus ring off): the end items round their own corners instead.
+      bordered: "rounded-medium border border-border",
     },
     fullWidth: { true: "flex w-full" },
   },
@@ -65,7 +66,10 @@ const item = tv({
   variants: {
     variant: {
       segmented: "rounded-small data-[state=on]:inset-shadow-tactile data-[state=on]:shadow-raised",
-      bordered: "border-l border-border first:border-l-0 hover:bg-default-bg",
+      bordered: [
+        "border-l border-border first:border-l-0 hover:bg-default-bg",
+        "first:rounded-l-[calc(var(--radius-medium)_-_1px)] last:rounded-r-[calc(var(--radius-medium)_-_1px)]",
+      ],
     },
     size: {
       sm: "h-7 px-2.5 text-xs",
