@@ -96,6 +96,7 @@ test("a dot sits under the thumb's centre at every mark, in every size", async (
 });
 
 test("labels are centred under their dots; long first and last ones stay inside the slider", async ({ page }) => {
+  await page.evaluate(() => document.fonts.ready); // label widths depend on the font
   const level = thumb(page, "Log level");
   const slider = sliderOf(level);
   const box = await slider.boundingBox();
@@ -108,10 +109,17 @@ test("labels are centred under their dots; long first and last ones stay inside 
   const ticks = slider.locator('[data-slot="tick"]');
   const warning = slider.locator('[data-slot="mark"]', { hasText: "Warning" });
   expect(Math.abs((await centreX(warning)) - (await centreX(ticks.nth(1))))).toBeLessThan(1);
-  // Short edge labels fit centred.
+  // An edge label is centred when it fits in the half thumb before the edge, and flush with the edge
+  // when it does not; which one depends on the font, so either is right. Middle labels are centred.
   const coverage = sliderOf(thumb(page, "Coverage threshold"));
+  const coverageBox = await coverage.boundingBox();
   const coverageTicks = coverage.locator('[data-slot="tick"]');
-  expect(Math.abs((await centreX(coverage.getByText("0%", { exact: true }))) - (await centreX(coverageTicks.first())))).toBeLessThan(1);
+  const zero = coverage.getByText("0%", { exact: true });
+  const zeroBox = await zero.boundingBox();
+  if (!coverageBox || !zeroBox) throw new Error("no box");
+  const centred = Math.abs((await centreX(zero)) - (await centreX(coverageTicks.first()))) < 1;
+  const flush = Math.abs(zeroBox.x - coverageBox.x) < 0.5;
+  expect(centred || flush, JSON.stringify({ zeroBox, coverageBox })).toBe(true);
   expect(Math.abs((await centreX(coverage.getByText("50%"))) - (await centreX(coverageTicks.nth(2))))).toBeLessThan(1);
   // Nothing pushes the page sideways on a phone.
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
