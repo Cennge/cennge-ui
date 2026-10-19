@@ -26,6 +26,7 @@ export default defineConfig({
   ],
   webServer: {
     command: `pnpm exec vite --port ${PORT} --strictPort`,
+    env: { CENNGE_E2E: "1" },
     url: `http://localhost:${PORT}/fixture.html`,
     reuseExistingServer: !process.env.CI,
   },

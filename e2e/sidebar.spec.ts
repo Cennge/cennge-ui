@@ -1,15 +1,15 @@
-import { expect, expectAccessible, openFixture, test } from "./test";
+import { expect, expectAccessible, openFixture, settleAnimations, test } from "./test";
 import type { Page } from "@playwright/test";
 
 const column = (page: Page) => page.getByRole("complementary", { name: "Cennge/cennge-ui" });
 const drawer = (page: Page) => page.getByRole("dialog", { name: "Cennge/cennge-ui" });
 
-test.beforeEach(async ({ page }) => {
-  await openFixture(page, "sidebar");
-});
-
+// Each layout skips itself before loading the page: skipped tests should not load anything.
 test.describe("desktop", () => {
-  test.skip(({ isMobile }) => isMobile, "Desktop layout");
+  test.beforeEach(async ({ page, isMobile }) => {
+    test.skip(isMobile, "Desktop layout");
+    await openFixture(page, "sidebar");
+  });
 
   test("a column with the current page marked; links navigate", async ({ page }) => {
     await expect(column(page)).toBeVisible();
@@ -32,23 +32,39 @@ test.describe("desktop", () => {
     await expect.poll(async () => Math.round((await column(page).boundingBox())?.width ?? 0)).toBe(256);
   });
 
-  test("passes axe, expanded and collapsed, in both themes", async ({ page }) => {
+  test("passes axe expanded", async ({ page }) => {
     await expectAccessible(page);
+  });
+
+  test("passes axe collapsed", async ({ page }) => {
     await page.getByRole("button", { name: "Collapse sidebar" }).click();
     await expectAccessible(page);
+  });
+
+  test("passes axe in the light theme", async ({ page }) => {
     await openFixture(page, "sidebar", "light");
     await expectAccessible(page);
   });
 });
 
 test.describe("phone", () => {
-  test.skip(({ isMobile }) => !isMobile, "Phone layout");
+  test.beforeEach(async ({ page, isMobile }) => {
+    test.skip(!isMobile, "Phone layout");
+    await openFixture(page, "sidebar");
+  });
 
-  test("the menu button opens a drawer that closes once a page is chosen", async ({ page }) => {
+  test("the menu button opens a drawer that closes once a page is chosen", async ({ page, browserName }) => {
     await expect(column(page)).toBeHidden();
     await page.getByRole("button", { name: "Open navigation" }).tap();
     await expect(drawer(page)).toBeVisible();
-    await drawer(page).getByRole("link", { name: "Actions" }).tap();
+    // A tap during the slide-in lands on a moving item and turns into no click at all.
+    await settleAnimations(page);
+    const item = drawer(page).getByRole("link", { name: "Actions" });
+    // Playwright's WebKit iPhone emulation drops a few percent of taps on links: measured with a bare
+    // <a href> outside any dialog and outside React (5 of 120 never navigated). The drawer closes on
+    // the click whatever the input, so WebKit gets a click; Chromium keeps the real tap.
+    if (browserName === "webkit") await item.click();
+    else await item.tap();
     await expect(drawer(page)).toBeHidden();
     await expect(page.getByTestId("page")).toHaveText("Actions");
   });
@@ -62,16 +78,17 @@ test.describe("phone", () => {
     await expect(drawer(page)).toBeHidden();
     await expect(menu).toBeFocused();
     await menu.tap();
+    await settleAnimations(page);
     await drawer(page).getByRole("button", { name: "Close" }).tap();
     await expect(drawer(page)).toBeHidden();
   });
 
-  test("passes axe with the drawer open, in both themes", async ({ page }) => {
-    await page.getByRole("button", { name: "Open navigation" }).tap();
-    await expect(drawer(page)).toBeVisible();
-    await expectAccessible(page, { modal: true });
-    await openFixture(page, "sidebar", "light");
-    await page.getByRole("button", { name: "Open navigation" }).tap();
-    await expectAccessible(page, { modal: true });
-  });
+  for (const theme of ["dark", "light"] as const) {
+    test(`passes axe with the drawer open in the ${theme} theme`, async ({ page }) => {
+      await openFixture(page, "sidebar", theme);
+      await page.getByRole("button", { name: "Open navigation" }).tap();
+      await expect(drawer(page)).toBeVisible();
+      await expectAccessible(page, { modal: true });
+    });
+  }
 });
