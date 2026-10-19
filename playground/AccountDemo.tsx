@@ -1,5 +1,5 @@
 import { useState, type ReactNode } from "react";
-import { Button, Input, PasswordInput, Progress, toast, type CenngeColor } from "cennge-ui";
+import { Button, Input, OtpInput, PasswordInput, Progress, toast, type CenngeColor } from "cennge-ui";
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
@@ -28,7 +28,7 @@ function Passwords() {
   const strength = strengthOf(newPassword);
 
   return (
-    <div className="grid gap-6 sm:grid-cols-2">
+    <div className="grid gap-6">
       <form
         className="flex flex-col gap-3"
         onSubmit={(event) => {
@@ -67,10 +67,66 @@ function Passwords() {
   );
 }
 
+const digitLabel = (position: number, length: number) => `Цифра ${position} из ${length}`;
+
+function TwoFactor() {
+  const [code, setCode] = useState("");
+  const [status, setStatus] = useState<"idle" | "checking" | "invalid">("idle");
+
+  const verify = (value: string) => {
+    setStatus("checking");
+    setTimeout(() => {
+      if (value === "246810") {
+        setStatus("idle");
+        setCode("");
+        toast.success("Двухфакторная аутентификация включена");
+      } else {
+        setStatus("invalid");
+      }
+    }, 700);
+  };
+
+  return (
+    <div className="flex flex-col gap-6">
+      <OtpInput
+        label="Код из приложения-аутентификатора"
+        description={status === "checking" ? "Проверяю…" : "Для проверки введите 246810 или вставьте код целиком"}
+        errorMessage="Неверный код. Попробуйте ещё раз."
+        isInvalid={status === "invalid"}
+        isReadOnly={status === "checking"}
+        value={code}
+        onValueChange={(value) => {
+          setCode(value);
+          if (status === "invalid") setStatus("idle");
+        }}
+        onComplete={verify}
+        groupSize={3}
+        formatSlotLabel={digitLabel}
+      />
+      <div className="flex flex-wrap items-start gap-6">
+        <OtpInput label="PIN-код" length={4} isMasked size="sm" variant="bordered" formatSlotLabel={digitLabel} />
+        <OtpInput
+          label="Код восстановления"
+          length={8}
+          allowedCharacters="alphanumeric"
+          size="sm"
+          variant="faded"
+          formatSlotLabel={(position, length) => `Символ ${position} из ${length}`}
+        />
+      </div>
+    </div>
+  );
+}
+
 export function AccountDemo() {
   return (
-    <Section title="PasswordInput">
-      <Passwords />
-    </Section>
+    <div className="grid gap-6 md:grid-cols-2">
+      <Section title="PasswordInput">
+        <Passwords />
+      </Section>
+      <Section title="OtpInput">
+        <TwoFactor />
+      </Section>
+    </div>
   );
 }
