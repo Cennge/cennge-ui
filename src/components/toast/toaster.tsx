@@ -38,7 +38,7 @@ const viewport = tv({
 const toastStyles = tv({
   slots: {
     root: [
-      "group relative flex w-full items-start gap-3 rounded-large border border-border bg-surface-3 p-4 pr-10",
+      "group relative flex w-full items-start gap-3 rounded-large border border-border bg-surface-3 p-4 pr-12",
       "text-foreground shadow-floating",
       "data-[state=open]:animate-cennge-toast-in data-[state=closed]:animate-cennge-toast-out motion-reduce:animate-none",
       "data-[swipe=cancel]:translate-x-0 data-[swipe=cancel]:translate-y-0 data-[swipe=cancel]:transition-transform",
@@ -52,10 +52,11 @@ const toastStyles = tv({
       "bg-surface-4 inset-shadow-tactile transition-[filter,transform] hover:brightness-110 active:scale-[0.97]",
       "outline-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-ring",
     ],
+    // A 28px target with a 16px cross at full contrast: big enough to find and to hit.
     close: [
-      "absolute top-3 right-3 flex size-6 cursor-pointer items-center justify-center rounded-full text-muted",
-      "opacity-70 transition hover:bg-default-bg hover:text-foreground hover:opacity-100",
-      "outline-none focus-visible:opacity-100 focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-ring",
+      "absolute top-3 right-3 flex size-7 cursor-pointer items-center justify-center rounded-full text-muted",
+      "transition-colors hover:bg-default-bg hover:text-foreground",
+      "outline-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-ring",
     ],
   },
   variants: {
@@ -75,18 +76,19 @@ const toastStyles = tv({
   },
 });
 
+// Glyphs of about the same visual size: the cross used to be a third of the check.
 const iconPaths: Partial<Record<CenngeColor, string>> = {
   success: "M5 12.5l4.5 4.5L19 7.5",
-  danger: "M15 9l-6 6M9 9l6 6",
-  warning: "M12 8v5M12 16.5v.5",
-  info: "M12 11v6M12 7.5v.5",
+  danger: "M7 7l10 10M17 7 7 17",
+  warning: "M12 5.5v8.5M12 18.5v.01",
+  info: "M12 10.5v8M12 5.5v.01",
 };
 
 function ColorIcon({ color }: { color: CenngeColor }) {
   const d = iconPaths[color];
   if (!d) return null;
   return (
-    <svg viewBox="0 0 24 24" className="size-3.5" fill="none" stroke="currentColor" strokeWidth="3" aria-hidden="true">
+    <svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="3" aria-hidden="true">
       <path d={d} strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
@@ -94,7 +96,7 @@ function ColorIcon({ color }: { color: CenngeColor }) {
 
 function CloseIcon() {
   return (
-    <svg viewBox="0 0 24 24" className="size-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
+    <svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="2.25" aria-hidden="true">
       <path d="M18 6 6 18M6 6l12 12" strokeLinecap="round" />
     </svg>
   );
