@@ -27,8 +27,8 @@ A regular npm package — `npm update` and every app gets the fix.
 - **Server Components ready.** `"use client"` ships in the build; helpers stay server-safe.
 
 > **Status:** early development (0.x).
-> **53 components.**
-> Forms: Button · Input · PasswordInput · OtpInput · Textarea · NumberInput · DatePicker · DateRangePicker · TimeInput · Select · Combobox · MultiSelect · TagsInput · FileUpload · Checkbox · RadioGroup · Switch · Slider · ToggleGroup.
+> **54 components.**
+> Forms: Button · Input · PasswordInput · OtpInput · Textarea · NumberInput · DatePicker · DateRangePicker · TimeInput · Select · Combobox · MultiSelect · TagsInput · FileUpload · Checkbox · RadioGroup · Switch · Slider · Rating · ToggleGroup.
 > Overlays: Dialog · AlertDialog · Command · Drawer · Popover · Dropdown · ContextMenu · HoverCard · Tooltip · Toast.
 > Display: Table · Tree · Calendar · RangeCalendar · Card · Badge · Avatar · Indicator · Alert · Progress · CircularProgress · Skeleton · Spinner · EmptyState · Kbd · Snippet · Separator · Timeline.
 > Navigation: Sidebar · Tabs · Accordion · Breadcrumbs · Pagination · Stepper.
@@ -208,6 +208,10 @@ const repos = [
 <Slider label="Opacity" defaultValue={70} formatValue={(v) => `${v}%`} />
 <Slider label="Coverage" marks={[0, 50, 100].map((v) => ({ value: v, label: `${v}%` }))} />  // a click on a label moves the thumb
 <Slider label="Parallel jobs" min={1} max={16} marks={[1, 2, 4, 8, 16]} restrictToMarks />   // stops only on the marks
+
+<Rating label="Rate this repo" value={stars} onValueChange={setStars} />   // 0 = no rating; a second click clears
+<Rating label="Docs" allowHalf defaultValue={3.5} />                      // half stars
+<Rating isReadOnly value={4.3} aria-label="Average rating" />             // read as "Average rating: 4.3 stars"
 ```
 
 ### Drawer, Popover, Accordion, Progress, Pagination

@@ -12,6 +12,7 @@ import {
   AlertDialogTrigger,
   Button,
   Input,
+  Rating,
   Snippet,
   Switch,
   toast,
@@ -148,14 +149,72 @@ pnpm install && pnpm dev`}
   );
 }
 
+/** "1 звезда", "3 звезды", "5 звёзд", "3,5 звезды". */
+function ratingLabel(value: number) {
+  if (value === 0) return "Без оценки";
+  if (!Number.isInteger(value)) return `${String(value).replace(".", ",")} звезды`;
+  const [ones, tens] = [value % 10, value % 100];
+  const word = ones === 1 && tens !== 11 ? "звезда" : ones >= 2 && ones <= 4 && (tens < 12 || tens > 14) ? "звезды" : "звёзд";
+  return `${value} ${word}`;
+}
+
+const repositories = [
+  { name: "Cennge/ai-niche-scout", average: 4.3, reviews: "128 отзывов" },
+  { name: "Cennge/cennge-ui", average: 4.8, reviews: "64 отзыва" },
+];
+
+function Reviews() {
+  const [mine, setMine] = useState(0);
+  const [docs, setDocs] = useState(3.5);
+
+  return (
+    <div className="grid gap-6 sm:grid-cols-2">
+      <ul className="flex flex-col gap-3">
+        {repositories.map((repo) => (
+          <li key={repo.name} className="flex flex-col gap-1 rounded-medium bg-surface-3 p-3">
+            <span className="text-sm font-medium">{repo.name}</span>
+            <span className="flex items-center gap-2 text-sm text-muted">
+              <Rating isReadOnly value={repo.average} aria-label="Средняя оценка" getValueLabel={ratingLabel} size="sm" />
+              {String(repo.average).replace(".", ",")} · {repo.reviews}
+            </span>
+          </li>
+        ))}
+      </ul>
+      <div className="flex flex-col gap-4">
+        <Rating
+          label="Ваша оценка ai-niche-scout"
+          value={mine}
+          onValueChange={setMine}
+          getValueLabel={ratingLabel}
+          description={mine ? ratingLabel(mine) : "Повторный клик по звезде снимает оценку"}
+        />
+        <Rating
+          label="Качество документации"
+          allowHalf
+          value={docs}
+          onValueChange={setDocs}
+          getValueLabel={ratingLabel}
+          color="primary"
+          size="lg"
+        />
+      </div>
+    </div>
+  );
+}
+
 export function RepositoryDemo() {
   return (
-    <div className="grid gap-6 md:grid-cols-2">
-      <Section title="Snippet">
-        <Commands />
-      </Section>
-      <Section title="AlertDialog">
-        <DangerZone />
+    <div className="flex flex-col gap-6">
+      <div className="grid gap-6 md:grid-cols-2">
+        <Section title="Snippet">
+          <Commands />
+        </Section>
+        <Section title="AlertDialog">
+          <DangerZone />
+        </Section>
+      </div>
+      <Section title="Rating">
+        <Reviews />
       </Section>
     </div>
   );
