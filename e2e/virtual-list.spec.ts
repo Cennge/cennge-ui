@@ -30,17 +30,17 @@ test("only the rows in view are rendered; each tells the full size", async ({ pa
 
 test("rows of different heights stack without gaps or overlaps, and fill the view", async ({ page }) => {
   await region(page).evaluate((node) => (node.scrollTop = 150_000));
-  // Rows that just came into view are measured a frame or two later (longer on a slow engine), and only then
-  // sit exactly: wait for that, then check the whole layout.
-  const seam = async () => {
-    const { items } = await layout(page);
-    return Math.max(0, ...items.slice(1).map((item, i) => Math.abs(item.top - items[i]!.bottom)));
+  // The list renders the rows for the new position a frame later, and rows that just came into view are
+  // measured a frame or two after that (longer on a slow engine). Wait for the settled layout: rows in
+  // order, touching, and covering the whole view.
+  const settled = async () => {
+    const { top, bottom, items } = await layout(page);
+    const ordered = items.every((item, i) => i === 0 || item.index === items[i - 1]!.index + 1);
+    const seam = Math.max(0, ...items.slice(1).map((item, i) => Math.abs(item.top - items[i]!.bottom)));
+    const covers = items.length > 0 && items[0]!.top <= top + 1 && items[items.length - 1]!.bottom >= bottom - 1;
+    return ordered && seam < 1 && covers;
   };
-  await expect.poll(seam, { timeout: 10_000 }).toBeLessThan(1);
-  const { top, bottom, items } = await layout(page);
-  for (let i = 1; i < items.length; i++) expect(items[i]!.index).toBe(items[i - 1]!.index + 1);
-  expect(items[0]!.top).toBeLessThanOrEqual(top + 1);
-  expect(items[items.length - 1]!.bottom).toBeGreaterThanOrEqual(bottom - 1);
+  await expect.poll(settled, { timeout: 10_000 }).toBe(true);
 });
 
 test("the keyboard reaches the end: Tab to the list, End", async ({ page }) => {
