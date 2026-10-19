@@ -27,10 +27,10 @@ A regular npm package — `npm update` and every app gets the fix.
 - **Server Components ready.** `"use client"` ships in the build; helpers stay server-safe.
 
 > **Status:** early development (0.x).
-> **49 components.**
+> **51 components.**
 > Forms: Button · Input · PasswordInput · OtpInput · Textarea · NumberInput · DatePicker · DateRangePicker · TimeInput · Select · Combobox · MultiSelect · TagsInput · FileUpload · Checkbox · RadioGroup · Switch · Slider · ToggleGroup.
 > Overlays: Dialog · AlertDialog · Drawer · Popover · Dropdown · ContextMenu · HoverCard · Tooltip · Toast.
-> Display: Calendar · RangeCalendar · Card · Badge · Avatar · Indicator · Alert · Progress · CircularProgress · Skeleton · Spinner · EmptyState · Kbd · Snippet · Separator · Timeline.
+> Display: Table · Tree · Calendar · RangeCalendar · Card · Badge · Avatar · Indicator · Alert · Progress · CircularProgress · Skeleton · Spinner · EmptyState · Kbd · Snippet · Separator · Timeline.
 > Navigation: Tabs · Accordion · Breadcrumbs · Pagination · Stepper.
 
 <details>
@@ -305,6 +305,35 @@ Snippet falls back to a selected textarea where the Clipboard API is missing, e.
 Names, the first day of the week and the order of a typed date come from `Intl` for the `locale`
 (set it once on `CenngeProvider`); there is no date library to ship. Combine a DatePicker and a
 TimeInput for a date and time: `` `${date}T${time}` ``.
+
+### Table and Tree
+
+```tsx
+// Native table markup; sortable headers set aria-sort. Hooks for client-side sorting and selection.
+const { sortedRows, getSortProps } = useTableSort(repos, { getValue: (repo, column) => repo[column] });
+const selection = useTableSelection(sortedRows.map((repo) => repo.id));
+
+<Table aria-label="Repositories" isHoverable isLoading={isFetching}>
+  <TableHeader>
+    <TableColumn><Checkbox aria-label="Select all" isSelected={selection.allSelected}
+      isIndeterminate={selection.someSelected} onValueChange={selection.toggleAll} /></TableColumn>
+    <TableColumn {...getSortProps("name")}>Name</TableColumn>
+    <TableColumn {...getSortProps("stars")} align="end">Stars</TableColumn>
+  </TableHeader>
+  <TableBody emptyContent={<EmptyState title="No repositories" />}>
+    {sortedRows.map((repo) => (
+      <TableRow key={repo.id} isSelected={selection.isSelected(repo.id)}>…</TableRow>
+    ))}
+  </TableBody>
+</Table>
+
+// TanStack Table: TableColumn takes its sort state and handler as they are.
+<TableColumn onSort={header.column.getToggleSortingHandler()} sortDirection={header.column.getIsSorted()}>
+
+// Tree: the WAI-ARIA tree keyboard, type-ahead, and children fetched on first open.
+<Tree aria-label="Files" items={files} onAction={(file) => open(file.id)}
+      loadChildren={(folder) => fetchFolder(folder.id)} />
+```
 
 ### Stepper and Timeline
 
