@@ -25,6 +25,8 @@ jobs:
       - run: pnpm test
       - run: pnpm build
       - run: pnpm check:package
+      # Each typical import stays within its size: catches tree shaking breaking.
+      - run: pnpm size
 
   e2e:
     name: Playwright · ${{ matrix.engine }}

@@ -1,0 +1,43 @@
+// What a consumer's bundler takes from the package for typical imports (run after the build).
+// Dependencies (Radix, tailwind-variants…) are left out: this measures cennge-ui's own code.
+import { gzipSync } from "node:zlib";
+import { build } from "esbuild";
+
+const cases = [
+  // [what is imported, the most gzip bytes it may cost]
+  // Limits leave ~30% room above today's sizes (Button 2.1 KB; all of it 68 KB). Before the split build,
+  // importing Button alone cost 57 KB: these catch that coming back.
+  [["Button"], 3_000],
+  [["Input"], 4_500],
+  [["Dialog", "DialogContent", "DialogTrigger"], 2_500],
+  [["Combobox"], 9_000],
+  [["DatePicker"], 13_500],
+  [["Table", "TableBody", "TableCell", "TableColumn", "TableHeader", "TableRow"], 3_500],
+  [["*"], 90_000],
+];
+
+let failed = false;
+for (const [names, limit] of cases) {
+  const contents =
+    names[0] === "*" ? 'import * as all from "cennge-ui"; console.log(all);' : `import { ${names.join(", ")} } from "cennge-ui"; console.log(${names.join(", ")});`;
+  const result = await build({
+    stdin: { contents, resolveDir: process.cwd(), loader: "js" },
+    bundle: true,
+    minify: true,
+    format: "esm",
+    platform: "browser",
+    write: false,
+    logLevel: "error",
+    alias: { "cennge-ui": "./dist/index.js" },
+    external: ["react", "react-dom", "react/jsx-runtime", "radix-ui", "tailwind-variants", "tailwind-merge", "clsx"],
+  });
+  const gzip = gzipSync(result.outputFiles[0].contents).length;
+  const label = names[0] === "*" ? "everything" : names.join(", ");
+  const over = limit > 0 && gzip > limit;
+  if (over) failed = true;
+  console.log(`${over ? "✗" : "✓"} ${label.padEnd(60)} ${(gzip / 1024).toFixed(1).padStart(6)} KB gzip${limit ? ` (limit ${(limit / 1024).toFixed(1)} KB)` : ""}`);
+}
+if (failed) {
+  console.error("\nAn import grew past its limit: check that tree shaking still works (tsup.config.ts).");
+  process.exit(1);
+}

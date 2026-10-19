@@ -10,6 +10,9 @@
 - `cennge-ui`, без scope, MIT. Один вход + `cennge-ui/styles.css`.
 - `"type": "module"`, `"sideEffects": ["*.css"]`, `exports` с types/import/require. Сборка tsup (ESM + CJS + .d.ts),
   `"use client"` в выходных файлах.
+- ESM собирается с разбиением: по чанку на компонент, index.js только реэкспортирует. Одним файлом tree shaking
+  не работал: импорт одного Button тянул 87% библиотеки (57 KB gzip), теперь ~2 KB. `pnpm size` в CI держит
+  пределы для типичных импортов. CJS — один файл: require() всё равно не вытряхивается.
 - peer: `react`, `react-dom` — 18 и 19 в приоритете, 17 поддерживается. `tailwindcss` v4 — peer.
 - deps: `radix-ui` (единый пакет), `tailwind-variants`, `tailwind-merge`, `clsx`. Никакого framer-motion.
 - Типы Radix не выходят в публичный API — фундамент можно заменить (Base UI) без breaking changes.

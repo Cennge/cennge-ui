@@ -24,6 +24,7 @@ A regular npm package — `npm update` and every app gets the fix.
 - **Updates instead of copy-paste.** Install once, fix bugs centrally.
 - **Accessible by default.** Behaviour and focus management come from Radix primitives.
 - **Light on dependencies.** No CSS-in-JS, no animation library: motion is plain CSS and respects `prefers-reduced-motion`.
+  Each component is its own chunk, so a page pays only for what it imports (Button alone: ~2 KB gzip).
 - **Server Components ready.** `"use client"` ships in the build; helpers stay server-safe.
 
 > **Status:** early development (0.x).
@@ -573,6 +574,7 @@ pnpm test:e2e       # Playwright: Chromium, Firefox, WebKit; desktop, Pixel and 
 pnpm typecheck
 pnpm build          # tsup → dist/
 pnpm check:package  # publint + are-the-types-wrong
+pnpm size           # what typical imports cost after tree shaking (Button alone: ~2 KB gzip)
 pnpm changeset      # describe a change for the next release
 ```
 
