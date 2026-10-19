@@ -27,10 +27,10 @@ A regular npm package — `npm update` and every app gets the fix.
 - **Server Components ready.** `"use client"` ships in the build; helpers stay server-safe.
 
 > **Status:** early development (0.x).
-> **44 components.**
-> Forms: Button · Input · PasswordInput · OtpInput · Textarea · NumberInput · Select · Combobox · MultiSelect · TagsInput · FileUpload · Checkbox · RadioGroup · Switch · Slider · ToggleGroup.
+> **49 components.**
+> Forms: Button · Input · PasswordInput · OtpInput · Textarea · NumberInput · DatePicker · DateRangePicker · TimeInput · Select · Combobox · MultiSelect · TagsInput · FileUpload · Checkbox · RadioGroup · Switch · Slider · ToggleGroup.
 > Overlays: Dialog · AlertDialog · Drawer · Popover · Dropdown · ContextMenu · HoverCard · Tooltip · Toast.
-> Display: Card · Badge · Avatar · Indicator · Alert · Progress · CircularProgress · Skeleton · Spinner · EmptyState · Kbd · Snippet · Separator · Timeline.
+> Display: Calendar · RangeCalendar · Card · Badge · Avatar · Indicator · Alert · Progress · CircularProgress · Skeleton · Spinner · EmptyState · Kbd · Snippet · Separator · Timeline.
 > Navigation: Tabs · Accordion · Breadcrumbs · Pagination · Stepper.
 
 <details>
@@ -282,6 +282,29 @@ cd ai-niche-scout"}</Snippet>
 ```
 
 Snippet falls back to a selected textarea where the Clipboard API is missing, e.g. a dev server opened over plain http.
+
+### Dates and times
+
+```tsx
+// Values are ISO strings with no time zone: "2026-10-19", "14:30". They survive JSON, FormData and
+// server actions, and daylight-saving changes never shift a day.
+<DatePicker label="Release" value={date} onValueChange={setDate} minValue="2026-01-01" />
+
+// Typing is lenient: "19.10.2026", "19/10/26" and "19102026" all work in ru-RU. Text that is not a
+// date stays in the field, with the reason under it.
+<DateRangePicker label="Vacation" value={range} onValueChange={setRange}   // { start, end } | null
+                 isDateUnavailable={(date) => holidays.has(date)} />        // a range cannot cross these
+
+// Arrows change the part under the caret: hours, minutes by step, or AM/PM.
+<TimeInput label="Call" step={15} minValue="09:00" maxValue="18:00" />
+
+<Calendar value={date} onValueChange={setDate} />                  // month and year pickers jump to any year
+<RangeCalendar visibleMonths={2} value={range} onValueChange={setRange} />
+```
+
+Names, the first day of the week and the order of a typed date come from `Intl` for the `locale`
+(set it once on `CenngeProvider`); there is no date library to ship. Combine a DatePicker and a
+TimeInput for a date and time: `` `${date}T${time}` ``.
 
 ### Stepper and Timeline
 
