@@ -147,13 +147,23 @@ test("openOn=\"click\": resting the pointer does nothing, a click opens, a click
   await expect(trigger(nav, "Components")).toHaveAttribute("aria-expanded", "false");
 });
 
-test("vertical: the panel opens beside its trigger", async ({ page, isMobile }) => {
+test("vertical: the panel opens beside its trigger, and on a phone stays on the screen", async ({ page, isMobile }) => {
   const nav = menu(page, "Docs");
   await press(trigger(nav, "Repositories"), isMobile);
   const [panelBox, triggerBox] = [await panel(nav).boundingBox(), await trigger(nav, "Repositories").boundingBox()];
   if (!panelBox || !triggerBox) throw new Error("no box");
-  expect(panelBox.x).toBeGreaterThanOrEqual(triggerBox.x + triggerBox.width - 1);
   expect(Math.abs(panelBox.y - triggerBox.y)).toBeLessThan(2);
+  if (!isMobile) expect(panelBox.x).toBeGreaterThanOrEqual(triggerBox.x + triggerBox.width - 1);
+  // The wide panel does not fit beside the list on a phone: it moves left instead of off the screen.
+  await press(trigger(nav, "Components"), isMobile);
+  const wide = await panel(nav).boundingBox();
+  const width = await page.evaluate(() => window.innerWidth);
+  if (!wide) throw new Error("no panel");
+  expect(wide.x).toBeGreaterThanOrEqual(0);
+  expect(wide.x + wide.width).toBeLessThanOrEqual(width);
+  await expect
+    .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth))
+    .toBe(true);
 });
 
 test("keepMounted: closed panels' links are in the page, hidden", async ({ page }) => {

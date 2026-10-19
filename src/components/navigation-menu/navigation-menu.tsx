@@ -102,7 +102,7 @@ export const NavigationMenu = React.forwardRef<HTMLElement, NavigationMenuProps>
   const [panel, setPanel] = React.useState<HTMLDivElement | null>(null);
   const [inner, setInner] = React.useState(defaultValue ?? "");
   const active = value ?? inner;
-  const [offset, setOffset] = React.useState(0);
+  const [offset, setOffset] = React.useState({ x: 0, y: 0 });
 
   // Place the shared panel under (or beside) the open trigger, but inside the window.
   const place = React.useCallback(() => {
@@ -112,15 +112,20 @@ export const NavigationMenu = React.forwardRef<HTMLElement, NavigationMenuProps>
     const rootBox = root.getBoundingClientRect();
     const triggerBox = trigger.getBoundingClientRect();
     const margin = 8;
+    // The layout viewport: window.innerWidth grows on a phone once anything overflows (the page zooms out).
+    const { clientWidth: screenWidth, clientHeight: screenHeight } = document.documentElement;
+    const within = (wanted: number, lowest: number, highest: number) => Math.max(Math.min(wanted, highest), lowest);
     if (orientation === "vertical") {
-      const wanted = triggerBox.top - rootBox.top;
-      const lowest = window.innerHeight - rootBox.top - panel.offsetHeight - margin;
-      setOffset(Math.max(Math.min(wanted, lowest), margin - rootBox.top));
+      // Beside the trigger, level with it; on a narrow screen it moves left over the list rather than off screen.
+      const start = rootBox.right + 8; // the panel sits after the list, past an 8px gap
+      setOffset({
+        x: within(0, margin - start, screenWidth - margin - start - panel.offsetWidth),
+        y: within(triggerBox.top - rootBox.top, margin - rootBox.top, screenHeight - rootBox.top - panel.offsetHeight - margin),
+      });
       return;
     }
     const wanted = triggerBox.left + triggerBox.width / 2 - rootBox.left - panel.offsetWidth / 2;
-    const rightmost = window.innerWidth - rootBox.left - panel.offsetWidth - margin;
-    setOffset(Math.max(Math.min(wanted, rightmost), margin - rootBox.left));
+    setOffset({ x: within(wanted, margin - rootBox.left, screenWidth - rootBox.left - panel.offsetWidth - margin), y: 0 });
   }, [orientation, panel]);
 
   useIsomorphicLayoutEffect(() => {
@@ -156,7 +161,7 @@ export const NavigationMenu = React.forwardRef<HTMLElement, NavigationMenuProps>
         {children}
         <div
           className={slots.viewportPosition()}
-          style={{ transform: orientation === "vertical" ? `translateY(${offset}px)` : `translateX(${offset}px)` }}
+          style={{ transform: `translate(${offset.x}px, ${offset.y}px)` }}
         >
           {/* Radix renders every panel's content here, so links learn they are in a panel from this provider. */}
           <InContentContext.Provider value>
