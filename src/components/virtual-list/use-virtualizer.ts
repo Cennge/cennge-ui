@@ -1,5 +1,7 @@
 import * as React from "react";
 
+const useLayoutEffectSafe = typeof window !== "undefined" ? React.useLayoutEffect : React.useEffect;
+
 export interface VirtualItem {
   index: number;
   /** Offset of the item's top from the top of the scrolling content, in px. */
@@ -156,25 +158,55 @@ export function useVirtualizer({
     }
   }
 
+  type Edge = "start" | "end" | "center";
+  // A row scrolled to by code stays where it was put while rows around it get measured (they may be taller
+  // or shorter than estimated), until the person scrolls or a second has passed.
+  const target = React.useRef<{ index: number; edge: Edge; time: number } | null>(null);
+  const placeAt = React.useCallback(
+    (index: number, edge: "auto" | Edge): Edge | null => {
+      if (!scrollElement) return null;
+      const list = startsRef.current;
+      const start = list[index] ?? 0;
+      const end = list[index + 1] ?? start;
+      const top = scrollElement.scrollTop;
+      const viewHeight = scrollElement.clientHeight;
+      let next = top;
+      let used: Edge | null = null;
+      if (edge === "start" || (edge === "auto" && start < top)) [next, used] = [start, "start"];
+      else if (edge === "end" || (edge === "auto" && end > top + viewHeight)) [next, used] = [end - viewHeight, "end"];
+      else if (edge === "center") [next, used] = [start - (viewHeight - (end - start)) / 2, "center"];
+      if (Math.abs(next - top) >= 0.5) scrollElement.scrollTop = Math.max(0, next);
+      return used;
+    },
+    [scrollElement],
+  );
   const scrollToIndex = React.useCallback<Virtualizer["scrollToIndex"]>(
     (index, { align = "auto" } = {}) => {
       if (!scrollElement || count === 0) return;
       const clamped = Math.min(Math.max(index, 0), count - 1);
-      const list = startsRef.current;
-      const start = list[clamped] ?? 0;
-      const end = list[clamped + 1] ?? start;
-      const top = scrollElement.scrollTop;
-      const viewHeight = scrollElement.clientHeight;
-      let next = top;
-      if (align === "start") next = start;
-      else if (align === "end") next = end - viewHeight;
-      else if (align === "center") next = start - (viewHeight - (end - start)) / 2;
-      else if (start < top) next = start;
-      else if (end > top + viewHeight) next = end - viewHeight;
-      if (next !== top) scrollElement.scrollTop = Math.max(0, next);
+      const used = placeAt(clamped, align);
+      target.current = used ? { index: clamped, edge: used, time: Date.now() } : null;
     },
-    [scrollElement, count],
+    [scrollElement, count, placeAt],
   );
+  // Each measurement moves the rows: put the target back.
+  useLayoutEffectSafe(() => {
+    const current = target.current;
+    if (!current) return;
+    if (Date.now() - current.time > 1000) target.current = null;
+    else placeAt(current.index, current.edge);
+  }, [version, placeAt]);
+  // The person scrolling takes over.
+  React.useEffect(() => {
+    if (!scrollElement) return;
+    const release = () => {
+      target.current = null;
+    };
+    for (const type of ["wheel", "touchstart", "pointerdown"]) scrollElement.addEventListener(type, release, { passive: true });
+    return () => {
+      for (const type of ["wheel", "touchstart", "pointerdown"]) scrollElement.removeEventListener(type, release);
+    };
+  }, [scrollElement]);
 
   const getItem = (index: number): VirtualItem => {
     const start = starts[index] ?? 0;

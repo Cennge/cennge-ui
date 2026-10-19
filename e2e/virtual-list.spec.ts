@@ -46,7 +46,15 @@ test("the keyboard reaches the end: Tab to the list, End", async ({ page }) => {
   await expect(region(page)).toBeFocused();
   await page.keyboard.press("End");
   await expect(region(page).getByText("Commit 10000", { exact: true })).toBeVisible();
-  await expect(rows(page).last()).toHaveAttribute("aria-posinset", "10000");
+  // Exactly at the end: the last row's bottom on the list's bottom edge, after its height was measured.
+  await expect
+    .poll(() =>
+      region(page).evaluate((node) => {
+        const last = node.querySelector('[aria-posinset="10000"]');
+        return last ? Math.round(node.getBoundingClientRect().bottom - last.getBoundingClientRect().bottom) : null;
+      }),
+    )
+    .toBe(0);
   await page.keyboard.press("Home");
   await expect(region(page).getByText("Commit 1", { exact: true })).toBeVisible();
 });

@@ -36,6 +36,23 @@ export function VirtualList<T>({
   const virtualizer = useVirtualizer({ count: items.length, estimateSize, overscan, scrollElement });
   React.useImperativeHandle(listRef, () => ({ scrollToIndex: virtualizer.scrollToIndex }), [virtualizer.scrollToIndex]);
 
+  // Home and End go to the first and last row exactly. Natively they scroll to the edge of the estimated
+  // height, which moves as rows get measured, and WebKit on Linux does not scroll a focused element at all.
+  const { scrollToIndex } = virtualizer;
+  React.useEffect(() => {
+    if (!scrollElement) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      // Only on the list itself: keys inside a row's own controls stay theirs.
+      if (event.target !== scrollElement || items.length === 0) return;
+      if (event.key === "Home") scrollToIndex(0, { align: "start" });
+      else if (event.key === "End") scrollToIndex(items.length - 1, { align: "end" });
+      else return;
+      event.preventDefault();
+    };
+    scrollElement.addEventListener("keydown", onKeyDown);
+    return () => scrollElement.removeEventListener("keydown", onKeyDown);
+  }, [scrollElement, items.length, scrollToIndex]);
+
   return (
     <ScrollArea viewportRef={setScrollElement} {...rest}>
       <div role="list" className={listClassName} style={{ position: "relative", height: virtualizer.totalSize }}>
