@@ -82,6 +82,56 @@ test("every month keeps six rows, so the calendar never changes height", async (
   expect([...heights]).toHaveLength(1);
 });
 
+test.describe("RangeCalendar", () => {
+  const vacation = (page: Page) => page.getByRole("group", { name: "Vacation" });
+  const range = (page: Page) => page.getByTestId("range");
+
+  test("two clicks or taps pick a range; the band follows the pointer in between", async ({ page, isMobile }) => {
+    const calendar = vacation(page);
+    const pick = async (name: string) => {
+      const day = calendar.getByRole("button", { name });
+      if (isMobile) await day.tap();
+      else await day.click();
+    };
+    await pick("Tuesday, November 10, 2026");
+    if (!isMobile) {
+      await calendar.getByRole("button", { name: "Friday, November 13, 2026" }).hover();
+      await expect(calendar.getByRole("button", { name: "Thursday, November 12, 2026" }).locator("xpath=..")).toHaveAttribute(
+        "data-range-middle",
+      );
+    }
+    await pick("Saturday, November 14, 2026");
+    await expect(range(page)).toHaveText("2026-11-10/2026-11-14");
+  });
+
+  test("keyboard: Enter, arrows, Enter; Escape between them starts over", async ({ page }) => {
+    const calendar = vacation(page);
+    await calendar.getByRole("button", { name: "Monday, October 26, 2026" }).focus();
+    await page.keyboard.press("Enter");
+    await page.keyboard.press("ArrowDown");
+    await page.keyboard.press("Escape");
+    await page.keyboard.press("ArrowRight");
+    await page.keyboard.press("Enter");
+    await page.keyboard.press("ArrowRight");
+    await page.keyboard.press("ArrowRight");
+    await page.keyboard.press("Enter");
+    await expect(range(page)).toHaveText("2026-11-03/2026-11-05");
+  });
+
+  test("the band is continuous: tinted days between round ends", async ({ page }) => {
+    const calendar = vacation(page);
+    const cellOf = (name: string) => calendar.getByRole("button", { name }).locator("xpath=..");
+    const style = (name: string) =>
+      cellOf(name).evaluate((cell) => ({ color: getComputedStyle(cell).backgroundColor, image: getComputedStyle(cell).backgroundImage }));
+    expect((await style("Wednesday, October 28, 2026")).color).not.toBe("rgba(0, 0, 0, 0)");
+    expect((await style("Monday, October 26, 2026")).image).toContain("gradient");
+    expect((await style("Wednesday, November 4, 2026")).image).toContain("gradient");
+    // Saturday ends the week: rounded band, nothing after it.
+    const saturday = await cellOf("Saturday, October 31, 2026").evaluate((cell) => getComputedStyle(cell).borderTopRightRadius);
+    expect(saturday).not.toBe("0px");
+  });
+});
+
 for (const theme of ["dark", "light"] as const) {
   test(`passes axe in the ${theme} theme`, async ({ page }) => {
     await openFixture(page, "calendar", theme);

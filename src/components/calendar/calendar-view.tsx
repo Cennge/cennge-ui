@@ -58,18 +58,18 @@ export type CalendarSlots =
 /* Literal strings per colour, so Tailwind can find them. */
 const selectedDay: Record<CenngeColor, string> = {
   default:
-    "data-[selected]:bg-default data-[selected]:text-default-foreground data-[selected]:hover:bg-default data-[today]:not-data-[selected]:text-default-text data-[range-middle]:bg-default-bg",
+    "data-[selected]:bg-default data-[selected]:text-default-foreground data-[selected]:hover:bg-default data-[today]:not-data-[selected]:text-default-text",
   primary:
-    "data-[selected]:bg-primary data-[selected]:text-primary-foreground data-[selected]:hover:bg-primary data-[today]:not-data-[selected]:text-primary-text data-[range-middle]:bg-primary-bg",
+    "data-[selected]:bg-primary data-[selected]:text-primary-foreground data-[selected]:hover:bg-primary data-[today]:not-data-[selected]:text-primary-text",
   secondary:
-    "data-[selected]:bg-secondary data-[selected]:text-secondary-foreground data-[selected]:hover:bg-secondary data-[today]:not-data-[selected]:text-secondary-text data-[range-middle]:bg-secondary-bg",
+    "data-[selected]:bg-secondary data-[selected]:text-secondary-foreground data-[selected]:hover:bg-secondary data-[today]:not-data-[selected]:text-secondary-text",
   success:
-    "data-[selected]:bg-success data-[selected]:text-success-foreground data-[selected]:hover:bg-success data-[today]:not-data-[selected]:text-success-text data-[range-middle]:bg-success-bg",
+    "data-[selected]:bg-success data-[selected]:text-success-foreground data-[selected]:hover:bg-success data-[today]:not-data-[selected]:text-success-text",
   warning:
-    "data-[selected]:bg-warning data-[selected]:text-warning-foreground data-[selected]:hover:bg-warning data-[today]:not-data-[selected]:text-warning-text data-[range-middle]:bg-warning-bg",
+    "data-[selected]:bg-warning data-[selected]:text-warning-foreground data-[selected]:hover:bg-warning data-[today]:not-data-[selected]:text-warning-text",
   danger:
-    "data-[selected]:bg-danger data-[selected]:text-danger-foreground data-[selected]:hover:bg-danger data-[today]:not-data-[selected]:text-danger-text data-[range-middle]:bg-danger-bg",
-  info: "data-[selected]:bg-info data-[selected]:text-info-foreground data-[selected]:hover:bg-info data-[today]:not-data-[selected]:text-info-text data-[range-middle]:bg-info-bg",
+    "data-[selected]:bg-danger data-[selected]:text-danger-foreground data-[selected]:hover:bg-danger data-[today]:not-data-[selected]:text-danger-text",
+  info: "data-[selected]:bg-info data-[selected]:text-info-foreground data-[selected]:hover:bg-info data-[today]:not-data-[selected]:text-info-text",
 };
 
 export const calendarStyles = tv({
@@ -96,7 +96,15 @@ export const calendarStyles = tv({
     month: "flex flex-col gap-2",
     grid: "border-separate border-spacing-0",
     weekday: "pb-1 text-center text-xs font-medium text-muted",
-    cell: "p-0 text-center",
+    cell: [
+      "p-0 text-center",
+      "data-[range-middle]:bg-(--cennge-range-band)",
+      "data-[range-start]:bg-linear-to-r data-[range-start]:from-transparent data-[range-start]:from-50% data-[range-start]:to-(--cennge-range-band) data-[range-start]:to-50%",
+      "data-[range-end]:bg-linear-to-l data-[range-end]:from-transparent data-[range-end]:from-50% data-[range-end]:to-(--cennge-range-band) data-[range-end]:to-50%",
+      // The band ends with the week: rounded at the row's edges, no half band leading nowhere.
+      "first:data-[range-middle]:rounded-l-medium last:data-[range-middle]:rounded-r-medium",
+      "last:data-[range-start]:bg-none first:data-[range-end]:bg-none",
+    ],
     day: [
       "relative mx-auto flex cursor-pointer items-center justify-center rounded-medium text-foreground tabular-nums",
       "transition-[background-color,color,transform] duration-(--cennge-duration-fast) ease-tactile motion-reduce:transition-none",
@@ -107,8 +115,6 @@ export const calendarStyles = tv({
       "disabled:cursor-not-allowed disabled:opacity-35 disabled:hover:bg-transparent",
       // Today: bold, in the accent text colour, with a dot under the number.
       "data-[today]:font-bold data-[today]:after:absolute data-[today]:after:bottom-1 data-[today]:after:size-1 data-[today]:after:rounded-full data-[today]:after:bg-current",
-      // Days between a range's ends: a continuous band.
-      "data-[range-middle]:rounded-none",
     ],
   },
   variants: {
@@ -118,13 +124,13 @@ export const calendarStyles = tv({
       lg: { day: "size-11 text-base", weekday: "w-11" },
     },
     color: {
-      default: { day: selectedDay.default },
-      primary: { day: selectedDay.primary },
-      secondary: { day: selectedDay.secondary },
-      success: { day: selectedDay.success },
-      warning: { day: selectedDay.warning },
-      danger: { day: selectedDay.danger },
-      info: { day: selectedDay.info },
+      default: { base: "[--cennge-range-band:color-mix(in_oklab,var(--cennge-default-500)_14%,transparent)]", day: selectedDay.default },
+      primary: { base: "[--cennge-range-band:color-mix(in_oklab,var(--cennge-primary)_14%,transparent)]", day: selectedDay.primary },
+      secondary: { base: "[--cennge-range-band:color-mix(in_oklab,var(--cennge-secondary)_14%,transparent)]", day: selectedDay.secondary },
+      success: { base: "[--cennge-range-band:color-mix(in_oklab,var(--cennge-success)_14%,transparent)]", day: selectedDay.success },
+      warning: { base: "[--cennge-range-band:color-mix(in_oklab,var(--cennge-warning)_14%,transparent)]", day: selectedDay.warning },
+      danger: { base: "[--cennge-range-band:color-mix(in_oklab,var(--cennge-danger)_14%,transparent)]", day: selectedDay.danger },
+      info: { base: "[--cennge-range-band:color-mix(in_oklab,var(--cennge-info)_14%,transparent)]", day: selectedDay.info },
     },
   },
   defaultVariants: { size: "md", color: "primary" },
@@ -161,6 +167,8 @@ export interface CalendarViewProps {
   size: CenngeSize;
   color: CenngeColor;
   classNames?: Partial<Record<CalendarSlots, string>>;
+  /** Read out by screen readers when it changes, e.g. the chosen range. */
+  announcement?: string;
   /** The root element; also used to move focus between days. */
   rootRef: React.RefObject<HTMLDivElement | null>;
   rootProps: React.HTMLAttributes<HTMLDivElement>;
@@ -233,6 +241,7 @@ export function CalendarView(props: CalendarViewProps) {
     size,
     color,
     classNames,
+    announcement,
     rootRef,
     rootProps,
   } = props;
@@ -322,6 +331,77 @@ export function CalendarView(props: CalendarViewProps) {
   const lastYear = max?.year ?? Math.max(now.year + 30, shownYear);
   const years = Array.from({ length: lastYear - firstYear + 1 }, (_, index) => firstYear + index);
 
+  const previousButton = (
+    <button
+      type="button"
+      aria-label={labels.previousMonth}
+      disabled={isDisabled || !canGoBack}
+      onClick={() => showMonth(addMonths(view, -1))}
+      className={slots.navButton({ class: classNames?.navButton })}
+    >
+      <ChevronIcon direction="left" />
+    </button>
+  );
+  const nextButton = (
+    <button
+      type="button"
+      aria-label={labels.nextMonth}
+      disabled={isDisabled || !canGoForward}
+      onClick={() => showMonth(addMonths(view, 1))}
+      className={slots.navButton({ class: classNames?.navButton })}
+    >
+      <ChevronIcon direction="right" />
+    </button>
+  );
+  const pickers = (
+    <div className={slots.pickers()}>
+      <div className={slots.pickerWrapper()}>
+        <select
+          aria-label={labels.month}
+          value={view.month}
+          disabled={isDisabled}
+          onChange={(event) => showMonth({ ...view, month: Number(event.target.value), day: 1 })}
+          className={slots.picker({ class: classNames?.picker })}
+        >
+          {Array.from({ length: 12 }, (_, index) => index + 1).map((month) => (
+            <option
+              key={month}
+              value={month}
+              disabled={isOutOfRange({ year: view.year, month, day: 1 }, min ? startOfMonth(min) : null, max)}
+            >
+              {monthName(month)}
+            </option>
+          ))}
+        </select>
+        <span className={slots.pickerIcon()}>
+          <ChevronIcon direction="down" />
+        </span>
+      </div>
+      <div className={slots.pickerWrapper()}>
+        <select
+          aria-label={labels.year}
+          value={view.year}
+          disabled={isDisabled}
+          onChange={(event) =>
+            showMonth(clampDate({ ...view, year: Number(event.target.value), day: 1 }, min ? startOfMonth(min) : null, max))
+          }
+          className={slots.picker({ class: classNames?.picker })}
+        >
+          {years.map((year) => (
+            <option key={year} value={year}>
+              {numberFormat.format(year)}
+            </option>
+          ))}
+        </select>
+        <span className={slots.pickerIcon()}>
+          <ChevronIcon direction="down" />
+        </span>
+      </div>
+    </div>
+  );
+  // Keeps a header's middle centred when it has a button on one side only.
+  const spacer = <span aria-hidden="true" className="size-8 shrink-0" />;
+
   const renderMonth = (monthStart: CalendarDate, index: number) => {
     const gridStart = startOfWeek(monthStart, firstDayOfWeek);
     const weeks = Array.from({ length: 6 }, (_, week) =>
@@ -329,11 +409,17 @@ export function CalendarView(props: CalendarViewProps) {
     );
     return (
       <div key={toIsoDate(monthStart)} className={slots.month()}>
-        {index > 0 ? (
-          <div className={slots.monthTitle()} aria-hidden="true">
-            {monthTitle(monthStart)}
-          </div>
-        ) : null}
+        <div className={slots.header({ class: classNames?.header })}>
+          {index === 0 ? previousButton : spacer}
+          {index === 0 ? (
+            pickers
+          ) : (
+            <div className={slots.monthTitle()} aria-hidden="true">
+              {monthTitle(monthStart)}
+            </div>
+          )}
+          {index === visibleMonths - 1 ? nextButton : spacer}
+        </div>
         <table
           role="grid"
           aria-label={monthTitle(monthStart)}
@@ -368,6 +454,9 @@ export function CalendarView(props: CalendarViewProps) {
                       key={iso}
                       role="gridcell"
                       aria-selected={state.isSelected || state.isRangeMiddle || undefined}
+                      data-range-middle={(!isOutside && state.isRangeMiddle) || undefined}
+                      data-range-start={(!isOutside && state.isRangeStart) || undefined}
+                      data-range-end={(!isOutside && state.isRangeEnd) || undefined}
                       className={slots.cell({ class: classNames?.cell })}
                     >
                       <button
@@ -427,68 +516,11 @@ export function CalendarView(props: CalendarViewProps) {
       <div className="sr-only" aria-live="polite">
         {months.map((month) => monthTitle(month)).join(" – ")}
       </div>
-      <div className={slots.header({ class: classNames?.header })}>
-        <button
-          type="button"
-          aria-label={labels.previousMonth}
-          disabled={isDisabled || !canGoBack}
-          onClick={() => showMonth(addMonths(view, -1))}
-          className={slots.navButton({ class: classNames?.navButton })}
-        >
-          <ChevronIcon direction="left" />
-        </button>
-        <div className={slots.pickers()}>
-          <div className={slots.pickerWrapper()}>
-            <select
-              aria-label={labels.month}
-              value={view.month}
-              disabled={isDisabled}
-              onChange={(event) => showMonth({ ...view, month: Number(event.target.value), day: 1 })}
-              className={slots.picker({ class: classNames?.picker })}
-            >
-              {Array.from({ length: 12 }, (_, index) => index + 1).map((month) => (
-                <option
-                  key={month}
-                  value={month}
-                  disabled={isOutOfRange({ year: view.year, month, day: 1 }, min ? startOfMonth(min) : null, max)}
-                >
-                  {monthName(month)}
-                </option>
-              ))}
-            </select>
-            <span className={slots.pickerIcon()}>
-              <ChevronIcon direction="down" />
-            </span>
-          </div>
-          <div className={slots.pickerWrapper()}>
-            <select
-              aria-label={labels.year}
-              value={view.year}
-              disabled={isDisabled}
-              onChange={(event) => showMonth(clampDate({ ...view, year: Number(event.target.value), day: 1 }, min ? startOfMonth(min) : null, max))}
-              className={slots.picker({ class: classNames?.picker })}
-            >
-              {years.map((year) => (
-                <option key={year} value={year}>
-                  {numberFormat.format(year)}
-                </option>
-              ))}
-            </select>
-            <span className={slots.pickerIcon()}>
-              <ChevronIcon direction="down" />
-            </span>
-          </div>
+      {announcement !== undefined ? (
+        <div className="sr-only" aria-live="polite">
+          {announcement}
         </div>
-        <button
-          type="button"
-          aria-label={labels.nextMonth}
-          disabled={isDisabled || !canGoForward}
-          onClick={() => showMonth(addMonths(view, 1))}
-          className={slots.navButton({ class: classNames?.navButton })}
-        >
-          <ChevronIcon direction="right" />
-        </button>
-      </div>
+      ) : null}
       <div className={slots.months({ class: classNames?.months })}>{months.map(renderMonth)}</div>
     </div>
   );
