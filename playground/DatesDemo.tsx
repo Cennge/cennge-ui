@@ -1,5 +1,14 @@
 import { useState, type ReactNode } from "react";
-import { Calendar, DatePicker, DateRangePicker, type DatePickerError, type DateRange, type DateRangePickerError } from "cennge-ui";
+import {
+  Calendar,
+  DatePicker,
+  DateRangePicker,
+  TimeInput,
+  type DatePickerError,
+  type DateRange,
+  type DateRangePickerError,
+  type TimeInputError,
+} from "cennge-ui";
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
@@ -134,6 +143,42 @@ function RangePickers() {
   );
 }
 
+const timeError = (error: TimeInputError) =>
+  error.type === "invalid" ? "Введите время в формате ЧЧ:ММ" : "Созвоны только с 09:00 до 18:00";
+
+function Times() {
+  const [date, setDate] = useState<string | null>(isoToday());
+  const [time, setTime] = useState<string | null>("12:00");
+  return (
+    <div className="grid gap-4 sm:grid-cols-2">
+      <TimeInput
+        label="Начало созвона"
+        defaultValue="10:00"
+        step={15}
+        minValue="09:00"
+        maxValue="18:00"
+        placeholder="ЧЧ:ММ"
+        description="↑/↓ над минутами — шаг 15 минут, над часами — час"
+        formatError={timeError}
+      />
+      <div className="flex flex-col gap-1.5">
+        <div className="grid grid-cols-[1fr_8rem] gap-2">
+          <DatePicker
+            label="Публикация релиза"
+            value={date}
+            onValueChange={setDate}
+            placeholder="ДД.ММ.ГГГГ"
+            formatError={dateError}
+            labels={pickerLabels}
+          />
+          <TimeInput label="Время" value={time} onValueChange={setTime} placeholder="ЧЧ:ММ" formatError={timeError} />
+        </div>
+        <p className="text-xs text-muted">ISO: {date && time ? `${date}T${time}` : "—"}</p>
+      </div>
+    </div>
+  );
+}
+
 export function DatesDemo() {
   return (
     <div className="grid gap-6">
@@ -142,6 +187,9 @@ export function DatesDemo() {
       </Section>
       <Section title="DateRangePicker">
         <RangePickers />
+      </Section>
+      <Section title="TimeInput">
+        <Times />
       </Section>
       <Section title="Calendar">
         <Calendars />
