@@ -174,7 +174,8 @@ toast.promise(push(), { loading: "Pushing…", success: "Pushed", error: "Push f
 ```
 
 > **React 17:** toasts do not show with `radix-ui` 1.8.1. Its Toast 1.3.1 drops its own state updates when
-> `React.startTransition` is missing. The fix belongs in Radix; once it is out, updating `radix-ui` is enough.
+> `React.startTransition` is missing ([radix-ui/primitives#4228](https://github.com/radix-ui/primitives/issues/4228)).
+> Once Radix ships the fix, updating `radix-ui` is enough.
 
 ### Select, Combobox, MultiSelect
 

@@ -3,8 +3,8 @@ import { act, fireEvent, render, screen } from "@testing-library/react";
 import { Toaster, toast } from "./index";
 
 // Radix Toast 1.3.1 shows nothing on React 17: in place of the missing React.startTransition it uses a
-// function that drops the update, so toasts never learn where the viewport is. When Radix fixes it these
-// report "Expect test to fail"; then make them plain `it` again.
+// function that drops the update, so toasts never learn where the viewport is (radix-ui/primitives#4228).
+// When Radix fixes it these report "Expect test to fail"; then make them plain `it` again.
 const itRenders = React.version.startsWith("17.") ? it.fails : it;
 
 afterEach(() => {
