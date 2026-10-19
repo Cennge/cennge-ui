@@ -20,6 +20,7 @@ import {
   type CalendarDate,
 } from "../calendar/date";
 import { CalendarIcon, calendarButtonClass, defaultDateError, type DatePickerError } from "../date-picker/shared";
+import { useFormField } from "../form/form";
 
 export type DateRangePickerError = DatePickerError | { type: "order" };
 
@@ -94,7 +95,7 @@ export const DateRangePicker = React.forwardRef<HTMLDivElement, DateRangePickerP
   const {
     label,
     description,
-    errorMessage,
+    errorMessage: errorMessageProp,
     value: valueProp,
     defaultValue,
     onValueChange,
@@ -109,7 +110,7 @@ export const DateRangePicker = React.forwardRef<HTMLDivElement, DateRangePickerP
     placeholder,
     startName,
     endName,
-    isInvalid = false,
+    isInvalid: isInvalidProp = false,
     isRequired = false,
     isDisabled = false,
     isReadOnly = false,
@@ -124,6 +125,11 @@ export const DateRangePicker = React.forwardRef<HTMLDivElement, DateRangePickerP
   } = props;
 
   const id = useId(idProp);
+  // Errors from a surrounding <Form>, by either name.
+  const startField = useFormField(startName, { isInvalid: isInvalidProp, errorMessage: errorMessageProp });
+  const endField = useFormField(endName);
+  const isInvalid = startField.isInvalid || endField.isInvalid;
+  const errorMessage = startField.isInvalid ? startField.errorMessage : endField.errorMessage;
   const labelId = id ? `${id}-label` : undefined;
   const helperId = id ? `${id}-helper` : undefined;
   const labels = { ...defaultCalendarLabels, chooseDates: "Choose dates", start: "Start date", end: "End date", ...labelsProp };
@@ -161,6 +167,8 @@ export const DateRangePicker = React.forwardRef<HTMLDivElement, DateRangePickerP
     const range = next ? { start: toIsoDate(next.start), end: toIsoDate(next.end) } : null;
     if (!isControlled) setInnerValue(range);
     onValueChange?.(range);
+    startField.markEdited();
+    endField.markEdited();
   };
 
   const isUnavailable = (date: CalendarDate) => Boolean(isDateUnavailable?.(toIsoDate(date)));
@@ -248,6 +256,7 @@ export const DateRangePicker = React.forwardRef<HTMLDivElement, DateRangePickerP
       className={slots.base({ class: [classNames?.base, className] })}
       data-disabled={isDisabled || undefined}
       data-required={isRequired || undefined}
+      data-field-name={startName ?? endName}
       data-invalid={showInvalid || undefined}
       {...rest}
     >

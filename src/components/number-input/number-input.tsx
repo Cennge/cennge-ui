@@ -6,6 +6,7 @@ import { useCenngeDefaults } from "../../provider";
 import type { CenngeColor, CenngeRadius, CenngeSize } from "../../types";
 import { input, type InputVariant } from "../input/input.styles";
 import { addStep, clamp, decimals, getNumberSymbols, isPartialNumber, parseNumber, roundTo } from "./number-parser";
+import { useFormField } from "../form/form";
 
 type NumberInputSlots =
   | "base"
@@ -96,7 +97,7 @@ export const NumberInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
   const {
     label,
     description,
-    errorMessage,
+    errorMessage: errorMessageProp,
     value: valueProp,
     defaultValue = null,
     onValueChange,
@@ -107,7 +108,7 @@ export const NumberInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
     formatOptions,
     locale = defaults.locale ?? "en-US",
     hideStepper = false,
-    isInvalid = false,
+    isInvalid: isInvalidProp = false,
     isRequired = false,
     isDisabled: isDisabledProp = false,
     disabled,
@@ -133,6 +134,10 @@ export const NumberInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
   } = props;
 
   const id = useId(idProp);
+  // Errors from a surrounding <Form>: server ones by name, and the browser's own checks.
+  const field = useFormField(name, { isInvalid: isInvalidProp, errorMessage: errorMessageProp });
+  const isInvalid = field.isInvalid;
+  const errorMessage = field.errorMessage;
   const helperId = id ? `${id}-helper` : undefined;
   const isDisabled = isDisabledProp || Boolean(disabled);
   const isReadOnly = isReadOnlyProp || Boolean(readOnly);
@@ -174,6 +179,7 @@ export const NumberInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
     latest.current.value = next;
     if (!isControlled) setInnerValue(next);
     onValueChange?.(next);
+    field.markEdited();
   };
 
   const commitText = () => {
@@ -296,6 +302,7 @@ export const NumberInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
       className={slots.base({ class: [classNames?.base, className] })}
       data-disabled={isDisabled || undefined}
       data-required={isRequiredField || undefined}
+      data-field-name={name}
       data-invalid={isInvalid || undefined}
     >
       {label ? (

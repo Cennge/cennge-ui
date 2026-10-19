@@ -5,10 +5,12 @@ import { cn } from "../../utils/cn";
 import { useCenngeDefaults } from "../../provider";
 import { useId } from "../../utils/use-id";
 import type { CenngeColor, CenngeSize } from "../../types";
+import { useFormField } from "../form/form";
 
 interface RadioStyle {
   color: CenngeColor;
   size: CenngeSize;
+  isInvalid?: boolean;
 }
 
 const RadioStyleContext = React.createContext<RadioStyle>({ color: "primary", size: "md" });
@@ -41,6 +43,8 @@ const radio = tv({
       danger: { control: "data-[state=checked]:border-danger", dot: "bg-danger" },
       info: { control: "data-[state=checked]:border-info", dot: "bg-info" },
     },
+    // An unchecked group with an error: the circles turn red, like the borders of other fields.
+    isInvalid: { true: { control: "data-[state=unchecked]:border-danger" } },
   },
 });
 
@@ -68,11 +72,11 @@ export interface RadioGroupProps {
 export function RadioGroup({
   label,
   description,
-  errorMessage,
+  errorMessage: errorMessageProp,
   orientation = "vertical",
   color,
   size,
-  isInvalid = false,
+  isInvalid: isInvalidProp = false,
   isRequired = false,
   isDisabled = false,
   className,
@@ -81,12 +85,17 @@ export function RadioGroup({
 }: RadioGroupProps) {
   const defaults = useCenngeDefaults();
   const id = useId();
+  // Errors from a surrounding <Form>: server ones by name, and a required group left empty.
+  const field = useFormField(rest.name, { isInvalid: isInvalidProp, errorMessage: errorMessageProp });
+  const isInvalid = field.isInvalid;
+  const errorMessage = field.errorMessage;
   const style = React.useMemo(
     () => ({
       color: color ?? (defaults.color && defaults.color !== "default" ? defaults.color : "primary"),
       size: size ?? defaults.size ?? "md",
+      isInvalid,
     }),
-    [color, size, defaults.color, defaults.size],
+    [color, size, defaults.color, defaults.size, isInvalid],
   );
   const helper = isInvalid && errorMessage ? errorMessage : description;
   const labelId = id ? `${id}-label` : undefined;
@@ -94,9 +103,9 @@ export function RadioGroup({
 
   return (
     <RadioStyleContext.Provider value={style}>
-      <div className={cn("flex flex-col gap-2", className)}>
+      <div className={cn("flex flex-col gap-2", className)} data-field-name={rest.name} data-invalid={isInvalid || undefined}>
         {label ? (
-          <span id={labelId} className="text-sm font-medium text-foreground">
+          <span id={labelId} className={isInvalid ? "text-sm font-medium text-danger-text" : "text-sm font-medium text-foreground"}>
             {label}
             {isRequired ? <span className="ml-0.5 text-danger-text">*</span> : null}
           </span>

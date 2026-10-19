@@ -5,6 +5,7 @@ import type { CenngeColor, CenngeRadius, CenngeSize } from "../../types";
 import { input, type InputVariant } from "../input/input.styles";
 import { ClearIcon } from "../listbox/styles";
 import { Tag } from "../listbox/tag";
+import { useFormField } from "../form/form";
 
 export type TagsInputEvent =
   | { type: "added"; tag: string }
@@ -78,7 +79,7 @@ export const TagsInput = React.forwardRef<HTMLInputElement, TagsInputProps>(func
   const {
     label,
     description,
-    errorMessage,
+    errorMessage: errorMessageProp,
     value: valueProp,
     defaultValue,
     onValueChange,
@@ -90,7 +91,7 @@ export const TagsInput = React.forwardRef<HTMLInputElement, TagsInputProps>(func
     formatAnnouncement = defaultAnnouncement,
     removeLabel = (tag: string) => `Remove ${tag}`,
     isClearable = false,
-    isInvalid = false,
+    isInvalid: isInvalidProp = false,
     isRequired = false,
     isDisabled: isDisabledProp = false,
     disabled,
@@ -114,6 +115,10 @@ export const TagsInput = React.forwardRef<HTMLInputElement, TagsInputProps>(func
   } = props;
 
   const id = useId(idProp);
+  // Errors from a surrounding <Form>: server ones by name, and the browser's own checks.
+  const field = useFormField(name, { isInvalid: isInvalidProp, errorMessage: errorMessageProp });
+  const isInvalid = field.isInvalid;
+  const errorMessage = field.errorMessage;
   const helperId = id ? `${id}-helper` : undefined;
   const isDisabled = isDisabledProp || Boolean(disabled);
   const isReadOnly = isReadOnlyProp || Boolean(readOnly);
@@ -156,6 +161,7 @@ export const TagsInput = React.forwardRef<HTMLInputElement, TagsInputProps>(func
     latestTags.current = next;
     if (!isControlled) setInnerTags(next);
     onValueChange?.(next);
+    field.markEdited();
   };
 
   const isSame = (a: string, b: string) => a.toLocaleLowerCase() === b.toLocaleLowerCase();
@@ -310,6 +316,7 @@ export const TagsInput = React.forwardRef<HTMLInputElement, TagsInputProps>(func
       className={slots.base({ class: [classNames?.base, className] })}
       data-disabled={isDisabled || undefined}
       data-required={isRequired || Boolean(required) || undefined}
+      data-field-name={name}
       data-invalid={showInvalid || undefined}
     >
       {label ? (

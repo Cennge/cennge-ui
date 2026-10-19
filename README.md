@@ -27,8 +27,8 @@ A regular npm package — `npm update` and every app gets the fix.
 - **Server Components ready.** `"use client"` ships in the build; helpers stay server-safe.
 
 > **Status:** early development (0.x).
-> **57 components.**
-> Forms: Button · Input · PasswordInput · OtpInput · Textarea · NumberInput · DatePicker · DateRangePicker · TimeInput · Select · Combobox · MultiSelect · TagsInput · FileUpload · Checkbox · RadioGroup · Switch · Slider · Rating · ToggleGroup.
+> **58 components.**
+> Forms: Form · Button · Input · PasswordInput · OtpInput · Textarea · NumberInput · DatePicker · DateRangePicker · TimeInput · Select · Combobox · MultiSelect · TagsInput · FileUpload · Checkbox · RadioGroup · Switch · Slider · Rating · ToggleGroup.
 > Overlays: Dialog · AlertDialog · Command · Drawer · Popover · Dropdown · ContextMenu · HoverCard · Tooltip · Toast.
 > Display: Table · Tree · Calendar · RangeCalendar · Card · Badge · Avatar · Indicator · Alert · Progress · CircularProgress · Skeleton · Spinner · EmptyState · Kbd · Snippet · Separator · Timeline · ScrollArea · Prose · Carousel.
 > Navigation: Sidebar · Tabs · Accordion · Breadcrumbs · Pagination · Stepper.
@@ -461,6 +461,29 @@ scroll sideways become keyboard-focusable.
 ```
 
 `ContextMenu` and `HoverCard` follow the same pattern as `Dropdown` and `Popover`: a trigger plus content.
+
+### Form: errors from the server, under their fields
+
+```tsx
+"use client";
+const [state, action, isPending] = useActionState(saveProfile, {});   // a Next.js server action
+
+<Form action={action} validationErrors={state.errors}>                // { email: "Already taken" }
+  <Input name="email" label="Email" type="email" isRequired />
+  <Select name="plan" label="Plan" isRequired>…</Select>
+  <Checkbox name="terms" isRequired>I agree to the terms</Checkbox>
+  <Button type="submit" isLoading={isPending}>Save</Button>
+</Form>
+```
+
+- Each error appears under the field with that `name`, is read with it (`aria-describedby`), and goes
+  away as soon as that field is edited. A new set of errors focuses the first one in the form.
+- The browser's own checks (`isRequired`, `type="email"`, `minLength`, `pattern`) show the same way
+  instead of the browser's tooltips, and a blocked submit focuses the first field to fix.
+- Every field joins in: inputs, Select, Combobox, TagsInput, DatePicker, TimeInput, OtpInput, FileUpload,
+  RadioGroup, Checkbox, Rating. Your own fields can too, with `useFormField(name)`.
+- React 19 resets a form after its action. Pass the submitted values back and use them as
+  `defaultValue` (with a `key`) to keep what was typed.
 
 ### Forms and feedback
 

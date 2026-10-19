@@ -13,6 +13,7 @@ import {
   type FileErrorCode,
   type FileRejection,
 } from "./file-validation";
+import { useFormField } from "../form/form";
 
 export interface FileUploadMessages {
   /** Dropzone text before the browse word. @default "Drag files here or" */
@@ -207,7 +208,7 @@ export interface FileUploadProps {
 export function FileUpload({
   label,
   description,
-  errorMessage,
+  errorMessage: errorMessageProp,
   value: valueProp,
   defaultValue,
   onValueChange,
@@ -223,7 +224,7 @@ export function FileUpload({
   showFileList = true,
   name,
   isDisabled = false,
-  isInvalid = false,
+  isInvalid: isInvalidProp = false,
   isRequired = false,
   messages,
   id: idProp,
@@ -233,6 +234,10 @@ export function FileUpload({
   const defaults = useCenngeDefaults();
   const locale = defaults.locale ?? "en-US";
   const id = useId(idProp);
+  // Errors from a surrounding <Form>: server ones by name, and the browser's own checks.
+  const field = useFormField(name, { isInvalid: isInvalidProp, errorMessage: errorMessageProp });
+  const isInvalid = field.isInvalid;
+  const errorMessage = field.errorMessage;
   const promptId = id ? `${id}-prompt` : undefined;
   const helperId = id ? `${id}-helper` : undefined;
   const errorsId = id ? `${id}-errors` : undefined;
@@ -280,6 +285,7 @@ export function FileUpload({
     latest.current = next;
     if (!isControlled) setInnerFiles(next);
     onValueChange?.(next);
+    field.markEdited();
   };
 
   const addFiles = (incoming: File[]) => {
@@ -379,6 +385,7 @@ export function FileUpload({
       className={fieldSlots.base({ class: [classNames?.base, className] })}
       data-disabled={isDisabled || undefined}
       data-required={isRequired || undefined}
+      data-field-name={name}
       data-invalid={isInvalid || errors.length > 0 || undefined}
       data-dragging={isDragging || undefined}
       {...dragHandlers}

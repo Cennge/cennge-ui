@@ -16,6 +16,7 @@ import {
   usesDayPeriod,
   type TimeOfDay,
 } from "./time";
+import { useFormField } from "../form/form";
 
 // useLayoutEffect warns during SSR on React 17/18; it only matters in the browser anyway.
 const useIsomorphicLayoutEffect = typeof window !== "undefined" ? React.useLayoutEffect : React.useEffect;
@@ -75,7 +76,7 @@ export const TimeInput = React.forwardRef<HTMLInputElement, TimeInputProps>(func
   const {
     label,
     description,
-    errorMessage,
+    errorMessage: errorMessageProp,
     value: valueProp,
     defaultValue,
     onValueChange,
@@ -85,7 +86,7 @@ export const TimeInput = React.forwardRef<HTMLInputElement, TimeInputProps>(func
     hourCycle,
     locale = defaults.locale ?? "en-US",
     formatError,
-    isInvalid = false,
+    isInvalid: isInvalidProp = false,
     isRequired = false,
     isDisabled: isDisabledProp = false,
     disabled,
@@ -109,6 +110,10 @@ export const TimeInput = React.forwardRef<HTMLInputElement, TimeInputProps>(func
   } = props;
 
   const id = useId(idProp);
+  // Errors from a surrounding <Form>: server ones by name, and the browser's own checks.
+  const field = useFormField(name, { isInvalid: isInvalidProp, errorMessage: errorMessageProp });
+  const isInvalid = field.isInvalid;
+  const errorMessage = field.errorMessage;
   const helperId = id ? `${id}-helper` : undefined;
   const isDisabled = isDisabledProp || Boolean(disabled);
   const isReadOnly = isReadOnlyProp || Boolean(readOnly);
@@ -154,6 +159,7 @@ export const TimeInput = React.forwardRef<HTMLInputElement, TimeInputProps>(func
     if (iso === valueIso) return;
     if (!isControlled) setInnerValue(iso);
     onValueChange?.(iso);
+    field.markEdited();
   };
 
   const commitText = () => {
@@ -210,6 +216,7 @@ export const TimeInput = React.forwardRef<HTMLInputElement, TimeInputProps>(func
       className={slots.base({ class: [classNames?.base, className] })}
       data-disabled={isDisabled || undefined}
       data-required={isRequiredField || undefined}
+      data-field-name={name}
       data-invalid={showInvalid || undefined}
     >
       {label ? (

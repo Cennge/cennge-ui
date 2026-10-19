@@ -14,6 +14,7 @@ import {
   optionClass,
   popoverClass,
 } from "../listbox/styles";
+import { useFormField } from "../form/form";
 
 type SelectSlots = "base" | "label" | "trigger" | "value" | "popover" | "clearButton" | "description" | "errorMessage";
 
@@ -56,12 +57,12 @@ export function Select({
   label,
   placeholder = "Select…",
   description,
-  errorMessage,
+  errorMessage: errorMessageProp,
   value: valueProp,
   defaultValue = null,
   onValueChange,
   isClearable = false,
-  isInvalid = false,
+  isInvalid: isInvalidProp = false,
   isRequired = false,
   isDisabled = false,
   isOpen,
@@ -80,6 +81,10 @@ export function Select({
 }: SelectProps) {
   const defaults = useCenngeDefaults();
   const id = useId(idProp);
+  // Errors from a surrounding <Form>: server ones by name, and the browser's own checks.
+  const field = useFormField(name, { isInvalid: isInvalidProp, errorMessage: errorMessageProp });
+  const isInvalid = field.isInvalid;
+  const errorMessage = field.errorMessage;
   const helperId = id ? `${id}-helper` : undefined;
 
   // Radix uses "" for "nothing selected"; the public API uses null.
@@ -90,6 +95,7 @@ export function Select({
   const setValue = (next: string | null) => {
     if (!isControlled) setInnerValue(next);
     onValueChange?.(next);
+    field.markEdited();
   };
 
   const slots = input({
@@ -107,6 +113,7 @@ export function Select({
       className={slots.base({ class: [classNames?.base, className] })}
       data-disabled={isDisabled || undefined}
       data-required={isRequired || undefined}
+      data-field-name={name}
       data-invalid={isInvalid || undefined}
     >
       {label ? (

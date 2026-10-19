@@ -3,6 +3,7 @@ import { tv } from "../../utils/tv";
 import { useCenngeDefaults } from "../../provider";
 import { useId } from "../../utils/use-id";
 import type { CenngeColor, CenngeSize } from "../../types";
+import { useFormField } from "../form/form";
 
 const rating = tv({
   slots: {
@@ -45,7 +46,7 @@ const rating = tv({
     isDisabled: {
       true: { control: "cursor-not-allowed", item: "cursor-not-allowed active:scale-100", icon: "opacity-(--cennge-disabled-opacity)", label: "text-muted" },
     },
-    isInvalid: { true: { helper: "text-danger-text" } },
+    isInvalid: { true: { label: "text-danger-text", helper: "text-danger-text" } },
   },
   // Read-only stars are not tap targets, so small ones sit closer together.
   compoundVariants: [{ kind: "img", size: "sm", class: { item: "p-0.5" } }],
@@ -116,7 +117,7 @@ const defaultValueLabel = (value: number) => (value === 0 ? "No rating" : `${val
 export function Rating({
   label,
   description,
-  errorMessage,
+  errorMessage: errorMessageProp,
   value: valueProp,
   defaultValue = 0,
   onValueChange,
@@ -126,7 +127,7 @@ export function Rating({
   isReadOnly = false,
   isDisabled = false,
   isRequired = false,
-  isInvalid = false,
+  isInvalid: isInvalidProp = false,
   getValueLabel = defaultValueLabel,
   icon,
   emptyIcon,
@@ -138,6 +139,10 @@ export function Rating({
 }: RatingProps) {
   const defaults = useCenngeDefaults();
   const id = useId();
+  // Errors from a surrounding <Form>: server ones by name.
+  const field = useFormField(name, { isInvalid: isInvalidProp, errorMessage: errorMessageProp });
+  const isInvalid = field.isInvalid;
+  const errorMessage = field.errorMessage;
   const [inner, setInner] = React.useState(defaultValue);
   const [hovered, setHovered] = React.useState<number | null>(null);
   // After a click the star under the pointer keeps its new look until the pointer moves to another value.
@@ -169,6 +174,7 @@ export function Rating({
     if (next === value) return;
     if (valueProp === undefined) setInner(next);
     onValueChange?.(next);
+    field.markEdited();
   };
 
   /** The value under the pointer: the star it is on, and for half stars which half. */
@@ -273,7 +279,7 @@ export function Rating({
   const tabStop = value > 0 ? Math.ceil(value) - 1 : 0;
 
   return (
-    <div className={slots.base({ class: className })}>
+    <div className={slots.base({ class: className })} data-field-name={name}>
       {label ? (
         <span id={labelId} className={slots.label()}>
           {label}

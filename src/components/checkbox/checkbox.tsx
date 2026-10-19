@@ -4,6 +4,7 @@ import { tv } from "../../utils/tv";
 import { useCenngeDefaults } from "../../provider";
 import { useId } from "../../utils/use-id";
 import type { CenngeColor, CenngeSize } from "../../types";
+import { useFormField } from "../form/form";
 
 const checkbox = tv({
   slots: {
@@ -17,6 +18,8 @@ const checkbox = tv({
     ],
     indicator: "flex items-center justify-center data-[state=checked]:animate-cennge-pop-in motion-reduce:animate-none",
     label: "cursor-pointer text-sm text-foreground select-none group-data-[disabled]:cursor-not-allowed",
+    text: "flex flex-col gap-0.5",
+    helper: "text-xs text-muted",
   },
   variants: {
     size: {
@@ -24,6 +27,7 @@ const checkbox = tv({
       md: { box: "mt-px size-5", label: "leading-6" },
       lg: { box: "size-6", label: "text-base leading-6" },
     },
+    isInvalid: { true: {} },
     color: {
       default: {
         box: "data-[state=checked]:border-default-500 data-[state=checked]:bg-default-500 data-[state=checked]:text-white data-[state=indeterminate]:border-default-500 data-[state=indeterminate]:bg-default-500 data-[state=indeterminate]:text-white",
@@ -48,6 +52,7 @@ const checkbox = tv({
       },
     },
   },
+  compoundVariants: [{ isInvalid: true, class: { box: "border-danger", helper: "text-danger-text" } }],
   defaultVariants: { size: "md", color: "primary" },
 });
 
@@ -62,6 +67,11 @@ export interface CheckboxProps
   onValueChange?: (isSelected: boolean) => void;
   isDisabled?: boolean;
   isRequired?: boolean;
+  /** Small text under the label. */
+  description?: React.ReactNode;
+  /** Shown instead of `description` while `isInvalid`; inside a <Form>, also its errors for `name`. */
+  errorMessage?: React.ReactNode;
+  isInvalid?: boolean;
   /** @default "primary" */
   color?: CenngeColor;
   /** @default "md" */
@@ -80,6 +90,9 @@ export const Checkbox = React.forwardRef<HTMLButtonElement, CheckboxProps>(funct
     isDisabled = false,
     disabled,
     isRequired = false,
+    description,
+    errorMessage: errorMessageProp,
+    isInvalid: isInvalidProp = false,
     color,
     size,
     className,
@@ -90,16 +103,27 @@ export const Checkbox = React.forwardRef<HTMLButtonElement, CheckboxProps>(funct
 ) {
   const defaults = useCenngeDefaults();
   const id = useId(idProp);
+  const helperId = id ? `${id}-helper` : undefined;
+  // Errors from a surrounding <Form>: e.g. a required "I agree" box left empty.
+  const field = useFormField(rest.name, { isInvalid: isInvalidProp, errorMessage: errorMessageProp });
+  const isInvalid = field.isInvalid;
+  const helper = isInvalid && field.errorMessage ? field.errorMessage : description;
   const sizeValue = size ?? defaults.size ?? "md";
   const slots = checkbox({
     size: sizeValue,
     color: color ?? (defaults.color && defaults.color !== "default" ? defaults.color : "primary"),
+    isInvalid,
   });
   const isOff = isDisabled || Boolean(disabled);
   const iconSize = sizeValue === "sm" ? "size-3" : sizeValue === "lg" ? "size-4" : "size-3.5";
 
   return (
-    <div className={slots.base({ class: className })} data-disabled={isOff || undefined}>
+    <div
+      className={slots.base({ class: className })}
+      data-disabled={isOff || undefined}
+      data-field-name={rest.name}
+      data-invalid={isInvalid || undefined}
+    >
       <CheckboxPrimitive.Root
         ref={ref}
         id={id}
@@ -108,6 +132,8 @@ export const Checkbox = React.forwardRef<HTMLButtonElement, CheckboxProps>(funct
         onCheckedChange={(state) => onValueChange?.(state === true)}
         disabled={isOff}
         required={isRequired}
+        aria-invalid={isInvalid || undefined}
+        aria-describedby={helper ? helperId : undefined}
         className={slots.box()}
         {...rest}
       >
@@ -121,10 +147,19 @@ export const Checkbox = React.forwardRef<HTMLButtonElement, CheckboxProps>(funct
           </svg>
         </CheckboxPrimitive.Indicator>
       </CheckboxPrimitive.Root>
-      {children ? (
-        <label htmlFor={id} className={slots.label()}>
-          {children}
-        </label>
+      {children || helper ? (
+        <div className={slots.text()}>
+          {children ? (
+            <label htmlFor={id} className={slots.label()}>
+              {children}
+            </label>
+          ) : null}
+          {helper ? (
+            <span id={helperId} className={slots.helper()}>
+              {helper}
+            </span>
+          ) : null}
+        </div>
       ) : null}
     </div>
   );

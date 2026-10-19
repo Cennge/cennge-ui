@@ -1,5 +1,17 @@
-import { useState, type ReactNode } from "react";
-import { Button, Input, OtpInput, PasswordInput, Progress, toast, type CenngeColor } from "cennge-ui";
+import { useActionState, useState, type ReactNode } from "react";
+import {
+  Button,
+  Checkbox,
+  Form,
+  Input,
+  OtpInput,
+  PasswordInput,
+  Progress,
+  Select,
+  SelectItem,
+  toast,
+  type CenngeColor,
+} from "cennge-ui";
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
@@ -118,6 +130,51 @@ function TwoFactor() {
   );
 }
 
+interface InviteState {
+  errors?: Record<string, string>;
+  values?: { login?: string; role?: string };
+}
+
+/** Как server action в Next.js: получает FormData, возвращает ошибки по именам полей. */
+async function inviteCollaborator(_previous: InviteState, data: FormData): Promise<InviteState> {
+  await new Promise((resolve) => setTimeout(resolve, 600));
+  const login = String(data.get("login") ?? "").trim();
+  const values = { login, role: String(data.get("role") ?? "") };
+  if (login.toLowerCase() === "admin") return { values, errors: { login: "Такого пользователя нет на GitHub" } };
+  if (login === "Cennge") return { values, errors: { login: "Это владелец репозитория" } };
+  toast.success("Приглашение отправлено", { description: `${login} · ai-niche-scout` });
+  return {};
+}
+
+function Invite() {
+  const [state, action, isPending] = useActionState(inviteCollaborator, {});
+  return (
+    <Form action={action} validationErrors={state.errors} className="flex flex-col gap-4">
+      {/* key: после action React сбрасывает форму, а defaultValue из состояния сохраняет введённое */}
+      <Input
+        key={`login-${state.values?.login ?? ""}`}
+        name="login"
+        label="Логин на GitHub"
+        defaultValue={state.values?.login}
+        description="Попробуйте admin — сервер вернёт ошибку"
+        isRequired
+        minLength={2}
+      />
+      <Select key={`role-${state.values?.role ?? ""}`} name="role" label="Роль" defaultValue={state.values?.role} isRequired placeholder="Выберите роль">
+        <SelectItem value="read">Чтение</SelectItem>
+        <SelectItem value="write">Запись</SelectItem>
+        <SelectItem value="maintain">Сопровождение</SelectItem>
+      </Select>
+      <Checkbox name="notify" defaultSelected>
+        Отправить письмо с приглашением
+      </Checkbox>
+      <Button type="submit" color="primary" isLoading={isPending} className="self-start">
+        Пригласить
+      </Button>
+    </Form>
+  );
+}
+
 export function AccountDemo() {
   return (
     <div className="grid gap-6 md:grid-cols-2">
@@ -126,6 +183,9 @@ export function AccountDemo() {
       </Section>
       <Section title="OtpInput">
         <TwoFactor />
+      </Section>
+      <Section title="Form + server action">
+        <Invite />
       </Section>
     </div>
   );

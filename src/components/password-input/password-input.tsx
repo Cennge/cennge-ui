@@ -5,6 +5,7 @@ import { useId } from "../../utils/use-id";
 import { useCenngeDefaults } from "../../provider";
 import type { CenngeColor, CenngeRadius, CenngeSize } from "../../types";
 import { input, type InputVariant } from "../input/input.styles";
+import { useFormField } from "../form/form";
 
 type PasswordInputSlots =
   | "base"
@@ -107,7 +108,7 @@ export const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputPro
   const {
     label,
     description,
-    errorMessage,
+    errorMessage: errorMessageProp,
     value,
     defaultValue,
     onChange,
@@ -117,7 +118,7 @@ export const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputPro
     onVisibilityChange,
     toggleLabel = "Show password",
     capsLockWarning = "Caps Lock is on",
-    isInvalid = false,
+    isInvalid: isInvalidProp = false,
     isRequired = false,
     isDisabled: isDisabledProp = false,
     disabled,
@@ -137,6 +138,10 @@ export const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputPro
   } = props;
 
   const id = useId(idProp);
+  // Errors from a surrounding <Form>: server ones by name, and the browser's own checks.
+  const field = useFormField(rest.name, { isInvalid: isInvalidProp, errorMessage: errorMessageProp });
+  const isInvalid = field.isInvalid;
+  const errorMessage = field.errorMessage;
   const helperId = id ? `${id}-helper` : undefined;
   const capsLockId = id ? `${id}-caps-lock` : undefined;
   const isDisabled = isDisabledProp || Boolean(disabled);
@@ -168,6 +173,7 @@ export const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputPro
         className={slots.base({ class: [classNames?.base, className] })}
         data-disabled={isDisabled || undefined}
         data-required={isRequiredField || undefined}
+        data-field-name={rest.name}
         data-invalid={isInvalid || undefined}
       >
         {label ? (

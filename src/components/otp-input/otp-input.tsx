@@ -5,6 +5,7 @@ import { useId } from "../../utils/use-id";
 import { useCenngeDefaults } from "../../provider";
 import type { CenngeColor, CenngeRadius, CenngeSize } from "../../types";
 import { input, type InputVariant } from "../input/input.styles";
+import { useFormField } from "../form/form";
 
 type OtpInputSlots = "base" | "label" | "group" | "slot" | "separator" | "description" | "errorMessage";
 
@@ -86,7 +87,7 @@ export const OtpInput = React.forwardRef<HTMLDivElement, OtpInputProps>(function
   const {
     label,
     description,
-    errorMessage,
+    errorMessage: errorMessageProp,
     length = 6,
     value,
     defaultValue,
@@ -101,7 +102,7 @@ export const OtpInput = React.forwardRef<HTMLDivElement, OtpInputProps>(function
     name,
     form,
     autoFocus = false,
-    isInvalid = false,
+    isInvalid: isInvalidProp = false,
     isDisabled = false,
     isReadOnly = false,
     variant = "flat",
@@ -115,6 +116,10 @@ export const OtpInput = React.forwardRef<HTMLDivElement, OtpInputProps>(function
   } = props;
 
   const id = useId(idProp);
+  // Errors from a surrounding <Form>: server ones by name, and the browser's own checks.
+  const field = useFormField(name, { isInvalid: isInvalidProp, errorMessage: errorMessageProp });
+  const isInvalid = field.isInvalid;
+  const errorMessage = field.errorMessage;
   const labelId = id ? `${id}-label` : undefined;
   const helperId = id ? `${id}-helper` : undefined;
   const groupRef = React.useRef<HTMLDivElement>(null);
@@ -136,6 +141,7 @@ export const OtpInput = React.forwardRef<HTMLDivElement, OtpInputProps>(function
   const handleValueChange = (next: string) => {
     filled.current = next.length;
     onValueChange?.(next);
+    field.markEdited();
     if (next.length === length) onComplete?.(next);
   };
 
@@ -147,6 +153,7 @@ export const OtpInput = React.forwardRef<HTMLDivElement, OtpInputProps>(function
     <div
       className={inputSlots.base({ class: [classNames?.base, className] })}
       data-disabled={isDisabled || undefined}
+      data-field-name={name}
       data-invalid={isInvalid || undefined}
     >
       {label ? (

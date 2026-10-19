@@ -19,6 +19,7 @@ import {
   toIsoDate,
   type CalendarDate,
 } from "../calendar/date";
+import { useFormField } from "../form/form";
 
 export interface DatePickerLabels extends CalendarLabels {
   /** Name of the calendar button and of the calendar popup. @default "Choose date" */
@@ -91,7 +92,7 @@ export const DatePicker = React.forwardRef<HTMLInputElement, DatePickerProps>(fu
   const {
     label,
     description,
-    errorMessage,
+    errorMessage: errorMessageProp,
     value: valueProp,
     defaultValue,
     onValueChange,
@@ -102,7 +103,7 @@ export const DatePicker = React.forwardRef<HTMLInputElement, DatePickerProps>(fu
     firstDayOfWeek,
     formatError,
     labels: labelsProp,
-    isInvalid = false,
+    isInvalid: isInvalidProp = false,
     isRequired = false,
     isDisabled: isDisabledProp = false,
     disabled,
@@ -125,6 +126,10 @@ export const DatePicker = React.forwardRef<HTMLInputElement, DatePickerProps>(fu
   } = props;
 
   const id = useId(idProp);
+  // Errors from a surrounding <Form>: server ones by name, and the browser's own checks.
+  const field = useFormField(name, { isInvalid: isInvalidProp, errorMessage: errorMessageProp });
+  const isInvalid = field.isInvalid;
+  const errorMessage = field.errorMessage;
   const helperId = id ? `${id}-helper` : undefined;
   const isDisabled = isDisabledProp || Boolean(disabled);
   const isReadOnly = isReadOnlyProp || Boolean(readOnly);
@@ -159,6 +164,7 @@ export const DatePicker = React.forwardRef<HTMLInputElement, DatePickerProps>(fu
     if (iso === valueIso) return;
     if (!isControlled) setInnerValue(iso);
     onValueChange?.(iso);
+    field.markEdited();
   };
 
   const isUnavailable = (date: CalendarDate) => Boolean(isDateUnavailable?.(toIsoDate(date)));
@@ -186,6 +192,7 @@ export const DatePicker = React.forwardRef<HTMLInputElement, DatePickerProps>(fu
       className={slots.base({ class: [classNames?.base, className] })}
       data-disabled={isDisabled || undefined}
       data-required={isRequiredField || undefined}
+      data-field-name={name}
       data-invalid={showInvalid || undefined}
     >
       {label ? (

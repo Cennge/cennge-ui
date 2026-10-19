@@ -7,6 +7,7 @@ import type { CenngeColor, CenngeRadius, CenngeSize } from "../../types";
 import { input, type InputVariant } from "../input/input.styles";
 import { CheckIcon, ChevronIcon, ClearIcon, optionCheckClass, optionClass, popoverClass } from "../listbox/styles";
 import { Tag } from "../listbox/tag";
+import { useFormField } from "../form/form";
 
 export interface ComboboxItem {
   value: string;
@@ -87,12 +88,12 @@ export const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(functi
     label,
     placeholder,
     description,
-    errorMessage,
+    errorMessage: errorMessageProp,
     emptyContent = "No results",
     filter = defaultFilter,
     onInputChange,
     isClearable = false,
-    isInvalid = false,
+    isInvalid: isInvalidProp = false,
     isRequired = false,
     isDisabled = false,
     variant = "flat",
@@ -111,6 +112,10 @@ export const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(functi
   const defaults = useCenngeDefaults();
   const sizeValue = size ?? defaults.size ?? "md";
   const id = useId(idProp);
+  // Errors from a surrounding <Form>: server ones by name, and the browser's own checks.
+  const field = useFormField(name, { isInvalid: isInvalidProp, errorMessage: errorMessageProp });
+  const isInvalid = field.isInvalid;
+  const errorMessage = field.errorMessage;
   const listId = id ? `${id}-listbox` : undefined;
   const helperId = id ? `${id}-helper` : undefined;
   const optionId = (index: number) => (id ? `${id}-option-${index}` : undefined);
@@ -127,6 +132,7 @@ export const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(functi
     if (controlledSelection === undefined) setInnerSelection(next);
     if (props.selectionMode === "multiple") props.onValuesChange?.(next);
     else props.onValueChange?.(next[0] ?? null);
+    field.markEdited();
   };
 
   const labelOf = React.useCallback(
@@ -281,6 +287,7 @@ export const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(functi
       className={slots.base({ class: [classNames?.base, className] })}
       data-disabled={isDisabled || undefined}
       data-required={isRequired || undefined}
+      data-field-name={name}
       data-invalid={isInvalid || undefined}
     >
       {label ? (
