@@ -60,6 +60,8 @@ interface NavigationMenuContextValue {
   openOn: "hover" | "click";
   slots: ReturnType<typeof navigationMenu>;
   keepMounted: boolean;
+  /** A trigger was clicked (just before Radix toggles its panel). */
+  noteClick: () => void;
 }
 
 const NavigationMenuContext = React.createContext<NavigationMenuContextValue | null>(null);
@@ -138,7 +140,12 @@ export const NavigationMenu = React.forwardRef<HTMLElement, NavigationMenuProps>
     };
   }, [active, panel, place]);
 
-  const context = React.useMemo(() => ({ openOn, slots, keepMounted }), [openOn, slots, keepMounted]);
+  const lastClick = React.useRef(0);
+  const clickClosed = React.useRef<{ value: string; time: number } | null>(null);
+  const noteClick = React.useCallback(() => {
+    lastClick.current = Date.now();
+  }, []);
+  const context = React.useMemo(() => ({ openOn, slots, keepMounted, noteClick }), [openOn, slots, keepMounted, noteClick]);
 
   return (
     <NavigationMenuContext.Provider value={context}>
@@ -147,6 +154,12 @@ export const NavigationMenu = React.forwardRef<HTMLElement, NavigationMenuProps>
         orientation={orientation}
         value={active}
         onValueChange={(next) => {
+          // Resting the pointer on a trigger starts a delayed open in Radix, and a click does not cancel it:
+          // open-and-close with two quick clicks would reopen when that timer fires. Ignore it.
+          const now = Date.now();
+          if (next === "" && now - lastClick.current < 50) clickClosed.current = { value: active, time: now };
+          const closed = clickClosed.current;
+          if (next !== "" && closed?.value === next && now - closed.time < (rest.delayDuration ?? 200) + 200) return;
           if (value === undefined) setInner(next);
           onValueChange?.(next);
         }}
@@ -186,8 +199,8 @@ export const NavigationMenuItem = NavigationMenuPrimitive.Item;
 export const NavigationMenuTrigger = React.forwardRef<
   HTMLButtonElement,
   React.ComponentPropsWithoutRef<typeof NavigationMenuPrimitive.Trigger>
->(function NavigationMenuTrigger({ className, children, onPointerMove, onPointerLeave, ...rest }, ref) {
-  const { slots, openOn } = useNavigationMenuContext("NavigationMenuTrigger");
+>(function NavigationMenuTrigger({ className, children, onPointerMove, onPointerLeave, onClick, ...rest }, ref) {
+  const { slots, openOn, noteClick } = useNavigationMenuContext("NavigationMenuTrigger");
   return (
     <NavigationMenuPrimitive.Trigger
       ref={ref}
@@ -195,6 +208,10 @@ export const NavigationMenuTrigger = React.forwardRef<
       className={slots.trigger({ class: className })}
       onPointerMove={openOn === "click" ? ignorePointer : onPointerMove}
       onPointerLeave={openOn === "click" ? ignorePointer : onPointerLeave}
+      onClick={(event) => {
+        noteClick();
+        onClick?.(event);
+      }}
       {...rest}
     >
       {children}

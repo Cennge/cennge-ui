@@ -44,6 +44,15 @@ test("hover opens the panel under its trigger; moving on moves the panel", async
     .toBeLessThan(2);
 });
 
+test("two quick clicks open and close a panel, and it stays closed", async ({ page }) => {
+  // Radix's delayed open from resting the pointer used to fire after the second click and reopen it.
+  const nav = menu(page, "Main");
+  await trigger(nav, "Repositories").click();
+  await trigger(nav, "Repositories").click();
+  await page.waitForTimeout(600);
+  await expect(trigger(nav, "Repositories")).toHaveAttribute("aria-expanded", "false");
+});
+
 test("an open panel keeps its size: it does not shrink frame by frame", async ({ page, isMobile }) => {
   const nav = menu(page, "Main");
   await press(trigger(nav, "Components"), isMobile);
