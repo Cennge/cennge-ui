@@ -453,11 +453,31 @@ import { Map, MapControls, MapMarker, MapPopup, MapRoute } from "cennge-ui/map";
 </Map>
 ```
 
+Data on the map:
+
+```tsx
+import { MapArc, MapClusterLayer, MapGeoJSON, MapLegend } from "cennge-ui/map";
+
+<MapGeoJSON data={regions} valueProperty="downloads" tooltip={(r) => `${r.name}: ${r.downloads}`} />
+<MapLegend title="Downloads" domain={[0, 6000]} />          {/* the same shades, low to high */}
+<MapArc arcs={[{ from: moscow, to: kazan }]} color="secondary" />
+<MapClusterLayer items={stores} getLngLat={(s) => s.lngLat} getLabel={(s) => s.name}
+                 onItemClick={open} clusterLabel={(count, shown) => `${shown} stores`} />
+```
+
+- MapGeoJSON draws areas, lines and points; with `valueProperty` it shades them along the colour's
+  scale (a choropleth), light to dark on a light map and the other way round on a dark one. Hover
+  highlights a feature and shows `tooltip`; on a phone a tap does. Give screen readers the same numbers
+  another way too, say a table: a drawing on a canvas is not read out.
+- MapClusterLayer takes thousands of points. Groups and single points are markers, buttons in the tab
+  order; a group zooms in until it comes apart. Only what is in view is in the page.
 - maplibre-gl is fetched when the first map mounts; until then, and on the server, the map holds its
-  place. The map code itself is about 8 KB gzip.
-- Tiles come from [OpenFreeMap](https://openfreemap.org) (no key, no usage limits, commercial use
-  allowed), light or dark with the page. Pass your own with `mapStyle` (a URL, a style object, or
-  `{ light, dark }`); `blankMapStyle(color)` draws nothing but your data.
+  place. The map code itself is 9 to 12 KB gzip.
+- The base map is [OpenFreeMap](https://openfreemap.org)'s Positron (no key, no usage limits,
+  commercial use allowed) recoloured with the theme's tokens: land in the surfaces, water and parks
+  touched with info and success, labels in the text colours. Light or dark with the page. Pass your
+  own with `mapStyle` (a URL, a style object, or `{ light, dark }`; `openFreeMapStyles` has OpenFreeMap's
+  as published); `blankMapStyle(color)` draws nothing but your data.
 - Markers, tooltips and popups are our own components over the map, not MapLibre's: markers with a popup
   or `onClick` are buttons in the tab order, popups are dialogs that close on Escape and pan the map to
   fit. The map itself takes focus too: arrows move it, plus and minus zoom.

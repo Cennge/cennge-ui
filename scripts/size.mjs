@@ -14,8 +14,10 @@ const cases = [
   [["DatePicker"], 13_500],
   [["Table", "TableBody", "TableCell", "TableColumn", "TableHeader", "TableRow"], 3_500],
   [["*"], 90_000],
-  // The map's own code (7.8 KB); maplibre-gl itself is the app's, fetched only when a map mounts.
-  [["Map", "MapMarker", "MapPopup", "MapControls", "MapRoute"], 10_500, "cennge-ui/map"],
+  // The map's own code (9.4 KB with the base map's palette; 12 KB for every layer); maplibre-gl itself is
+  // the app's, fetched only when a map mounts.
+  [["Map", "MapMarker", "MapPopup", "MapControls", "MapRoute"], 12_500, "cennge-ui/map"],
+  [["*"], 15_500, "cennge-ui/map"],
 ];
 
 let failed = false;
@@ -34,7 +36,7 @@ for (const [names, limit, from = "cennge-ui"] of cases) {
     external: ["react", "react-dom", "react/jsx-runtime", "radix-ui", "tailwind-variants", "tailwind-merge", "clsx", "maplibre-gl"],
   });
   const gzip = gzipSync(result.outputFiles[0].contents).length;
-  const label = names[0] === "*" ? "everything" : `${names.join(", ")}${from === "cennge-ui" ? "" : ` (${from})`}`;
+  const label = `${names[0] === "*" ? "everything" : names.join(", ")}${from === "cennge-ui" ? "" : ` (${from})`}`;
   const over = limit > 0 && gzip > limit;
   if (over) failed = true;
   console.log(`${over ? "✗" : "✓"} ${label.padEnd(60)} ${(gzip / 1024).toFixed(1).padStart(6)} KB gzip${limit ? ` (limit ${(limit / 1024).toFixed(1)} KB)` : ""}`);

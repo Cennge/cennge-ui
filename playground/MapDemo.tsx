@@ -1,6 +1,18 @@
-import { useState, type ReactNode } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 import { Badge, Button, Switch } from "cennge-ui";
-import { Map, MapControls, MapMarker, MapPopup, MapRoute, type LngLat, type MapLabels } from "cennge-ui/map";
+import {
+  Map,
+  MapArc,
+  MapClusterLayer,
+  MapControls,
+  MapGeoJSON,
+  MapLegend,
+  MapMarker,
+  MapPopup,
+  MapRoute,
+  type LngLat,
+  type MapLabels,
+} from "cennge-ui/map";
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
@@ -44,6 +56,84 @@ const route: LngLat[] = [
   [47.6, 55.95],
   [49.1221, 55.7887],
 ];
+
+/** Шестиугольники вокруг Москвы со «спросом»: плотнее к центру, с рябью. */
+function hexagons() {
+  const center: LngLat = [37.62, 55.75];
+  const size = 0.022; // градусов широты
+  const stretch = 1 / Math.cos((center[1] * Math.PI) / 180);
+  const features = [];
+  for (let q = -14; q <= 14; q++) {
+    for (let r = -14; r <= 14; r++) {
+      if (Math.abs(q + r) > 14) continue;
+      const x = center[0] + size * 1.5 * q * stretch;
+      const y = center[1] + size * Math.sqrt(3) * (r + q / 2);
+      const distance = Math.hypot(q, r, q + r) / 2;
+      const orders = Math.round(Math.max(0, 125 - distance * 8 + Math.sin(q * 1.7 + r) * 12));
+      const ring = Array.from({ length: 7 }, (_, corner) => {
+        const angle = (Math.PI / 3) * (corner % 6);
+        return [x + size * Math.cos(angle) * stretch, y + size * Math.sin(angle)];
+      });
+      features.push({
+        type: "Feature" as const,
+        properties: { orders },
+        geometry: { type: "Polygon" as const, coordinates: [ring] },
+      });
+    }
+  }
+  return { type: "FeatureCollection" as const, features };
+}
+
+/** 2000 пунктов самовывоза вокруг городов: одинаковые от запуска к запуску. */
+function pickupPoints() {
+  let seed = 11;
+  const random = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  return Array.from({ length: 2000 }, (_, index) => {
+    const office = offices[index % offices.length]!;
+    const spread = index % 7 === 0 ? 2.5 : 0.6;
+    return {
+      name: `Пункт ${index + 1}`,
+      lngLat: [office.lngLat[0] + (random() - 0.5) * spread * 1.8, office.lngLat[1] + (random() - 0.5) * spread] as LngLat,
+    };
+  });
+}
+
+function DataMaps() {
+  const demand = useMemo(hexagons, []);
+  const points = useMemo(pickupPoints, []);
+  const [picked, setPicked] = useState<string | null>(null);
+  const supplies = offices.slice(1).map((office) => ({ from: offices[0]!.lngLat, to: office.lngLat }));
+  return (
+    <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+      <Map aria-label="Заказы по районам Москвы" labels={labels} defaultCenter={[37.62, 55.75]} defaultZoom={9.2} scrollZoom={false} className="h-80">
+        <MapGeoJSON data={demand} valueProperty="orders" tooltip={(cell) => `${String(cell.orders)} заказов в день`} />
+        <MapLegend title="Заказов в день" domain={[0, 130]} />
+        <MapControls showCompass={false} />
+      </Map>
+      <Map
+        aria-label="Пункты самовывоза и поставки"
+        labels={labels}
+        defaultBounds={[
+          [29, 54.8],
+          [50.5, 60.5],
+        ]}
+        scrollZoom={false}
+        className="h-80"
+      >
+        <MapArc arcs={supplies} color="secondary" />
+        <MapClusterLayer
+          items={points}
+          getLngLat={(point) => point.lngLat}
+          getLabel={(point) => point.name}
+          onItemClick={(point) => setPicked(point.name)}
+          clusterLabel={(_count, shown) => `${shown} пунктов`}
+        />
+        <MapControls showCompass={false} />
+      </Map>
+      <p className="text-sm text-muted lg:col-start-2">Выбран: {picked ?? "ничего"}</p>
+    </div>
+  );
+}
 
 export function MapDemo() {
   const [clicked, setClicked] = useState<LngLat | null>(null);
@@ -101,6 +191,7 @@ export function MapDemo() {
         <Switch isSelected={scrollZoom} onValueChange={setScrollZoom}>
           Масштаб колесом мыши (выключен, чтобы страница прокручивалась мимо карты)
         </Switch>
+        <DataMaps />
       </div>
     </Section>
   );

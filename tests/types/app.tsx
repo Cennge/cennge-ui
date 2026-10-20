@@ -14,7 +14,7 @@ import {
   toast,
 } from "cennge-ui";
 import { cn } from "cennge-ui/utils";
-import { Map, MapControls, MapMarker, MapRoute } from "cennge-ui/map";
+import { Map, MapArc, MapClusterLayer, MapControls, MapGeoJSON, MapLegend, MapMarker, MapRoute } from "cennge-ui/map";
 
 const repositories = ["ai-niche-scout", "cennge-ui", "payload-cache", "spredo-crypto-screener"];
 
@@ -43,6 +43,10 @@ export function App() {
         <MapControls showLocate />
         <MapMarker lngLat={[37.62, 55.76]} label="Moscow office" popup={<p>cennge-ui</p>} />
         <MapRoute coordinates={[[37.62, 55.76], [49.11, 55.79]]} color="secondary" />
+        <MapArc arcs={[{ from: [37.62, 55.76], to: [30.33, 59.93] }]} curvature={0.3} />
+        <MapGeoJSON data="https://example.com/regions.geojson" valueProperty="stars" domain={[0, 100]} tooltip={(region) => String(region.name)} />
+        <MapLegend title="Stars" domain={[0, 100]} />
+        <MapClusterLayer items={repositories} getLngLat={() => [37.62, 55.76]} getLabel={(name) => name} />
       </Map>
       <Toaster placement="top-right" />
     </div>

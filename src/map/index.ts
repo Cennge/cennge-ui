@@ -5,3 +5,6 @@ export { MapControls, type MapControlsProps } from "./controls";
 export { MapRoute, type MapRouteProps } from "./route";
 export { useMap, defaultMapLabels, type LngLat, type MapLabels } from "./context";
 export { blankMapStyle, openFreeMapStyles, setMapWorkerUrl, type MapLibreMap, type MapStyle } from "./maplibre";
+export { MapGeoJSON, MapLegend, type MapGeoJSONProps, type MapLegendProps } from "./geojson";
+export { MapClusterLayer, type MapClusterLayerProps } from "./cluster";
+export { MapArc, type MapArcProps } from "./arc";
