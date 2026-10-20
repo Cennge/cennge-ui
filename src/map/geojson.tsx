@@ -174,6 +174,15 @@ export function MapGeoJSON({
   React.useEffect(() => {
     const layerIds = [`${id}-fill`, `${id}-line`, `${id}-point`];
     let hovered: string | number | undefined;
+    // A tooltip opened by a tap stays until a tap elsewhere: after a tap, browsers send the mouse events
+    // of a pointer that left, which would hide it at once.
+    let pinned = false;
+    let lastPointer = "mouse";
+    const canvas = map.getCanvas();
+    const onPointerDown = (event: PointerEvent) => {
+      lastPointer = event.pointerType;
+    };
+    canvas.addEventListener("pointerdown", onPointerDown);
     const setHover = (next: string | number | undefined) => {
       if (hovered === next) return;
       if (hovered !== undefined && map.getSource(id)) map.setFeatureState({ source: id, id: hovered }, { hover: false });
@@ -181,6 +190,7 @@ export function MapGeoJSON({
       if (next !== undefined) map.setFeatureState({ source: id, id: next }, { hover: true });
     };
     const onMove = (event: MapLayerMouseEvent) => {
+      if (pinned) return;
       const feature = event.features?.[0];
       setHover(feature?.id);
       if (isInteractive) map.getCanvas().style.cursor = "pointer";
@@ -188,6 +198,7 @@ export function MapGeoJSON({
       if (content) tooltipRef.current?.show(event.point.x, event.point.y, content);
     };
     const onLeave = () => {
+      if (pinned) return;
       setHover(undefined);
       map.getCanvas().style.cursor = "";
       tooltipRef.current?.hide();
@@ -195,15 +206,22 @@ export function MapGeoJSON({
     const onClick = (event: MapLayerMouseEvent) => {
       const feature = event.features?.[0];
       if (!feature) return;
-      // A tap has no hover: it shows the tooltip where it was.
+      // A tap has no hover: it shows the tooltip where it was, and the feature as hovered.
       const content = latest.current.tooltip?.(feature.properties);
+      if (lastPointer !== "mouse") {
+        pinned = false;
+        setHover(feature.id);
+        pinned = true;
+      }
       if (content) tooltipRef.current?.show(event.point.x, event.point.y, content);
       latest.current.onFeatureClick?.(feature.properties, [event.lngLat.lng, event.lngLat.lat]);
     };
     // A click away from every feature hides a tapped tooltip.
     const onMapClick = (event: { point: { x: number; y: number } }) => {
       const present = layerIds.filter((layer) => map.getLayer(layer));
-      if (map.queryRenderedFeatures([event.point.x, event.point.y], { layers: present }).length === 0) onLeave();
+      if (map.queryRenderedFeatures([event.point.x, event.point.y], { layers: present }).length > 0) return;
+      pinned = false;
+      onLeave();
     };
     for (const layer of layerIds) {
       map.on("mousemove", layer, onMove);
@@ -218,6 +236,7 @@ export function MapGeoJSON({
         map.off("click", layer, onClick);
       }
       map.off("click", onMapClick);
+      canvas.removeEventListener("pointerdown", onPointerDown);
     };
   }, [map, id, isInteractive]);
 
