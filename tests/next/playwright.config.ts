@@ -22,7 +22,15 @@ const servers = [
 const browsers = [
   { name: "chromium", use: devices["Desktop Chrome"] },
   { name: "chromium-mobile", use: devices["Pixel 7"] },
-  { name: "firefox", use: { ...devices["Desktop Firefox"], launchOptions: { firefoxUserPrefs: { "webgl.force-enabled": true } } } },
+  // WebGL for the map: see the firefox project in ../../playwright.config.ts.
+  {
+    name: "firefox",
+    use: {
+      ...devices["Desktop Firefox"],
+      headless: process.env.CENNGE_FIREFOX_HEADED !== "1",
+      launchOptions: { firefoxUserPrefs: { "webgl.force-enabled": true } },
+    },
+  },
   { name: "webkit", use: devices["Desktop Safari"] },
   { name: "webkit-mobile", use: devices["iPhone 17"] },
 ];

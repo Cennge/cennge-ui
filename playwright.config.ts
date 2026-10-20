@@ -19,8 +19,16 @@ export default defineConfig({
   projects: [
     { name: "chromium", use: { ...devices["Desktop Chrome"] } },
     { name: "chromium-mobile", use: { ...devices["Pixel 7"] } },
-    // Headless Firefox turns WebGL off without a GPU; the map needs it (as it does a real GPU).
-    { name: "firefox", use: { ...devices["Desktop Firefox"], launchOptions: { firefoxUserPrefs: { "webgl.force-enabled": true } } } },
+    // The map needs WebGL. Headless Firefox turns it off without a GPU, and on Linux has no GL at all:
+    // CI runs it in a window on a virtual display (CENNGE_FIREFOX_HEADED, see ci.yml).
+    {
+      name: "firefox",
+      use: {
+        ...devices["Desktop Firefox"],
+        headless: process.env.CENNGE_FIREFOX_HEADED !== "1",
+        launchOptions: { firefoxUserPrefs: { "webgl.force-enabled": true } },
+      },
+    },
     // Playwright's WebKit build: Safari's engine, though not Safari itself (fonts and OS integration differ).
     { name: "webkit", use: { ...devices["Desktop Safari"] } },
     { name: "webkit-mobile", use: { ...devices["iPhone 17"] } },
