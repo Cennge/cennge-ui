@@ -4,7 +4,8 @@ import { defineConfig, type Options } from "tsup";
 const shared: Options = {
   sourcemap: true,
   // No `treeshake`: it routes the bundle through Rollup, which strips the "use client" banner.
-  external: ["react", "react-dom", "react/jsx-runtime"],
+  // maplibre-gl: an optional peer, loaded by cennge-ui/map only when a map mounts.
+  external: ["react", "react-dom", "react/jsx-runtime", "maplibre-gl"],
 };
 
 /** One entry per component exported from src/index.ts, so new components get one by themselves. */
@@ -24,9 +25,10 @@ export default defineConfig([
   {
     ...shared,
     format: ["esm"],
-    entry: { index: "src/index.ts", ...components },
+    // cennge-ui/map shares the chunks too: one provider context, one copy of the helpers.
+    entry: { index: "src/index.ts", map: "src/map/index.ts", ...components },
     splitting: true,
-    dts: { entry: { index: "src/index.ts" } },
+    dts: { entry: { index: "src/index.ts", map: "src/map/index.ts" } },
     // Every file is a client component.
     banner: { js: '"use client";' },
   },

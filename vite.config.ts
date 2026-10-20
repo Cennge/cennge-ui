@@ -15,6 +15,7 @@ export default defineConfig({
   resolve: {
     alias: [
       { find: /^cennge-ui\/utils$/, replacement: src("utils/index.ts") },
+      { find: /^cennge-ui\/map$/, replacement: src("map/index.ts") },
       { find: /^cennge-ui$/, replacement: src("index.ts") },
     ],
   },

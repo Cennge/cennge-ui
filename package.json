@@ -47,6 +47,12 @@
         "default": "./dist/utils.cjs"
       }
     },
+    "./map": {
+      "import": {
+        "types": "./dist/map.d.ts",
+        "default": "./dist/map.js"
+      }
+    },
     "./styles.css": "./dist/styles.css",
     "./package.json": "./package.json"
   },
@@ -59,12 +65,13 @@
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "check:next": "node scripts/check-next.mjs",
-    "check:package": "publint && attw --pack . --profile node16 --exclude-entrypoints styles.css",
+    "check:package": "publint && attw --pack . --profile node16 --exclude-entrypoints styles.css map && attw --pack . --profile esm-only --entrypoints map",
     "changeset": "changeset",
     "release": "pnpm build && changeset publish",
     "size": "node scripts/size.mjs"
   },
   "peerDependencies": {
+    "maplibre-gl": "^6.0.0",
     "react": "^17.0.0 || ^18.0.0 || ^19.0.0",
     "react-dom": "^17.0.0 || ^18.0.0 || ^19.0.0",
     "tailwindcss": "^4.0.0"
@@ -85,12 +92,14 @@
     "@tanstack/react-table": "9.2.6",
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.3",
+    "@types/geojson": "^7946.0.16",
     "@types/node": "^26.6.5",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^6.1.2",
     "esbuild": "0.28.2",
     "jsdom": "^30.1.3",
+    "maplibre-gl": "6.15.0",
     "publint": "^0.3.25",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
@@ -107,5 +116,10 @@
     "tailwindcss",
     "radix-ui",
     "design-system"
-  ]
+  ],
+  "peerDependenciesMeta": {
+    "maplibre-gl": {
+      "optional": true
+    }
+  }
 }

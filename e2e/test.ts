@@ -10,7 +10,20 @@ const browserNotices = [
   /has been classified as a bounce tracker/,
   // Firefox notes any element moved on scroll; a custom scrollbar's thumb (ScrollArea) is exactly that.
   /appears to use a scroll-linked positioning effect/,
+  // Chromium's software WebGL (no GPU in headless) on reading the map's pixels back.
+  /GL Driver Message \(OpenGL, Performance, GL_CLOSE_PATH_NV, High\): GPU stall due to ReadPixels/,
 ];
+
+/** OpenFreeMap's styles as served offline (see serveMapTilesOffline). */
+const offlineMapStyle = (dark: boolean) =>
+  JSON.stringify({
+    version: 8,
+    sources: {
+      // A source that only credits, so the attribution has something to show.
+      credits: { type: "geojson", data: { type: "FeatureCollection", features: [] }, attribution: '<a href="https://www.openstreetmap.org/copyright">© OpenStreetMap</a>' },
+    },
+    layers: [{ id: "background", type: "background", paint: { "background-color": dark ? "#1b1e24" : "#e4e7ec" } }],
+  });
 
 /**
  * Every test fails if the page logs an error or warning (React key warnings, Radix
@@ -34,6 +47,17 @@ export const test = base.extend<{ consoleGuard: void }>({
 });
 
 export { expect };
+
+/**
+ * The map's default tiles (OpenFreeMap) answered offline, for pages that show a map with them: tests
+ * neither wait on nor depend on the network. Only there: in Firefox any page.route also slows other
+ * loads, and fonts reloaded during an axe run were aborted with a console error.
+ */
+export async function serveMapTilesOffline(page: Page) {
+  await page.route("https://tiles.openfreemap.org/**", (route) =>
+    route.fulfill({ contentType: "application/json", body: offlineMapStyle(route.request().url().endsWith("/dark")) }),
+  );
+}
 
 export type Theme = "dark" | "light";
 

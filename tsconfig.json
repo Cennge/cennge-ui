@@ -14,7 +14,8 @@
     "types": ["node", "vitest/globals", "@testing-library/jest-dom"],
     "paths": {
       "cennge-ui": ["./src/index.ts"],
-      "cennge-ui/utils": ["./src/utils/index.ts"]
+      "cennge-ui/utils": ["./src/utils/index.ts"],
+      "cennge-ui/map": ["./src/map/index.ts"]
     }
   },
   "include": ["src", "playground", "tests", "e2e", "*.config.ts"],

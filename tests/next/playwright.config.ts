@@ -22,7 +22,7 @@ const servers = [
 const browsers = [
   { name: "chromium", use: devices["Desktop Chrome"] },
   { name: "chromium-mobile", use: devices["Pixel 7"] },
-  { name: "firefox", use: devices["Desktop Firefox"] },
+  { name: "firefox", use: { ...devices["Desktop Firefox"], launchOptions: { firefoxUserPrefs: { "webgl.force-enabled": true } } } },
   { name: "webkit", use: devices["Desktop Safari"] },
   { name: "webkit-mobile", use: devices["iPhone 17"] },
 ];

@@ -14,6 +14,7 @@ import {
   toast,
 } from "cennge-ui";
 import { cn } from "cennge-ui/utils";
+import { Map, MapControls, MapMarker, MapRoute } from "cennge-ui/map";
 
 const repositories = ["ai-niche-scout", "cennge-ui", "payload-cache", "spredo-crypto-screener"];
 
@@ -38,6 +39,11 @@ export function App() {
       <VirtualList items={repositories} getKey={(name) => name} aria-label="Repositories" className="h-40">
         {(name, index) => <span>{`${index + 1}. ${name}`}</span>}
       </VirtualList>
+      <Map aria-label="Offices" defaultCenter={[37.62, 55.76]} defaultZoom={9} onViewChange={(view) => view.zoom}>
+        <MapControls showLocate />
+        <MapMarker lngLat={[37.62, 55.76]} label="Moscow office" popup={<p>cennge-ui</p>} />
+        <MapRoute coordinates={[[37.62, 55.76], [49.11, 55.79]]} color="secondary" />
+      </Map>
       <Toaster placement="top-right" />
     </div>
   );

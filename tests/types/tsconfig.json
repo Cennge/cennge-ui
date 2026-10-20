@@ -8,7 +8,8 @@
     "strict": true,
     "skipLibCheck": false,
     "noEmit": true,
-    "types": []
+    // maplibre-gl's declarations use the GeoJSON global of @types/geojson, which pnpm does not hoist.
+    "types": ["geojson"]
   },
   "files": ["app.tsx"]
 }

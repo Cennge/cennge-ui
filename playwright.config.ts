@@ -19,7 +19,8 @@ export default defineConfig({
   projects: [
     { name: "chromium", use: { ...devices["Desktop Chrome"] } },
     { name: "chromium-mobile", use: { ...devices["Pixel 7"] } },
-    { name: "firefox", use: { ...devices["Desktop Firefox"] } },
+    // Headless Firefox turns WebGL off without a GPU; the map needs it (as it does a real GPU).
+    { name: "firefox", use: { ...devices["Desktop Firefox"], launchOptions: { firefoxUserPrefs: { "webgl.force-enabled": true } } } },
     // Playwright's WebKit build: Safari's engine, though not Safari itself (fonts and OS integration differ).
     { name: "webkit", use: { ...devices["Desktop Safari"] } },
     { name: "webkit-mobile", use: { ...devices["iPhone 17"] } },

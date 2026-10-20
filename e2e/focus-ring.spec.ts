@@ -1,5 +1,5 @@
 import { readdirSync } from "node:fs";
-import { expect, openFixture, test } from "./test";
+import { expect, openFixture, serveMapTilesOffline, test } from "./test";
 
 /*
  * Every element that Tab reaches must look different while it has keyboard focus (WCAG 2.4.7).
@@ -91,11 +91,14 @@ test.describe("keyboard focus is visible", () => {
       });
       if (name === "playground") {
         test.setTimeout(120_000); // some 250 tab stops; WebKit under a full parallel run needs the time
+        await serveMapTilesOffline(page);
         await page.goto("/");
         await expect(page.getByRole("heading", { level: 1 })).toBeVisible({ timeout: 30_000 });
       } else {
         await openFixture(page, name);
       }
+      // A map's markers and controls appear once MapLibre has drawn it.
+      await expect(page.locator('[data-slot="map"][data-state="loading"]')).toHaveCount(0, { timeout: 20_000 });
       // The settled look only: no transitions or animations half-way.
       await page.addStyleTag({ content: "*, *::before, *::after { transition: none !important; animation: none !important; }" });
 

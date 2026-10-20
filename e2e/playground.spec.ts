@@ -1,6 +1,11 @@
-import { expect, expectAccessible, test } from "./test";
+import { expect, expectAccessible, serveMapTilesOffline, test } from "./test";
 
 test.describe("playground", () => {
+  // The map demo draws OpenFreeMap's tiles.
+  test.beforeEach(async ({ page }) => {
+    await serveMapTilesOffline(page);
+  });
+
   test("renders every demo without console errors", async ({ page }) => {
     await page.goto("/");
     await expect(page.getByRole("heading", { name: "cennge-ui", level: 1 })).toBeVisible();

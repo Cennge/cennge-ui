@@ -44,5 +44,11 @@ writeFileSync(join(app, "package.json"), `${JSON.stringify(manifest, null, 2)}\n
 rmSync(join(app, "node_modules/cennge-ui"), { recursive: true, force: true });
 rmSync(join(app, "node_modules/.package-lock.json"), { force: true });
 run("npm install --no-audit --no-fund", app);
+
+// MapLibre's worker, served as a static file as the README says for Next.js (layout.tsx points to it).
+mkdirSync(join(app, "public/maplibre"), { recursive: true });
+for (const file of ["maplibre-gl-worker.mjs", "maplibre-gl-shared.mjs"]) {
+  cpSync(join(app, "node_modules/maplibre-gl/dist", file), join(app, "public/maplibre", file));
+}
 run("npm run build", app);
 run(["pnpm exec playwright test -c tests/next/playwright.config.ts", ...process.argv.slice(2)].join(" "), root);

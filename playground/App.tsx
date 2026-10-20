@@ -29,6 +29,7 @@ import { AccountDemo } from "./AccountDemo";
 import { DatesDemo } from "./DatesDemo";
 import { DataDemo } from "./DataDemo";
 import { ShellDemo } from "./ShellDemo";
+import { MapDemo } from "./MapDemo";
 
 const colors: CenngeColor[] = ["default", "primary", "secondary", "success", "warning", "danger", "info"];
 const variants: CenngeVariant[] = ["solid", "shadow", "bordered", "flat", "faded", "light", "ghost"];
@@ -69,6 +70,7 @@ const sections = [
   "FileUpload",
   "NumberInput",
   "Stepper",
+  "Map",
 ];
 
 function scrollToSection(title: string) {
@@ -248,6 +250,7 @@ export function App() {
       <AccountDemo />
       <DatesDemo />
       <DataDemo />
+      <MapDemo />
       <ShellDemo />
 
       <Section title="Button: цвета × варианты">

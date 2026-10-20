@@ -5,10 +5,14 @@
 import { StrictMode, Suspense, lazy, type ComponentType } from "react";
 import { createRoot } from "react-dom/client";
 import { CenngeProvider, Toaster } from "cennge-ui";
+import { setMapWorkerUrl } from "cennge-ui/map";
+import mapWorkerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url";
 import "./fonts";
 import "./styles.css";
 
 const fixtures = import.meta.glob<{ default: ComponentType }>("./fixtures/*.tsx");
+
+setMapWorkerUrl(mapWorkerUrl);
 
 const params = new URLSearchParams(window.location.search);
 const name = params.get("name") ?? "";

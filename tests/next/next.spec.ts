@@ -1,8 +1,10 @@
 import type { Page } from "@playwright/test";
 // Fails every test on a console error or warning, hydration mismatches included.
-import { expect, test } from "../../e2e/test";
+import { expect, serveMapTilesOffline, test } from "../../e2e/test";
 
 async function open(page: Page) {
+  // The playground's map draws OpenFreeMap's tiles.
+  await serveMapTilesOffline(page);
   await page.goto("/");
   await expect(page.locator("html[data-hydrated]")).toBeAttached({ timeout: 30_000 });
 }
@@ -13,12 +15,22 @@ test("the server renders the components, not just the browser", async ({ request
   expect(html).toContain("Rendered by a Server Component");
   expect(html).toContain("Песочница компонентов");
   expect(html).toContain('role="grid"');
+  // The map holds its place on the server; MapLibre comes in the browser.
+  expect(html).toContain('data-slot="map" data-state="loading"');
 });
 
 test("hydrates without a single error or warning", async ({ page }) => {
   await open(page);
   // React reports some mismatches a moment after the commit.
   await page.waitForTimeout(1000);
+});
+
+test("the map: MapLibre and its worker, served from public/, draw it after hydration", async ({ page }) => {
+  await open(page);
+  const map = page.getByRole("region", { name: "Офисы и маршрут доставки" });
+  await map.scrollIntoViewIfNeeded();
+  await expect(map).toHaveAttribute("data-state", "ready", { timeout: 30_000 });
+  await expect(map.getByRole("button", { name: "Москва" })).toBeVisible();
 });
 
 test("the package's classes and tokens reach the page", async ({ page }) => {

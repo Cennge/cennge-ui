@@ -46,7 +46,8 @@ A regular npm package — `npm update` and every app gets the fix.
 pnpm add cennge-ui
 ```
 
-Peer dependencies: `react` and `react-dom` 17, 18 or 19; `tailwindcss` 4.
+Peer dependencies: `react` and `react-dom` 17, 18 or 19; `tailwindcss` 4. `maplibre-gl` 6, only for
+[maps](#map-cennge-uimap).
 
 ```css
 /* app.css */
@@ -434,6 +435,48 @@ list.current?.scrollToIndex(4811, { align: "center" });
 Only the rows in view are in the DOM; each still tells screen readers its place in the whole list, and
 rows of any height are measured as they appear. `useVirtualizer` is the same engine for your own markup.
 Combobox and MultiSelect switch to it by themselves past 100 options.
+
+### Map (`cennge-ui/map`)
+
+```bash
+pnpm add maplibre-gl   # only apps with a map need it
+```
+
+```tsx
+import { Map, MapControls, MapMarker, MapPopup, MapRoute } from "cennge-ui/map";
+
+<Map aria-label="Offices" defaultBounds={[[37.6, 55.3], [49.2, 56.6]]} className="h-96">
+  <MapRoute coordinates={route} />                          {/* under the place names, in the accent */}
+  <MapControls showLocate showFullscreen />
+  <MapMarker lngLat={[37.62, 55.76]} label="Moscow office" tooltip="Moscow" popup={<OfficeCard />} />
+  <MapPopup lngLat={clicked} isOpen={open} onOpenChange={setOpen} label="Chosen point">…</MapPopup>
+</Map>
+```
+
+- maplibre-gl is fetched when the first map mounts; until then, and on the server, the map holds its
+  place. The map code itself is about 8 KB gzip.
+- Tiles come from [OpenFreeMap](https://openfreemap.org) (no key, no usage limits, commercial use
+  allowed), light or dark with the page. Pass your own with `mapStyle` (a URL, a style object, or
+  `{ light, dark }`); `blankMapStyle(color)` draws nothing but your data.
+- Markers, tooltips and popups are our own components over the map, not MapLibre's: markers with a popup
+  or `onClick` are buttons in the tab order, popups are dialogs that close on Escape and pan the map to
+  fit. The map itself takes focus too: arrows move it, plus and minus zoom.
+- `useMap()` and `onLoad` give the MapLibre map for everything else. The sources' credits stay in the corner,
+  as their licences ask.
+
+MapLibre draws in a worker, and bundlers do not find its file by themselves. Tell it once, at startup:
+
+```ts
+// Vite
+import workerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url";
+import { setMapWorkerUrl } from "cennge-ui/map";
+setMapWorkerUrl(workerUrl);
+```
+
+Next.js and other bundlers: copy `maplibre-gl-worker.mjs` and `maplibre-gl-shared.mjs` from
+`node_modules/maplibre-gl/dist` to `public/maplibre/` (say, in a `postinstall` script), then call
+`setMapWorkerUrl("/maplibre/maplibre-gl-worker.mjs")` in a client component. Unlike maplibre-gl's own
+`setWorkerUrl`, ours does not import maplibre-gl, so it still loads only with a map.
 
 ### Command palette and Sidebar
 
