@@ -73,9 +73,9 @@ jobs:
       - run: pnpm build
       - run: pnpm exec playwright install --with-deps chromium firefox webkit
       # Firefox in a window on a virtual display, for WebGL (see the Playwright job).
-      - run: sudo apt-get update && sudo apt-get install -y --no-install-recommends xvfb libgl1-mesa-dri
+      - run: sudo apt-get update && sudo apt-get install -y --no-install-recommends xvfb xdotool libgl1-mesa-dri
       # Packs the package, builds tests/next/app on it outside the repository, checks it in every browser.
-      - run: xvfb-run --auto-servernum pnpm check:next
+      - run: sh scripts/with-display.sh pnpm check:next
         env:
           CENNGE_FIREFOX_HEADED: "1"
       - uses: actions/upload-artifact@v7
@@ -99,7 +99,7 @@ jobs:
           - engine: firefox
             projects: --project=firefox
             # Headless Firefox has no GL on Linux; the map needs WebGL. A window on a virtual display instead.
-            display: xvfb-run --auto-servernum
+            display: sh scripts/with-display.sh
           - engine: webkit
             projects: --project=webkit --project=webkit-mobile
     steps:
@@ -112,7 +112,7 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm exec playwright install --with-deps ${{ matrix.engine }}
       - if: matrix.engine == 'firefox'
-        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends xvfb libgl1-mesa-dri
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends xvfb xdotool libgl1-mesa-dri
       - run: ${{ matrix.display }} pnpm exec playwright test ${{ matrix.projects }}
         env:
           CENNGE_FIREFOX_HEADED: ${{ matrix.engine == 'firefox' && '1' || '' }}
