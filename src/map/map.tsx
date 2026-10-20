@@ -2,7 +2,8 @@ import * as React from "react";
 import { cn } from "../utils/cn";
 import { MapAttribution } from "./attribution";
 import { MapContext, defaultMapLabels, type LngLat, type MapContextValue, type MapLabels } from "./context";
-import { defaultMapStyles, loadMapLibre, type MapLibreMap, type MapLibreModule, type MapStyle } from "./maplibre";
+import { loadMapLibre, openFreeMapStyles, type MapLibreMap, type MapLibreModule, type MapStyle } from "./maplibre";
+import { readPalette, tintStyle } from "./palette";
 
 export interface MapView {
   center: LngLat;
@@ -30,8 +31,8 @@ export interface MapProps extends Omit<React.HTMLAttributes<HTMLDivElement>, "ch
   minZoom?: number;
   maxZoom?: number;
   /**
-   * A MapLibre style (URL or object), or one per theme.
-   * @default OpenFreeMap's Positron and Dark: no key, no usage limits
+   * A MapLibre style (URL or object), or one per theme. openFreeMapStyles has OpenFreeMap's as published.
+   * @default OpenFreeMap's Positron in the theme's colours, light or dark: no key, no usage limits
    */
   mapStyle?: MapStyle | { light: MapStyle; dark: MapStyle };
   /** @default the page's: dark inside `class="dark"` */
@@ -58,13 +59,23 @@ function setRef<T>(ref: React.Ref<T> | undefined, value: T) {
   else if (ref) (ref as React.MutableRefObject<T>).current = value;
 }
 
-function styleFor(mapStyle: MapProps["mapStyle"], theme: "light" | "dark"): MapStyle {
-  if (mapStyle === undefined) return defaultMapStyles[theme];
-  if (typeof mapStyle === "object" && "light" in mapStyle && "dark" in mapStyle) return mapStyle[theme];
-  return mapStyle as MapStyle;
+/** The style to load, a key to tell whether it changed, and whether it is the default one to recolour. */
+function styleFor(mapStyle: MapProps["mapStyle"], theme: "light" | "dark") {
+  if (mapStyle === undefined) return { style: openFreeMapStyles.positron as MapStyle, key: `cennge:${theme}`, tinted: true };
+  const style = typeof mapStyle === "object" && "light" in mapStyle && "dark" in mapStyle ? mapStyle[theme] : (mapStyle as MapStyle);
+  return { style, key: typeof style === "string" ? style : JSON.stringify(style), tinted: false };
 }
 
-const keyOf = (style: MapStyle) => (typeof style === "string" ? style : JSON.stringify(style));
+/**
+ * Loads a style in full: layers added by children are gone and come back on "style.load". The default
+ * style is recoloured on the way in with the theme's tokens, read from around the map.
+ */
+function applyStyle(map: MapLibreMap, container: HTMLElement, resolved: ReturnType<typeof styleFor>, theme: "light" | "dark") {
+  map.setStyle(resolved.style, {
+    diff: false,
+    transformStyle: resolved.tinted ? (_previous, next) => tintStyle(next, readPalette(container, theme)) : undefined,
+  });
+}
 
 function viewOf(map: MapLibreMap): MapView {
   const { lng, lat } = map.getCenter();
@@ -167,11 +178,13 @@ export const Map = React.forwardRef<HTMLDivElement, MapProps>(function Map(props
       .then((maplibre) => {
         if (cancelled) return;
         const options = initial.current;
-        const style = styleFor(latest.current.mapStyle, themeProp ?? (container.closest(".dark") ? "dark" : "light"));
-        appliedStyle.current = keyOf(style);
+        const startTheme = themeProp ?? (container.closest(".dark") ? "dark" : "light");
+        const resolved = styleFor(latest.current.mapStyle, startTheme);
+        appliedStyle.current = resolved.key;
         instance = new maplibre.Map({
           container: host,
-          style,
+          // The default style is loaded below, to recolour it on the way in.
+          style: resolved.tinted ? undefined : resolved.style,
           center: options.defaultCenter,
           zoom: options.defaultZoom,
           bounds: options.defaultBounds,
@@ -190,6 +203,7 @@ export const Map = React.forwardRef<HTMLDivElement, MapProps>(function Map(props
         canvas.removeAttribute("role");
         canvas.setAttribute("aria-label", latest.current.labels.canvas);
         created.on("style.load", () => setStyleRevision(++styleCount.current));
+        if (resolved.tinted) applyStyle(created, container, resolved, startTheme);
         // OpenFreeMap's styles name a few icons their sprite lacks, and MapLibre warns about each. For
         // the default styles only, they become blank: a style of the app's own keeps its warnings.
         created.on("styleimagemissing", ({ id }: { id: string }) => {
@@ -220,13 +234,12 @@ export const Map = React.forwardRef<HTMLDivElement, MapProps>(function Map(props
 
   // A new style (or the other theme's): layers added by children come back on "style.load".
   const resolvedStyle = styleFor(mapStyle, theme);
-  const styleKey = keyOf(resolvedStyle);
   React.useEffect(() => {
-    if (!map || appliedStyle.current === styleKey) return;
-    appliedStyle.current = styleKey;
+    if (!map || !container || appliedStyle.current === resolvedStyle.key) return;
+    appliedStyle.current = resolvedStyle.key;
     setStyleRevision(null);
-    map.setStyle(resolvedStyle);
-  }, [map, styleKey]);
+    applyStyle(map, container, resolvedStyle, theme);
+  }, [map, resolvedStyle.key]);
 
   React.useEffect(() => {
     map?.getCanvas().setAttribute("aria-label", labels.canvas);
