@@ -211,11 +211,13 @@ test("locate: the user's dot, or a message when the location is not available", 
 
 test("the theme's style, and routes in the theme's and the accent's colour", async ({ page }) => {
   await open(page, "dark");
+  // Null while the new style loads: the routes are not back yet.
   const lineColor = () =>
-    evaluateMap<string>(page, 'return map.getPaintProperty(map.getStyle().layers.find((l) => l.id.endsWith("-line")).id, "line-color")');
+    evaluateMap<string | null>(page, 'const line = map.getStyle().layers.find((l) => l.id.endsWith("-line")); return line ? map.getPaintProperty(line.id, "line-color") : null');
   const token = (name: string) =>
     page.evaluate((property) => getComputedStyle(document.documentElement).getPropertyValue(property).trim(), name);
-  const background = () => evaluateMap<string>(page, 'return map.getPaintProperty("background", "background-color")');
+  const background = () =>
+    evaluateMap<string | null>(page, 'return map.getLayer("background") ? map.getPaintProperty("background", "background-color") : null');
 
   expect(await lineColor()).toBe(await token("--cennge-primary"));
   expect(await background()).toBe("#1b1e24");
