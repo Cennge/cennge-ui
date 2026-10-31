@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { Card, CardBody, CardHeader } from "cennge-ui";
-import { BarChart, type ChartLabels } from "cennge-ui/charts";
+import { AreaChart, BarChart, LineChart, type ChartLabels } from "cennge-ui/charts";
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
@@ -26,6 +26,23 @@ const issues = [
   { repo: "ai-niche-scout", open: 21, closed: 18 },
   { repo: "payload-cache", open: 4, closed: 27 },
   { repo: "cennge-ui", open: 6, closed: 44 },
+];
+
+// Звёзды за 12 недель: у каждого репозитория свой темп.
+const stars = Array.from({ length: 12 }, (_, i) => ({
+  week: `нед. ${i + 1}`,
+  cennge: Math.round(40 + i * i * 2.6 + i * 6),
+  spredo: Math.round(120 + i * 9),
+  scout: Math.round(60 + 30 * Math.log1p(i)),
+}));
+
+const ci = [
+  { week: "1", passed: 42, flaky: 3, failed: 6 },
+  { week: "2", passed: 51, flaky: 5, failed: 4 },
+  { week: "3", passed: 47, flaky: 2, failed: 9 },
+  { week: "4", passed: 58, flaky: 4, failed: 3 },
+  { week: "5", passed: 63, flaky: 1, failed: 5 },
+  { week: "6", passed: 66, flaky: 2, failed: 2 },
 ];
 
 function ChartCard({ title, children }: { title: string; children: ReactNode }) {
@@ -65,6 +82,39 @@ export function ChartsDemo() {
             series={[
               { key: "closed", label: "Закрытые" },
               { key: "open", label: "Открытые" },
+            ]}
+            labels={labels}
+          />
+        </ChartCard>
+        <ChartCard title="Звёзды на GitHub">
+          <LineChart
+            aria-label="Звёзды на GitHub по неделям"
+            data={stars}
+            index="week"
+            indexLabel="Неделя"
+            curve="smooth"
+            series={[
+              { key: "cennge", label: "cennge-ui" },
+              { key: "spredo", label: "spredo-crypto-screener" },
+              { key: "scout", label: "ai-niche-scout" },
+            ]}
+            labels={labels}
+          />
+        </ChartCard>
+        <ChartCard title="Прогоны CI: playwright-msi-scraper">
+          {/* Цвет здесь значит состояние, поэтому цвета статусов, а не палитры. */}
+          <AreaChart
+            aria-label="Прогоны CI playwright-msi-scraper по неделям"
+            data={ci}
+            index="week"
+            indexLabel="Неделя"
+            indexFormat={(week) => `нед. ${week}`}
+            isStacked
+            curve="smooth"
+            series={[
+              { key: "passed", label: "Успешные", color: "success" },
+              { key: "flaky", label: "Нестабильные", color: "warning" },
+              { key: "failed", label: "Упавшие", color: "danger" },
             ]}
             labels={labels}
           />
