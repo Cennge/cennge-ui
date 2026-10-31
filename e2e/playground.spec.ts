@@ -50,13 +50,16 @@ test.describe("playground", () => {
     await expect(html).toHaveAttribute("data-accent", "blue");
   });
 
-  // Every component on one page: a regression net for contrast and ARIA in both themes.
+  // Every component on one page: a regression net for contrast and ARIA in both themes. axe takes some
+  // 15 s over all of it in Firefox, and twice that when every browser is busy at once.
   test("passes an axe audit in the dark theme", async ({ page }) => {
+    test.slow();
     await page.goto("/");
     await expectAccessible(page);
   });
 
   test("passes an axe audit in the light theme", async ({ page }) => {
+    test.slow();
     await page.goto("/");
     await page.getByRole("radio", { name: "Светлая" }).click();
     await expect(page.locator("html")).not.toHaveClass(/dark/);
