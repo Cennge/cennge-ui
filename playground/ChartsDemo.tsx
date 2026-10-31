@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { Card, CardBody, CardHeader } from "cennge-ui";
-import { AreaChart, BarChart, DonutChart, LineChart, type ChartLabels } from "cennge-ui/charts";
+import { AreaChart, BarChart, DonutChart, LineChart, Sparkline, type ChartLabels } from "cennge-ui/charts";
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
@@ -53,6 +53,31 @@ const languages = [
   { language: "Другие", bytes: 19_000 },
 ];
 
+// Показатели с трендом за 12 недель. Вниз у задач — это хорошо, поэтому тоже зелёным.
+const kpis = [
+  {
+    title: "Скачивания cennge-ui",
+    value: "1 280",
+    change: "↑ 14 % за неделю",
+    trend: [320, 410, 380, 520, 610, 580, 720, 840, 790, 960, 1120, 1280],
+    label: "Скачивания cennge-ui за 12 недель: рост вчетверо",
+  },
+  {
+    title: "Звёзды spredo-crypto-screener",
+    value: "219",
+    change: "↑ 9 за неделю",
+    trend: [120, 129, 138, 147, 156, 165, 174, 183, 192, 201, 210, 219],
+    label: "Звёзды spredo-crypto-screener за 12 недель: ровный рост",
+  },
+  {
+    title: "Открытые задачи ai-niche-scout",
+    value: "21",
+    change: "↓ 3 за неделю",
+    trend: [34, 31, 33, 30, 29, 27, 28, 26, 25, 24, 24, 21],
+    label: "Открытые задачи ai-niche-scout за 12 недель: снижаются",
+  },
+];
+
 function ChartCard({ title, children }: { title: string; children: ReactNode }) {
   return (
     <Card>
@@ -65,6 +90,20 @@ function ChartCard({ title, children }: { title: string; children: ReactNode }) 
 export function ChartsDemo() {
   return (
     <Section title="Charts">
+      <div className="mb-4 grid grid-cols-1 gap-4 md:grid-cols-3">
+        {kpis.map((kpi) => (
+          <Card key={kpi.title}>
+            <CardBody className="flex-row items-end justify-between gap-3">
+              <div className="min-w-0">
+                <p className="truncate text-sm text-muted">{kpi.title}</p>
+                <p className="text-2xl font-semibold">{kpi.value}</p>
+                <p className="text-xs text-success-text">{kpi.change}</p>
+              </div>
+              <Sparkline aria-label={kpi.label} data={kpi.trend} variant="area" className="h-10 w-28" />
+            </CardBody>
+          </Card>
+        ))}
+      </div>
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         <ChartCard title="Скачивания с npm">
           <BarChart

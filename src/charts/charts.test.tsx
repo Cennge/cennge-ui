@@ -4,6 +4,7 @@ import { CenngeProvider } from "../provider";
 import { BarChart } from "./bar-chart";
 import { chartColor } from "./colors";
 import { DonutChart } from "./donut-chart";
+import { Sparkline } from "./sparkline";
 
 const data = [
   { month: "Jan", stars: 120, forks: 14 },
@@ -90,5 +91,29 @@ describe("DonutChart", () => {
     const html = renderToString(<DonutChart aria-label="One" data={[{ name: "all", n: 5 }]} index="name" value="n" />);
     // Two circles, the hole cut out by the even-odd rule.
     expect(html.match(/<path [^>]*d="([^"]+)"/)?.[1]?.match(/M/g)).toHaveLength(2);
+  });
+});
+
+describe("Sparkline", () => {
+  it("is a named picture, drawn whole on the server", () => {
+    const html = renderToString(<Sparkline aria-label="Downloads, up" data={[1, 3, 2, 5]} />);
+    expect(html).toContain('role="img" aria-label="Downloads, up"');
+    // The latest value is the highest: its dot sits at the right edge, at the top of the line's room.
+    expect(html).toContain('style="left:100%;top:10%');
+  });
+
+  it("breaks at a missing value, shows a value alone as a dot, and runs a flat trend through the middle", () => {
+    const { container, rerender } = render(<Sparkline aria-label="Gaps" data={[1, 2, null, 4, null, 2, 3]} showLast={false} />);
+    expect(container.querySelectorAll("path")).toHaveLength(2);
+    // 4 stands alone between gaps.
+    expect(container.querySelectorAll("span > span")).toHaveLength(1);
+    rerender(<Sparkline aria-label="Flat" data={[7, 7, 7]} />);
+    expect(container.querySelector("path")).toHaveAttribute("d", "M0,50L50,50L100,50");
+  });
+
+  it("an area variant adds the wash under the line", () => {
+    const { container } = render(<Sparkline aria-label="Area" data={[1, 2, 3]} variant="area" />);
+    expect(container.querySelectorAll("path")).toHaveLength(2);
+    expect(container.querySelector("linearGradient")).not.toBeNull();
   });
 });

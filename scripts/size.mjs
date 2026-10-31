@@ -19,10 +19,11 @@ const cases = [
   [["Map", "MapMarker", "MapPopup", "MapControls", "MapRoute"], 12_500, "cennge-ui/map"],
   [["*"], 15_500, "cennge-ui/map"],
   // The charts draw their own SVG, no chart library underneath (BarChart with its frame: 5.2 KB; all of them:
-  // 7.9 KB).
+  // 8.4 KB). A Sparkline beside a number takes 1.9 KB, the path maths included.
   [["BarChart"], 7_000, "cennge-ui/charts"],
   [["DonutChart"], 4_000, "cennge-ui/charts"],
-  [["*"], 10_500, "cennge-ui/charts"],
+  [["Sparkline"], 2_500, "cennge-ui/charts"],
+  [["*"], 11_000, "cennge-ui/charts"],
 ];
 
 let failed = false;

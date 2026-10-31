@@ -5,3 +5,4 @@ export { defaultChartLabels, type ChartLabels } from "./frame";
 export type { ChartColor } from "./colors";
 export type { CartesianChartProps, ChartSeries } from "./series";
 export { DonutChart, defaultDonutChartLabels, type DonutChartLabels, type DonutChartProps } from "./donut-chart";
+export { Sparkline, type SparklineProps } from "./sparkline";
