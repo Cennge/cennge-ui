@@ -50,16 +50,16 @@ test("hover a region: highlighted, with its tooltip at the pointer; a click repo
   await open(page);
   // The regions are drawn a moment after the map is ready.
   await expect
-    .poll(() => onMap<number>(page, "regionMap", "return map.queryRenderedFeatures(map.project([34.5, 54.5])).length"))
+    .poll(() => onMap<number>(page, "regionMap", "return map.queryRenderedFeatures(map.project([-73.915, 40.745])).length"))
     .toBeGreaterThan(0);
-  const region6 = await pointOnPage(page, "regionMap", [34.5, 54.5]);
+  const region6 = await pointOnPage(page, "regionMap", [-73.915, 40.745]);
   const tooltip = page.getByRole("tooltip").filter({ hasText: "Region 6: 6000" });
   if (isMobile) {
     // No hover on a phone: a tap shows the tooltip, a tap elsewhere hides it.
     await page.touchscreen.tap(region6.x, region6.y);
     await expect(tooltip).toBeVisible();
     await expect(page.getByTestId("picked")).toHaveText("picked Region 6");
-    const empty = await pointOnPage(page, "regionMap", [5, 50]);
+    const empty = await pointOnPage(page, "regionMap", [-74.085, 40.715]);
     await page.touchscreen.tap(empty.x, empty.y);
     await expect(tooltip).toBeHidden();
     return;
@@ -75,7 +75,7 @@ test("hover a region: highlighted, with its tooltip at the pointer; a click repo
   await page.mouse.click(region6.x, region6.y);
   await expect(page.getByTestId("picked")).toHaveText("picked Region 6");
   // Off the regions: no tooltip, no highlight.
-  const empty = await pointOnPage(page, "regionMap", [5, 50]);
+  const empty = await pointOnPage(page, "regionMap", [-74.085, 40.715]);
   await page.mouse.move(empty.x, empty.y);
   await expect(tooltip).toBeHidden();
   await expect.poll(hovered).toBe(false);
@@ -91,10 +91,10 @@ test("arcs: one curve per pair, bowed between its ends", async ({ page }) => {
     );
   await expect.poll(async () => (await read()).length).toBeGreaterThanOrEqual(3);
   const curves = await read();
-  const first = curves.find((points) => Math.abs(points.at(-1)![0]! - 24.5) < 0.01 && Math.abs(points.at(-1)![1]! - 44.5) < 0.01)!;
+  const first = curves.find((points) => Math.abs(points.at(-1)![0]! + 73.975) < 0.001 && Math.abs(points.at(-1)![1]! - 40.685) < 0.001)!;
   expect(first).toBeTruthy();
-  // East along a parallel, bowed north (to the left of the way): by a tenth of its length at the middle.
-  expect(Math.max(...first.map(([, lat]) => lat!))).toBeCloseTo(45.5, 1);
+  // East along a parallel, bowed north (to the left of the way): by a tenth of its 0.06° at the middle.
+  expect(Math.max(...first.map(([, lat]) => lat!))).toBeCloseTo(40.691, 3);
 });
 
 test("clusters: groups name their size, a click zooms in until the stores stand alone", async ({ page }) => {

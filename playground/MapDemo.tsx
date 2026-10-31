@@ -39,28 +39,29 @@ const labels: Partial<MapLabels> = {
 };
 
 const offices: { name: string; city: string; lngLat: LngLat; projects: string[] }[] = [
-  { name: "Москва", city: "Офис на Тверской", lngLat: [37.6062, 55.7642], projects: ["cennge-ui", "payload-cache"] },
-  { name: "Санкт-Петербург", city: "Офис на Литейном", lngLat: [30.3482, 59.9386], projects: ["spredo-crypto-screener"] },
-  { name: "Казань", city: "Склад и сервисный центр", lngLat: [49.1221, 55.7887], projects: ["ai-niche-scout"] },
-  { name: "Нижний Новгород", city: "Команда тестирования", lngLat: [44.002, 56.3287], projects: ["playwright-msi-scraper"] },
+  { name: "Манхэттен", city: "Офис в Мидтауне", lngLat: [-73.9855, 40.758], projects: ["cennge-ui", "payload-cache"] },
+  { name: "Бруклин", city: "Офис в Дамбо", lngLat: [-73.9888, 40.7033], projects: ["spredo-crypto-screener"] },
+  { name: "Квинс", city: "Склад и сервисный центр во Флашинге", lngLat: [-73.8331, 40.7675], projects: ["ai-niche-scout"] },
+  { name: "Бронкс", city: "Команда тестирования", lngLat: [-73.8648, 40.8448], projects: ["playwright-msi-scraper"] },
 ];
 
-// Москва — Нижний Новгород — Казань: по трассе М-12, грубо.
+// Мидтаун — Бронкс — Флашинг — Дамбо: по главным дорогам, грубо.
 const route: LngLat[] = [
-  [37.6062, 55.7642],
-  [39.0, 55.95],
-  [40.4, 56.13],
-  [42.2, 56.2],
-  [44.002, 56.3287],
-  [46.0, 56.1],
-  [47.6, 55.95],
-  [49.1221, 55.7887],
+  [-73.9855, 40.758],
+  [-73.944, 40.804],
+  [-73.93, 40.835],
+  [-73.8648, 40.8448],
+  [-73.825, 40.8],
+  [-73.8331, 40.7675],
+  [-73.87, 40.73],
+  [-73.93, 40.71],
+  [-73.9888, 40.7033],
 ];
 
-/** Шестиугольники вокруг Москвы со «спросом»: плотнее к центру, с рябью. */
+/** Шестиугольники вокруг Манхэттена со «спросом»: плотнее к центру, с рябью. */
 function hexagons() {
-  const center: LngLat = [37.62, 55.75];
-  const size = 0.022; // градусов широты
+  const center: LngLat = [-73.95, 40.74];
+  const size = 0.007; // градусов широты
   const stretch = 1 / Math.cos((center[1] * Math.PI) / 180);
   const features = [];
   for (let q = -14; q <= 14; q++) {
@@ -84,13 +85,13 @@ function hexagons() {
   return { type: "FeatureCollection" as const, features };
 }
 
-/** 2000 пунктов самовывоза вокруг городов: одинаковые от запуска к запуску. */
+/** 2000 пунктов самовывоза вокруг офисов: одинаковые от запуска к запуску. */
 function pickupPoints() {
   let seed = 11;
   const random = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
   return Array.from({ length: 2000 }, (_, index) => {
     const office = offices[index % offices.length]!;
-    const spread = index % 7 === 0 ? 2.5 : 0.6;
+    const spread = index % 7 === 0 ? 0.1 : 0.04;
     return {
       name: `Пункт ${index + 1}`,
       lngLat: [office.lngLat[0] + (random() - 0.5) * spread * 1.8, office.lngLat[1] + (random() - 0.5) * spread] as LngLat,
@@ -105,7 +106,16 @@ function DataMaps() {
   const supplies = offices.slice(1).map((office) => ({ from: offices[0]!.lngLat, to: office.lngLat }));
   return (
     <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-      <Map aria-label="Заказы по районам Москвы" labels={labels} defaultCenter={[37.62, 55.75]} defaultZoom={9.2} scrollZoom={false} className="h-80">
+      <Map
+        aria-label="Заказы по районам Нью-Йорка"
+        labels={labels}
+        defaultBounds={[
+          [-74.1, 40.64],
+          [-73.8, 40.84],
+        ]}
+        scrollZoom={false}
+        className="h-80"
+      >
         <MapGeoJSON data={demand} valueProperty="orders" tooltip={(cell) => `${String(cell.orders)} заказов в день`} />
         <MapLegend title="Заказов в день" domain={[0, 130]} />
         <MapControls showCompass={false} />
@@ -113,10 +123,12 @@ function DataMaps() {
       <Map
         aria-label="Пункты самовывоза и поставки"
         labels={labels}
+        // Группы в стороне от кнопок справа: под ними их не нажать.
         defaultBounds={[
-          [29, 54.8],
-          [50.5, 60.5],
+          [-74.05, 40.66],
+          [-73.8, 40.87],
         ]}
+        boundsPadding={{ top: 56, right: 72, bottom: 48, left: 48 }}
         scrollZoom={false}
         className="h-80"
       >
@@ -145,8 +157,12 @@ export function MapDemo() {
         <Map
           aria-label="Офисы и маршрут доставки"
           labels={labels}
-          defaultCenter={[41.5, 57.3]}
-          defaultZoom={4.6}
+          // Все четыре офиса на экране любой ширины, в стороне от кнопок справа.
+          defaultBounds={[
+            [-74.01, 40.69],
+            [-73.82, 40.86],
+          ]}
+          boundsPadding={{ top: 56, right: 72, bottom: 48, left: 48 }}
           scrollZoom={scrollZoom}
           onMapClick={setClicked}
           className="h-[28rem]"

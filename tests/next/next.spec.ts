@@ -30,7 +30,7 @@ test("the map: MapLibre and its worker, served from public/, draw it after hydra
   const map = page.getByRole("region", { name: "Офисы и маршрут доставки" });
   await map.scrollIntoViewIfNeeded();
   await expect(map).toHaveAttribute("data-state", "ready", { timeout: 30_000 });
-  await expect(map.getByRole("button", { name: "Москва" })).toBeVisible();
+  await expect(map.getByRole("button", { name: "Манхэттен" })).toBeVisible();
 });
 
 test("the package's classes and tokens reach the page", async ({ page }) => {

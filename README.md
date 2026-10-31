@@ -485,10 +485,10 @@ pnpm add maplibre-gl   # only apps with a map need it
 ```tsx
 import { Map, MapControls, MapMarker, MapPopup, MapRoute } from "cennge-ui/map";
 
-<Map aria-label="Offices" defaultBounds={[[37.6, 55.3], [49.2, 56.6]]} className="h-96">
+<Map aria-label="Offices" defaultBounds={[[-74.02, 40.69], [-73.82, 40.86]]} className="h-96">
   <MapRoute coordinates={route} />                          {/* under the place names, in the accent */}
   <MapControls showLocate showFullscreen />
-  <MapMarker lngLat={[37.62, 55.76]} label="Moscow office" tooltip="Moscow" popup={<OfficeCard />} />
+  <MapMarker lngLat={[-73.9855, 40.758]} label="Manhattan office" tooltip="Manhattan" popup={<OfficeCard />} />
   <MapPopup lngLat={clicked} isOpen={open} onOpenChange={setOpen} label="Chosen point">…</MapPopup>
 </Map>
 ```
@@ -500,7 +500,7 @@ import { MapArc, MapClusterLayer, MapGeoJSON, MapLegend } from "cennge-ui/map";
 
 <MapGeoJSON data={regions} valueProperty="downloads" tooltip={(r) => `${r.name}: ${r.downloads}`} />
 <MapLegend title="Downloads" domain={[0, 6000]} />          {/* the same shades, low to high */}
-<MapArc arcs={[{ from: moscow, to: kazan }]} color="secondary" />
+<MapArc arcs={[{ from: manhattan, to: queens }]} color="secondary" />
 <MapClusterLayer items={stores} getLngLat={(s) => s.lngLat} getLabel={(s) => s.name}
                  onItemClick={open} clusterLabel={(count, shown) => `${shown} stores`} />
 ```

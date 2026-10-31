@@ -39,14 +39,14 @@ export function App() {
       <VirtualList items={repositories} getKey={(name) => name} aria-label="Repositories" className="h-40">
         {(name, index) => <span>{`${index + 1}. ${name}`}</span>}
       </VirtualList>
-      <Map aria-label="Offices" defaultCenter={[37.62, 55.76]} defaultZoom={9} onViewChange={(view) => view.zoom}>
+      <Map aria-label="Offices" defaultCenter={[-73.9855, 40.758]} defaultZoom={11} onViewChange={(view) => view.zoom}>
         <MapControls showLocate />
-        <MapMarker lngLat={[37.62, 55.76]} label="Moscow office" popup={<p>cennge-ui</p>} />
-        <MapRoute coordinates={[[37.62, 55.76], [49.11, 55.79]]} color="secondary" />
-        <MapArc arcs={[{ from: [37.62, 55.76], to: [30.33, 59.93] }]} curvature={0.3} />
+        <MapMarker lngLat={[-73.9855, 40.758]} label="Manhattan office" popup={<p>cennge-ui</p>} />
+        <MapRoute coordinates={[[-73.9855, 40.758], [-73.8331, 40.7675]]} color="secondary" />
+        <MapArc arcs={[{ from: [-73.9855, 40.758], to: [-73.9888, 40.7033] }]} curvature={0.3} />
         <MapGeoJSON data="https://example.com/regions.geojson" valueProperty="stars" domain={[0, 100]} tooltip={(region) => String(region.name)} />
         <MapLegend title="Stars" domain={[0, 100]} />
-        <MapClusterLayer items={repositories} getLngLat={() => [37.62, 55.76]} getLabel={(name) => name} />
+        <MapClusterLayer items={repositories} getLngLat={() => [-73.9855, 40.758]} getLabel={(name) => name} />
       </Map>
       <Toaster placement="top-right" />
     </div>

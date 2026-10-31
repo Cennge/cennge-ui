@@ -7,7 +7,7 @@ describe("Map", () => {
   it("on the server: a labelled region holding its place, nothing of MapLibre yet", () => {
     const html = renderToString(
       <Map aria-label="Offices" className="h-64">
-        <MapMarker lngLat={[37.62, 55.75]} label="Moscow" />
+        <MapMarker lngLat={[-73.9855, 40.758]} label="Manhattan" />
       </Map>,
     );
     expect(html).toContain('role="region"');
@@ -15,7 +15,7 @@ describe("Map", () => {
     expect(html).toContain('data-state="loading"');
     expect(html).toContain("h-64");
     // Children need the map: they render once it exists, in the browser.
-    expect(html).not.toContain("Moscow");
+    expect(html).not.toContain("Manhattan");
     expect(html).not.toContain("<canvas");
   });
 
