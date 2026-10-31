@@ -138,7 +138,7 @@ export function Select({
             aria-describedby={helper ? helperId : undefined}
             className={slots.inputWrapper({
               class: [
-                "cursor-pointer text-left outline-none focus-visible:ring-2 data-[state=open]:ring-2",
+                "group/trigger cursor-pointer text-left outline-none focus-visible:ring-2 data-[state=open]:ring-2",
                 classNames?.trigger,
               ],
             })}
@@ -156,7 +156,8 @@ export function Select({
               <SelectPrimitive.Value placeholder={placeholder} />
             </span>
             <SelectPrimitive.Icon asChild>
-              <span className="transition-transform duration-(--cennge-duration) in-data-[state=open]:rotate-180">
+              {/* Its own trigger's state: any open ancestor (a Dialog, an Accordion item) also says data-state="open". */}
+              <span className="transition-transform duration-(--cennge-duration) group-data-[state=open]/trigger:rotate-180">
                 <ChevronIcon />
               </span>
             </SelectPrimitive.Icon>

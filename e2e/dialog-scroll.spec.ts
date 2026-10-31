@@ -1,4 +1,4 @@
-import { expect, expectAccessible, openFixture, test } from "./test";
+import { expect, expectAccessible, openFixture, settleAnimations, test } from "./test";
 import type { Locator, Page } from "@playwright/test";
 
 /*
@@ -154,6 +154,19 @@ for (const { title, open, list } of cases) {
     }
   });
 }
+
+test("a Select's chevron turns with its own list, not with the open dialog around it", async ({ page, isMobile }) => {
+  await press(page.getByRole("button", { name: "Move issues" }), isMobile);
+  // An open Select hides the rest of the page from the accessibility tree, its own trigger included.
+  const trigger = page.getByRole("combobox", { name: "Runner", includeHidden: true });
+  const chevron = trigger.locator('span[aria-hidden="true"]');
+  await settleAnimations(page);
+  await expect(chevron).toHaveCSS("rotate", "none");
+  await press(trigger, isMobile);
+  await expect(page.getByRole("listbox")).toBeVisible();
+  await settleAnimations(page);
+  await expect(chevron).toHaveCSS("rotate", "180deg");
+});
 
 test("the backdrop does not scroll the page", async ({ page, isMobile, browserName }) => {
   await press(page.getByRole("button", { name: "Move issues" }), isMobile);
