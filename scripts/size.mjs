@@ -18,10 +18,11 @@ const cases = [
   // the app's, fetched only when a map mounts.
   [["Map", "MapMarker", "MapPopup", "MapControls", "MapRoute"], 12_500, "cennge-ui/map"],
   [["*"], 15_500, "cennge-ui/map"],
-  // The charts draw their own SVG, no chart library underneath (BarChart with its frame: 5.2 KB; with the
-  // line and area charts: 6.5 KB).
+  // The charts draw their own SVG, no chart library underneath (BarChart with its frame: 5.2 KB; all of them:
+  // 7.9 KB).
   [["BarChart"], 7_000, "cennge-ui/charts"],
-  [["*"], 8_500, "cennge-ui/charts"],
+  [["DonutChart"], 4_000, "cennge-ui/charts"],
+  [["*"], 10_500, "cennge-ui/charts"],
 ];
 
 let failed = false;

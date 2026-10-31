@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { Card, CardBody, CardHeader } from "cennge-ui";
-import { AreaChart, BarChart, LineChart, type ChartLabels } from "cennge-ui/charts";
+import { AreaChart, BarChart, DonutChart, LineChart, type ChartLabels } from "cennge-ui/charts";
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
@@ -43,6 +43,14 @@ const ci = [
   { week: "4", passed: 58, flaky: 4, failed: 3 },
   { week: "5", passed: 63, flaky: 1, failed: 5 },
   { week: "6", passed: 66, flaky: 2, failed: 2 },
+];
+
+const languages = [
+  { language: "TypeScript", bytes: 412_000 },
+  { language: "Python", bytes: 139_000 },
+  { language: "Rust", bytes: 61_000 },
+  { language: "Shell", bytes: 33_000 },
+  { language: "Другие", bytes: 19_000 },
 ];
 
 function ChartCard({ title, children }: { title: string; children: ReactNode }) {
@@ -117,6 +125,19 @@ export function ChartsDemo() {
               { key: "failed", label: "Упавшие", color: "danger" },
             ]}
             labels={labels}
+          />
+        </ChartCard>
+        <ChartCard title="Языки в spredo-crypto-screener">
+          <DonutChart
+            aria-label="Языки в spredo-crypto-screener"
+            data={languages}
+            index="language"
+            value="bytes"
+            indexLabel="Язык"
+            valueLabel="Байт"
+            // Хвост в «Другие», серым: девятого цвета не бывает.
+            colors={[undefined, undefined, undefined, undefined, "default"]}
+            labels={{ ...labels, total: "Всего байт", share: "Доля" }}
           />
         </ChartCard>
       </div>

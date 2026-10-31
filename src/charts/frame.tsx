@@ -154,9 +154,9 @@ export interface Active {
 
 /**
  * Which place is looked at: under the mouse, under a finger (until a tap elsewhere), or moved to with the
- * arrow keys while the plot has focus.
+ * arrow keys while the plot has focus. `indexAt` gives null where the pointer is over nothing.
  */
-export function useExplorer(count: number, indexAt: (event: React.PointerEvent<HTMLElement>) => number) {
+export function useExplorer(count: number, indexAt: (event: React.PointerEvent<HTMLElement>) => number | null) {
   const [active, setActive] = React.useState<Active | null>(null);
   const plot = React.useRef<HTMLDivElement>(null);
   const current = active && active.index < count ? active : null;
@@ -175,10 +175,13 @@ export function useExplorer(count: number, indexAt: (event: React.PointerEvent<H
     ref: plot,
     onPointerMove: (event: React.PointerEvent<HTMLDivElement>) => {
       // Touch moves only while the finger is down: it scrubs along the chart.
-      setActive({ index: indexAt(event), source: "pointer" });
+      const index = indexAt(event);
+      setActive(index === null ? null : { index, source: "pointer" });
     },
     onPointerDown: (event: React.PointerEvent<HTMLDivElement>) => {
-      if (event.pointerType !== "mouse") setActive({ index: indexAt(event), source: "pointer" });
+      if (event.pointerType === "mouse") return;
+      const index = indexAt(event);
+      setActive(index === null ? null : { index, source: "pointer" });
     },
     onPointerLeave: (event: React.PointerEvent<HTMLDivElement>) => {
       if (event.pointerType === "mouse") setActive(null);

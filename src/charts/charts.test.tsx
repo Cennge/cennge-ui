@@ -3,6 +3,7 @@ import { render, screen } from "@testing-library/react";
 import { CenngeProvider } from "../provider";
 import { BarChart } from "./bar-chart";
 import { chartColor } from "./colors";
+import { DonutChart } from "./donut-chart";
 
 const data = [
   { month: "Jan", stars: 120, forks: 14 },
@@ -66,5 +67,28 @@ describe("BarChart", () => {
   it("missing values show as a dash in the table, never as zero", () => {
     render(<BarChart aria-label="Gaps" data={[{ day: "Mon", count: null }, { day: "Tue", count: 3 }]} index="day" series={[{ key: "count" }]} />);
     expect(screen.getByRole("row", { name: /Mon/ })).toHaveTextContent("Mon–");
+  });
+});
+
+describe("DonutChart", () => {
+  const languages = [
+    { language: "TypeScript", bytes: 300 },
+    { language: "Go", bytes: 0 },
+    { language: "Rust", bytes: 100 },
+  ];
+
+  it("is whole on the server: the ring, the total, the legend and the table", () => {
+    const html = renderToString(<DonutChart aria-label="Languages" data={languages} index="language" value="bytes" />);
+    // Two parts in the ring: Go, at nought, is left out of it.
+    expect(html.match(/<path /g)).toHaveLength(2);
+    expect(html).toContain('data-slot="donut-value">400<');
+    expect(html).toContain(">75%<");
+    expect(html).toContain('<th scope="row">Total</th><td>400</td><td>100%</td>');
+  });
+
+  it("a single part is a whole ring, without a gap", () => {
+    const html = renderToString(<DonutChart aria-label="One" data={[{ name: "all", n: 5 }]} index="name" value="n" />);
+    // Two circles, the hole cut out by the even-odd rule.
+    expect(html.match(/<path [^>]*d="([^"]+)"/)?.[1]?.match(/M/g)).toHaveLength(2);
   });
 });
