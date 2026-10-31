@@ -9,6 +9,8 @@ import { expect, openFixture, serveMapTilesOffline, test } from "./test";
 const fixtures = readdirSync(new URL("../playground/fixtures", import.meta.url))
   .filter((file) => file.endsWith(".tsx"))
   .map((file) => file.replace(/\.tsx$/, ""));
+/** Fixtures of pictures alone, with no control in them: Tab has nothing to reach. */
+const nothingToFocus = new Set(["sparkline"]);
 
 declare global {
   interface Window {
@@ -25,6 +27,7 @@ test.describe("keyboard focus is visible", () => {
   // Each fixture, then the whole playground for components without a fixture of their own.
   for (const name of [...fixtures, "playground"]) {
     test(name, async ({ page }) => {
+      test.skip(nothingToFocus.has(name), "nothing in it takes focus");
       await page.addInitScript(() => {
         const drawn = (style: CSSStyleDeclaration) => {
           // An outline or border with style none draws nothing, whatever its width and colour say.
