@@ -44,7 +44,7 @@ test.describe("playground", () => {
     await page.goto("/");
     const html = page.locator("html");
     await expect(html).toHaveClass(/dark/);
-    await page.getByRole("button", { name: "Светлая тема" }).click();
+    await page.getByRole("radio", { name: "Светлая" }).click();
     await expect(html).not.toHaveClass(/dark/);
     await page.getByRole("button", { name: "blue", exact: true }).click();
     await expect(html).toHaveAttribute("data-accent", "blue");
@@ -58,7 +58,7 @@ test.describe("playground", () => {
 
   test("passes an axe audit in the light theme", async ({ page }) => {
     await page.goto("/");
-    await page.getByRole("button", { name: "Светлая тема" }).click();
+    await page.getByRole("radio", { name: "Светлая" }).click();
     await expect(page.locator("html")).not.toHaveClass(/dark/);
     await expectAccessible(page);
   });

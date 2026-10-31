@@ -12,7 +12,9 @@ import {
   NavigationMenuLink,
   NavigationMenuList,
   NavigationMenuTrigger,
+  ThemeSwitch,
   toast,
+  useTheme,
   type CenngeColor,
   type CenngeRadius,
   type CenngeSize,
@@ -36,6 +38,8 @@ const variants: CenngeVariant[] = ["solid", "shadow", "bordered", "flat", "faded
 const sizes: CenngeSize[] = ["sm", "md", "lg"];
 const radii: CenngeRadius[] = ["none", "sm", "md", "lg", "full"];
 const accents = ["orange", "blue", "green", "violet", "red"] as const;
+/** The playground opens dark, like the library's design: kept by initTheme in main.tsx and ThemeScript in Next. */
+export const themeOptions = { defaultTheme: "dark" } as const;
 
 function PlusIcon() {
   return (
@@ -195,14 +199,14 @@ function Palette(props: {
 }
 
 export function App() {
-  const [dark, setDark] = useState(true);
+  const { resolvedTheme, setTheme } = useTheme(themeOptions);
   const [accent, setAccent] = useState<(typeof accents)[number]>("orange");
   const [isPaletteOpen, setPaletteOpen] = useState(false);
+  const toggleTheme = () => setTheme(resolvedTheme === "light" ? "dark" : "light");
 
   useEffect(() => {
-    document.documentElement.classList.toggle("dark", dark);
     document.documentElement.dataset.accent = accent;
-  }, [dark, accent]);
+  }, [accent]);
 
   return (
     <main className="mx-auto flex max-w-6xl flex-col gap-6 px-4 py-10">
@@ -223,9 +227,7 @@ export function App() {
               {a}
             </Button>
           ))}
-          <Button size="sm" variant="bordered" onClick={() => setDark((d) => !d)}>
-            {dark ? "Светлая тема" : "Тёмная тема"}
-          </Button>
+          <ThemeSwitch {...themeOptions} labels={{ group: "Тема", light: "Светлая", dark: "Тёмная", system: "Как в системе" }} />
           <Button size="sm" variant="faded" onClick={() => setPaletteOpen(true)} endContent={<Kbd keys="command" size="sm">K</Kbd>}>
             Команды
           </Button>
@@ -235,9 +237,9 @@ export function App() {
       <Palette
         isOpen={isPaletteOpen}
         onOpenChange={setPaletteOpen}
-        onToggleTheme={() => setDark((d) => !d)}
+        onToggleTheme={toggleTheme}
         onAccent={setAccent}
-        isDark={dark}
+        isDark={resolvedTheme !== "light"}
       />
 
       <SelectDemo />

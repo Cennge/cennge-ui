@@ -49,6 +49,7 @@ export * from "./components/table";
 export * from "./components/tabs";
 export * from "./components/tags-input";
 export * from "./components/textarea";
+export * from "./components/theme";
 export * from "./components/time-input";
 export * from "./components/timeline";
 export * from "./components/toast";

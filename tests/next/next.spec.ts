@@ -40,6 +40,62 @@ test("the package's classes and tokens reach the page", async ({ page }) => {
   expect(await download.evaluate((node) => getComputedStyle(node).getPropertyValue("--cennge-primary"))).not.toBe("");
 });
 
+/** Notes the class on <html> at the moment the body begins: what the first paint shows. */
+async function watchFirstPaint(page: Page) {
+  // Init scripts run before even <html> exists: watch the document for the body to appear.
+  await page.addInitScript(() => {
+    new MutationObserver((_records, observer) => {
+      if (!document.body) return;
+      (window as { classAtBody?: string }).classAtBody = document.documentElement.className;
+      observer.disconnect();
+    }).observe(document, { childList: true, subtree: true });
+  });
+}
+const classAtBody = (page: Page) => page.evaluate(() => (window as { classAtBody?: string }).classAtBody);
+
+test.describe("the theme (ThemeScript, useTheme, ThemeSwitch)", () => {
+  test("the stored theme is on <html> before the body exists: no flash, and no hydration warning", async ({ page }) => {
+    await page.addInitScript(() => localStorage.setItem("cennge-theme", "light"));
+    await watchFirstPaint(page);
+    await open(page);
+    expect(await classAtBody(page)).not.toContain("dark");
+    await expect(page.locator("html")).not.toHaveClass(/dark/);
+    // Once hydrated, the switch shows the choice the server could not know.
+    await expect(page.getByRole("radio", { name: "Светлая" })).toHaveAttribute("aria-checked", "true");
+    await page.waitForTimeout(1000);
+  });
+
+  test("the server sends the switch with nothing chosen, so the first render matches it", async ({ request }) => {
+    const html = await (await request.get("/")).text();
+    expect(html).toContain('aria-label="Тема"');
+    const items = html.match(/<button[^>]*aria-label="(Светлая|Тёмная|Как в системе)"[^>]*>/g) ?? [];
+    expect(items).toHaveLength(3);
+    for (const item of items) expect(item).not.toContain('aria-checked="true"');
+  });
+
+  test("a choice shows at once, and after a reload from the first paint", async ({ page }) => {
+    await watchFirstPaint(page);
+    await open(page);
+    // Nothing stored: the default, dark.
+    expect(await classAtBody(page)).toContain("dark");
+    await page.getByRole("radio", { name: "Светлая" }).click();
+    await expect(page.locator("html")).not.toHaveClass(/dark/);
+    await page.reload();
+    await expect(page.locator("html[data-hydrated]")).toBeAttached({ timeout: 30_000 });
+    expect(await classAtBody(page)).not.toContain("dark");
+  });
+
+  test("'as in the system' follows the device, also when it changes", async ({ page }) => {
+    await page.emulateMedia({ colorScheme: "light" });
+    await page.addInitScript(() => localStorage.setItem("cennge-theme", "system"));
+    await open(page);
+    await expect(page.locator("html")).not.toHaveClass(/dark/);
+    await page.emulateMedia({ colorScheme: "dark" });
+    await expect(page.locator("html")).toHaveClass(/dark/);
+    await expect(page.getByRole("radio", { name: "Как в системе" })).toHaveAttribute("aria-checked", "true");
+  });
+});
+
 test("a server action: its error under the field, then a toast from the layout's Toaster", async ({ page }) => {
   await open(page);
   const form = page.getByRole("form", { name: "Server action" });
