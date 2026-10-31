@@ -16,6 +16,7 @@ export default defineConfig({
     alias: [
       { find: /^cennge-ui\/utils$/, replacement: src("utils/index.ts") },
       { find: /^cennge-ui\/map$/, replacement: src("map/index.ts") },
+      { find: /^cennge-ui\/charts$/, replacement: src("charts/index.ts") },
       { find: /^cennge-ui$/, replacement: src("index.ts") },
     ],
   },

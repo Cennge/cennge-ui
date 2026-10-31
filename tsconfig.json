@@ -15,7 +15,8 @@
     "paths": {
       "cennge-ui": ["./src/index.ts"],
       "cennge-ui/utils": ["./src/utils/index.ts"],
-      "cennge-ui/map": ["./src/map/index.ts"]
+      "cennge-ui/map": ["./src/map/index.ts"],
+      "cennge-ui/charts": ["./src/charts/index.ts"]
     }
   },
   "include": ["src", "playground", "tests", "e2e", "*.config.ts"],

@@ -53,6 +53,12 @@
         "default": "./dist/map.js"
       }
     },
+    "./charts": {
+      "import": {
+        "types": "./dist/charts.d.ts",
+        "default": "./dist/charts.js"
+      }
+    },
     "./styles.css": "./dist/styles.css",
     "./package.json": "./package.json"
   },
@@ -65,7 +71,7 @@
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "check:next": "node scripts/check-next.mjs",
-    "check:package": "publint && attw --pack . --profile node16 --exclude-entrypoints styles.css map && attw --pack . --profile esm-only --entrypoints map",
+    "check:package": "publint && attw --pack . --profile node16 --exclude-entrypoints styles.css map charts && attw --pack . --profile esm-only --entrypoints map charts",
     "changeset": "changeset",
     "release": "pnpm build && changeset publish",
     "size": "node scripts/size.mjs"

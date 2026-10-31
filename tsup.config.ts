@@ -25,10 +25,10 @@ export default defineConfig([
   {
     ...shared,
     format: ["esm"],
-    // cennge-ui/map shares the chunks too: one provider context, one copy of the helpers.
-    entry: { index: "src/index.ts", map: "src/map/index.ts", ...components },
+    // cennge-ui/map and cennge-ui/charts share the chunks too: one provider context, one copy of the helpers.
+    entry: { index: "src/index.ts", map: "src/map/index.ts", charts: "src/charts/index.ts", ...components },
     splitting: true,
-    dts: { entry: { index: "src/index.ts", map: "src/map/index.ts" } },
+    dts: { entry: { index: "src/index.ts", map: "src/map/index.ts", charts: "src/charts/index.ts" } },
     // Every file is a client component.
     banner: { js: '"use client";' },
   },

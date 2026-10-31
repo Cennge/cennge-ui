@@ -18,6 +18,9 @@ const cases = [
   // the app's, fetched only when a map mounts.
   [["Map", "MapMarker", "MapPopup", "MapControls", "MapRoute"], 12_500, "cennge-ui/map"],
   [["*"], 15_500, "cennge-ui/map"],
+  // The charts draw their own SVG, no chart library underneath (BarChart with its frame: 5.2 KB).
+  [["BarChart"], 7_000, "cennge-ui/charts"],
+  [["*"], 7_000, "cennge-ui/charts"],
 ];
 
 let failed = false;
@@ -32,7 +35,7 @@ for (const [names, limit, from = "cennge-ui"] of cases) {
     platform: "browser",
     write: false,
     logLevel: "error",
-    alias: { "cennge-ui/map": "./dist/map.js", "cennge-ui": "./dist/index.js" },
+    alias: { "cennge-ui/map": "./dist/map.js", "cennge-ui/charts": "./dist/charts.js", "cennge-ui": "./dist/index.js" },
     external: ["react", "react-dom", "react/jsx-runtime", "radix-ui", "tailwind-variants", "tailwind-merge", "clsx", "maplibre-gl"],
   });
   const gzip = gzipSync(result.outputFiles[0].contents).length;

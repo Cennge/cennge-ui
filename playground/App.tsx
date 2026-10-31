@@ -29,6 +29,7 @@ import { AdvancedDemo } from "./AdvancedDemo";
 import { RepositoryDemo } from "./RepositoryDemo";
 import { AccountDemo } from "./AccountDemo";
 import { DatesDemo } from "./DatesDemo";
+import { ChartsDemo } from "./ChartsDemo";
 import { DataDemo } from "./DataDemo";
 import { ShellDemo } from "./ShellDemo";
 import { MapDemo } from "./MapDemo";
@@ -74,6 +75,7 @@ const sections = [
   "FileUpload",
   "NumberInput",
   "Stepper",
+  "Charts",
   "Map",
 ];
 
@@ -252,6 +254,7 @@ export function App() {
       <AccountDemo />
       <DatesDemo />
       <DataDemo />
+      <ChartsDemo />
       <MapDemo />
       <ShellDemo />
 

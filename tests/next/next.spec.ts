@@ -40,6 +40,16 @@ test("the package's classes and tokens reach the page", async ({ page }) => {
   expect(await download.evaluate((node) => getComputedStyle(node).getPropertyValue("--cennge-primary"))).not.toBe("");
 });
 
+test("a chart: the server sends its legend, axes and table; the bars come once the plot is measured", async ({ page, request }) => {
+  const html = await (await request.get("/")).text();
+  expect(html).toContain("<caption>Скачивания с npm по месяцам</caption>");
+  expect(html).toContain(">payload-cache<");
+  await open(page);
+  const chart = page.getByRole("figure", { name: "Скачивания с npm по месяцам" });
+  await chart.scrollIntoViewIfNeeded();
+  await expect(chart.locator('[data-slot="chart-marks"] path')).toHaveCount(24);
+});
+
 /** Notes the class on <html> at the moment the body begins: what the first paint shows. */
 async function watchFirstPaint(page: Page) {
   // Init scripts run before even <html> exists: watch the document for the body to appear.

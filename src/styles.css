@@ -341,6 +341,101 @@
   --cennge-primary-text: var(--cennge-red-800);
 }
 
+/* --------------------------------------------------------- chart palette */
+/*
+ * Eight hues for chart series (cennge-ui/charts), as --cennge-chart-1…8 and Tailwind's chart-1…8.
+ * Checked, not picked by eye: each step sits in the lightness band charts read best in (OKLCH L
+ * 0.43–0.77 light, 0.48–0.67 dark) with chroma ≥ 0.1, keeps 3:1 on every surface, and slots next to each
+ * other stay apart for colour-blind readers (worst pair ΔE 8.5 under simulated protanopia and
+ * deuteranopia, ≥ 16.7 with full colour vision; OKLab ×100). Each theme takes its own step of a hue.
+ */
+:root {
+  --cennge-chart-orange: var(--cennge-orange-600);
+  --cennge-chart-blue: var(--cennge-blue-600);
+  --cennge-chart-green: var(--cennge-green-600);
+  --cennge-chart-violet: var(--cennge-violet-600);
+  --cennge-chart-pink: #db2777;
+  --cennge-chart-amber: var(--cennge-amber-700);
+  --cennge-chart-teal: #0d9488;
+  --cennge-chart-red: var(--cennge-red-600);
+}
+
+.dark {
+  --cennge-chart-blue: var(--cennge-blue-500);
+  --cennge-chart-violet: var(--cennge-violet-500);
+  --cennge-chart-pink: #ec4899;
+  --cennge-chart-amber: var(--cennge-amber-600);
+  --cennge-chart-red: var(--cennge-red-500);
+}
+
+/*
+ * The first slot is the accent. The order after it is not one list rotated: next to the accent each
+ * order was searched for the one whose worst neighbours stay furthest apart, in both themes. The
+ * `[data-accent] .dark` selectors let a dark subtree under a preset keep that preset's order.
+ */
+:root,
+.dark,
+[data-accent="orange"],
+[data-accent="orange"] .dark {
+  --cennge-chart-1: var(--cennge-chart-orange);
+  --cennge-chart-2: var(--cennge-chart-blue);
+  --cennge-chart-3: var(--cennge-chart-green);
+  --cennge-chart-4: var(--cennge-chart-violet);
+  --cennge-chart-5: var(--cennge-chart-pink);
+  --cennge-chart-6: var(--cennge-chart-amber);
+  --cennge-chart-7: var(--cennge-chart-teal);
+  --cennge-chart-8: var(--cennge-chart-red);
+}
+
+[data-accent="blue"],
+[data-accent="blue"] .dark {
+  --cennge-chart-1: var(--cennge-chart-blue);
+  --cennge-chart-2: var(--cennge-chart-orange);
+  --cennge-chart-3: var(--cennge-chart-green);
+  --cennge-chart-4: var(--cennge-chart-violet);
+  --cennge-chart-5: var(--cennge-chart-pink);
+  --cennge-chart-6: var(--cennge-chart-amber);
+  --cennge-chart-7: var(--cennge-chart-teal);
+  --cennge-chart-8: var(--cennge-chart-red);
+}
+
+[data-accent="green"],
+[data-accent="green"] .dark {
+  --cennge-chart-1: var(--cennge-chart-green);
+  --cennge-chart-2: var(--cennge-chart-blue);
+  --cennge-chart-3: var(--cennge-chart-orange);
+  --cennge-chart-4: var(--cennge-chart-violet);
+  --cennge-chart-5: var(--cennge-chart-pink);
+  --cennge-chart-6: var(--cennge-chart-amber);
+  --cennge-chart-7: var(--cennge-chart-teal);
+  --cennge-chart-8: var(--cennge-chart-red);
+}
+
+/* Violet next to blue blurs for colour-blind readers: orange goes second, blue fourth. */
+[data-accent="violet"],
+[data-accent="violet"] .dark {
+  --cennge-chart-1: var(--cennge-chart-violet);
+  --cennge-chart-2: var(--cennge-chart-orange);
+  --cennge-chart-3: var(--cennge-chart-green);
+  --cennge-chart-4: var(--cennge-chart-blue);
+  --cennge-chart-5: var(--cennge-chart-pink);
+  --cennge-chart-6: var(--cennge-chart-amber);
+  --cennge-chart-7: var(--cennge-chart-teal);
+  --cennge-chart-8: var(--cennge-chart-red);
+}
+
+[data-accent="red"],
+[data-accent="red"] .dark {
+  --cennge-chart-1: var(--cennge-chart-red);
+  --cennge-chart-2: var(--cennge-chart-blue);
+  --cennge-chart-3: var(--cennge-chart-green);
+  --cennge-chart-4: var(--cennge-chart-violet);
+  --cennge-chart-5: var(--cennge-chart-pink);
+  --cennge-chart-6: var(--cennge-chart-amber);
+  --cennge-chart-7: var(--cennge-chart-teal);
+  --cennge-chart-8: var(--cennge-chart-orange);
+}
+
 /* Dark text steps for presets. `.dark` can sit on the same element or an ancestor. */
 .dark[data-accent],
 .dark [data-accent],
@@ -381,6 +476,10 @@
   --animate-cennge-slide-in: cennge-slide-in 300ms cubic-bezier(0.32, 0.72, 0, 1);
   --animate-cennge-slide-out: cennge-slide-out 200ms ease-in forwards;
   --animate-cennge-progress: cennge-progress 1.4s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+  /* Charts: bars grow out of their baseline, lines draw from the left, as they first appear. */
+  --animate-cennge-grow-x: cennge-grow-x 520ms cubic-bezier(0.23, 1, 0.32, 1);
+  --animate-cennge-grow-y: cennge-grow-y 520ms cubic-bezier(0.23, 1, 0.32, 1);
+  --animate-cennge-reveal: cennge-reveal 640ms cubic-bezier(0.23, 1, 0.32, 1);
 
   /* Height is the one layout animation here: Radix measures it for us. */
   @keyframes cennge-accordion-down {
@@ -397,6 +496,15 @@
   }
   @keyframes cennge-slide-out {
     to { transform: translate(var(--cennge-slide-x, 0), var(--cennge-slide-y, 0)); }
+  }
+  @keyframes cennge-grow-x {
+    from { transform: scaleX(0); }
+  }
+  @keyframes cennge-grow-y {
+    from { transform: scaleY(0); }
+  }
+  @keyframes cennge-reveal {
+    from { clip-path: inset(0 100% 0 0); }
   }
   @keyframes cennge-progress {
     from { transform: translateX(-100%); }
@@ -567,6 +675,16 @@
   --color-info-800: var(--cennge-info-800);
   --color-info-900: var(--cennge-info-900);
   --color-info-950: var(--cennge-info-950);
+
+  /* The chart palette, for legends and stat tiles of your own: bg-chart-1, text-chart-2… */
+  --color-chart-1: var(--cennge-chart-1);
+  --color-chart-2: var(--cennge-chart-2);
+  --color-chart-3: var(--cennge-chart-3);
+  --color-chart-4: var(--cennge-chart-4);
+  --color-chart-5: var(--cennge-chart-5);
+  --color-chart-6: var(--cennge-chart-6);
+  --color-chart-7: var(--cennge-chart-7);
+  --color-chart-8: var(--cennge-chart-8);
 
   /* rounded-small / rounded-medium / rounded-large — do not collide with Tailwind's sm/md/lg. */
   --radius-small: var(--cennge-radius-small);
