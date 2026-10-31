@@ -28,11 +28,14 @@ A regular npm package — `npm update` and every app gets the fix.
 - **Server Components ready.** `"use client"` ships in the build; helpers stay server-safe.
 
 > **Status:** early development (0.x).
-> **60 components.**
+> **66 components.**
 > Forms: Form · Button · Input · PasswordInput · OtpInput · Textarea · NumberInput · DatePicker · DateRangePicker · TimeInput · Select · Combobox · MultiSelect · TagsInput · FileUpload · Checkbox · RadioGroup · Switch · Slider · Rating · ToggleGroup.
 > Overlays: Dialog · AlertDialog · Command · Drawer · Popover · Dropdown · ContextMenu · HoverCard · Tooltip · Toast.
 > Display: Table · Tree · Calendar · RangeCalendar · Card · Badge · Avatar · Indicator · Alert · Progress · CircularProgress · Skeleton · Spinner · EmptyState · Kbd · Snippet · Separator · Timeline · ScrollArea · Prose · Carousel · VirtualList.
 > Navigation: NavigationMenu · Sidebar · Tabs · Accordion · Breadcrumbs · Pagination · Stepper.
+> Theme: ThemeSwitch, with ThemeScript and useTheme.
+> Charts ([`cennge-ui/charts`](#charts-cennge-uicharts)): BarChart · LineChart · AreaChart · DonutChart · Sparkline.
+> Maps ([`cennge-ui/map`](#map-cennge-uimap)): Map with markers, popups, routes, GeoJSON, clusters and arcs.
 
 <details>
 <summary>Light theme with the blue accent preset</summary>
@@ -68,7 +71,7 @@ import { Button } from "cennge-ui";
 
 ## Theming
 
-- **Dark mode:** `class="dark"` on `<html>`. Works with `next-themes` (`attribute="class"`).
+- **Dark mode:** `class="dark"` on `<html>`. Set it yourself, or let the package keep it, below.
 - **Accent preset:** `data-accent="orange" | "blue" | "green" | "violet" | "red"` on `<html>` or any subtree.
 - **Your own colours:** override the `--cennge-*` variables in your CSS, for example:
 
@@ -87,6 +90,43 @@ import { Button } from "cennge-ui";
 
 Radii, surfaces, borders and motion are variables too (`--cennge-radius-medium`, `--cennge-surface-2`…).
 See [`src/styles.css`](src/styles.css).
+
+### Light, dark or as the system says
+
+The server cannot know a choice kept in the browser, so the work is split in three, and the page neither
+flashes nor reports a hydration mismatch:
+
+```tsx
+// app/layout.tsx (Next.js)
+import { ThemeScript } from "cennge-ui";
+
+export default function RootLayout({ children }) {
+  return (
+    // The script sets the class on <html> before React hydrates; this covers that element's attributes only.
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <ThemeScript defaultTheme="dark" />  {/* the stored theme, before the first paint */}
+      </head>
+      <body>{children}</body>
+    </html>
+  );
+}
+```
+
+```tsx
+import { ThemeSwitch, useTheme } from "cennge-ui";
+
+<ThemeSwitch defaultTheme="dark" />                    {/* light · dark · system */}
+
+const { theme, resolvedTheme, setTheme } = useTheme({ defaultTheme: "dark" });
+```
+
+- `useTheme()` gives `undefined` on the server and while the page hydrates, then the real values: the first
+  render matches the server's HTML. Show what depends on the theme with CSS (`dark:hidden`) where you can.
+- The choice is kept in `localStorage` (`storageKey`, default `cennge-theme`), follows the system while it is
+  "system", and reaches every tab. Pass the same options to ThemeScript, useTheme and ThemeSwitch.
+- Without server rendering (Vite), call `initTheme({ defaultTheme: "dark" })` once before the first render
+  instead of ThemeScript.
 
 ## Button
 
@@ -617,6 +657,42 @@ const [state, action, isPending] = useActionState(saveProfile, {});   // a Next.
 
 <Skeleton isLoaded={!isLoading} className="h-4 w-40"><p>{user.name}</p></Skeleton>
 ```
+
+### Charts (`cennge-ui/charts`)
+
+Drawn in SVG by cennge-ui itself, no chart library underneath: 8.4 KB gzip for all of them, 5.2 KB for a
+bar chart alone. ESM only, like the map.
+
+```tsx
+import { AreaChart, BarChart, DonutChart, LineChart, Sparkline } from "cennge-ui/charts";
+
+<BarChart
+  aria-label="Monthly npm downloads"            // names it for screen readers, and its data table
+  data={downloads}                              // [{ month: "Jan", cennge: 320, payload: 210 }, …]
+  index="month"
+  series={[{ key: "cennge", label: "cennge-ui" }, { key: "payload", label: "payload-cache" }]}
+/>
+<BarChart layout="horizontal" isStacked … />    {/* bars from the side, parts piled up */}
+<LineChart curve="smooth" startAtZero={false} … />
+<AreaChart isStacked series={[{ key: "passed", color: "success" }, …]} … />
+<DonutChart aria-label="Languages" data={languages} index="language" value="bytes" />
+<Sparkline aria-label="Downloads over 12 weeks, up by half" data={[40, 42, 39, 51, 72]} />
+```
+
+- **Colours.** Series take the chart palette in order, `--cennge-chart-1…8` (Tailwind's `chart-1…8` for
+  legends of your own). Its first colour is the accent. The eight are checked, not picked by eye: neighbours
+  stay apart for colour-blind readers and each keeps 3:1 on every surface, in both themes and for every
+  accent preset. A ninth series is grey, never a new colour. Give `color` a theme colour where it means
+  something (`danger` for failures), or any CSS colour.
+- **Reading.** Hover, a tap or the arrow keys show every series at a place (a crosshair on lines, the band
+  on bars), with a live region for screen readers, who also get the whole data as a table.
+- **Server rendering.** The legend, axes, grid and table come from the server; bars and lines are drawn once
+  the plot is measured. DonutChart and Sparkline are drawn whole on the server.
+- **Size.** The default height (`h-72`) takes in the axes and the legend: set yours with `className`.
+  Labels that would overlap on a narrow chart are left out.
+- Numbers follow the provider's locale (`valueFormat` and `axisFormat` to change them); a missing value
+  (`null`) breaks a line and reads "–" in the table.
+- A dot on a line sits in a ring of the colour behind the chart; off a Card, set `--cennge-chart-surface`.
 
 ## Provider (optional)
 
