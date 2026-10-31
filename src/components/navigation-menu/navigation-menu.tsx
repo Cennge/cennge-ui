@@ -10,7 +10,7 @@ const navigationMenu = tv({
     root: "relative z-10 flex max-w-max",
     list: "flex list-none items-center gap-1",
     trigger: [
-      "group inline-flex h-9 items-center gap-1 rounded-medium px-3 text-sm font-medium text-foreground select-none",
+      "group inline-flex h-9 cursor-pointer items-center gap-1 rounded-medium px-3 text-sm font-medium text-foreground select-none",
       "transition-colors duration-(--cennge-duration-fast) motion-reduce:transition-none",
       "hover:bg-default-bg data-[state=open]:bg-default-bg",
       "outline-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-ring",

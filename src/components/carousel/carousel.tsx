@@ -30,7 +30,7 @@ const carousel = tv({
     controls: "flex items-center justify-between gap-2",
     controlsCenter: "flex min-w-0 items-center justify-center gap-1",
     dots: "flex min-h-6 flex-wrap items-center justify-center",
-    dot: "group/dot rounded-full p-2 outline-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-ring",
+    dot: "group/dot cursor-pointer rounded-full p-2 outline-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-ring",
     dotMark: [
       "block h-2 w-2 rounded-full bg-foreground/25",
       "transition-colors duration-(--cennge-duration-fast) motion-reduce:transition-none",

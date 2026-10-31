@@ -21,6 +21,25 @@ test.describe("playground", () => {
       .toBe(0);
   });
 
+  // shadcn/ui #6843: buttons that show the arrow read as not clickable. Every control on the page is checked.
+  test("every enabled control shows the pointer cursor", async ({ page }) => {
+    await page.goto("/");
+    await expect(page.getByRole("heading", { name: "Button: цвета × варианты" })).toBeVisible();
+    const offenders = await page.evaluate(() => {
+      const controls = document.querySelectorAll<HTMLElement>(
+        'button, [role="button"], [role="tab"], [role="switch"], [role="checkbox"], [role="radio"], [role="option"], [role="menuitem"], [role="treeitem"]',
+      );
+      const describe = (element: HTMLElement) =>
+        `${element.tagName.toLowerCase()}[${element.getAttribute("role") ?? ""}] "${(element.getAttribute("aria-label") ?? element.textContent ?? "").trim().slice(0, 40)}" → ${getComputedStyle(element).cursor}`;
+      return [...controls]
+        .filter((element) => element.getClientRects().length > 0)
+        .filter((element) => !element.matches(":disabled, [aria-disabled='true'], [data-disabled], [data-loading]"))
+        .filter((element) => getComputedStyle(element).cursor !== "pointer")
+        .map(describe);
+    });
+    expect(offenders).toEqual([]);
+  });
+
   test("switches theme and accent", async ({ page }) => {
     await page.goto("/");
     const html = page.locator("html");
