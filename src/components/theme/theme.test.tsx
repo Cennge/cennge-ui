@@ -1,12 +1,8 @@
-import { act } from "react";
-import { hydrateRoot } from "react-dom/client";
 import { renderToString } from "react-dom/server";
+import { act, render } from "@testing-library/react";
 import { ThemeScript, ThemeSwitch } from "./theme";
 import { useTheme } from "./use-theme";
 import { themeScript } from "./script";
-
-// act() straight from React, without Testing Library's render: say so, as Testing Library would.
-(globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
 let systemIsDark = false;
 const systemListeners = new Set<() => void>();
@@ -63,7 +59,8 @@ describe("the head script", () => {
   });
 
   it("is one self-contained statement, so it can go in a <script> as it is", () => {
-    expect(renderToString(<ThemeScript />)).toMatch(/^<script>\(function apply\(/);
+    // React 17 also marks the root element with data-reactroot.
+    expect(renderToString(<ThemeScript />)).toMatch(/^<script[^>]*>\(function apply\(/);
   });
 });
 
@@ -73,13 +70,14 @@ function Probe() {
 }
 
 describe("useTheme and ThemeSwitch", () => {
-  it("render the same on the server and in the first render, then show the theme", async () => {
-    const html = renderToString(
+  it("render the same on the server and in the first render, then show the theme", () => {
+    const ui = (
       <>
         <Probe />
         <ThemeSwitch />
-      </>,
+      </>
     );
+    const html = renderToString(ui);
     expect(html).toContain("unknown unknown");
     expect(html).not.toContain('aria-checked="true"');
 
@@ -88,59 +86,42 @@ describe("useTheme and ThemeSwitch", () => {
     const container = document.createElement("div");
     container.innerHTML = html;
     document.body.append(container);
+    // Every React reports a hydration mismatch on console.error.
     const errors: unknown[] = [];
     const spy = vi.spyOn(console, "error").mockImplementation((...args) => errors.push(args));
-    await act(async () => {
-      hydrateRoot(
-        container,
-        <>
-          <Probe />
-          <ThemeSwitch />
-        </>,
-        { onRecoverableError: (error) => errors.push(error) },
-      );
-    });
+    render(ui, { container, hydrate: true });
     spy.mockRestore();
     expect(errors).toEqual([]);
     expect(container.querySelector("output")).toHaveTextContent("dark dark");
     expect(container.querySelector('[aria-checked="true"]')).toHaveAccessibleName("Dark");
-    container.remove();
   });
 
-  it("switches, remembers, and tells every hook in the page", async () => {
+  it("switches, remembers, and tells every hook in the page", () => {
     runScript();
-    const container = document.createElement("div");
-    document.body.append(container);
-    const { createRoot } = await import("react-dom/client");
-    const root = createRoot(container);
-    await act(async () =>
-      root.render(
-        <>
-          <Probe />
-          <Probe />
-          <ThemeSwitch />
-        </>,
-      ),
+    const { container } = render(
+      <>
+        <Probe />
+        <Probe />
+        <ThemeSwitch />
+      </>,
     );
     expect(container.querySelectorAll("output")[1]).toHaveTextContent("system light");
 
-    await act(async () => (container.querySelector('[aria-label="Dark"]') as HTMLElement).click());
+    act(() => (container.querySelector('[aria-label="Dark"]') as HTMLElement).click());
     expect(localStorage.getItem("cennge-theme")).toBe("dark");
     expect(isDark()).toBe(true);
     for (const output of container.querySelectorAll("output")) expect(output).toHaveTextContent("dark dark");
 
     // Another tab chose light.
-    await act(async () => {
+    act(() => {
       localStorage.setItem("cennge-theme", "light");
       document.documentElement.classList.remove("dark");
       window.dispatchEvent(new StorageEvent("storage", { key: "cennge-theme" }));
     });
     expect(container.querySelector("output")).toHaveTextContent("light light");
-    await act(async () => root.unmount());
-    container.remove();
   });
 
-  it("still switches where storage is blocked", async () => {
+  it("still switches where storage is blocked", () => {
     runScript();
     const setItem = vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => {
       throw new DOMException("blocked", "SecurityError");
@@ -150,16 +131,10 @@ describe("useTheme and ThemeSwitch", () => {
       setTheme = useTheme().setTheme;
       return <Probe />;
     }
-    const container = document.createElement("div");
-    document.body.append(container);
-    const { createRoot } = await import("react-dom/client");
-    const root = createRoot(container);
-    await act(async () => root.render(<Grab />));
-    await act(async () => setTheme!("dark"));
+    const { container } = render(<Grab />);
+    act(() => setTheme!("dark"));
     expect(isDark()).toBe(true);
     expect(container.querySelector("output")).toHaveTextContent("dark dark");
     setItem.mockRestore();
-    await act(async () => root.unmount());
-    container.remove();
   });
 });
