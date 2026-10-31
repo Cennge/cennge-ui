@@ -454,16 +454,14 @@
 
 /* ------------------------------------------------------------ animations */
 /*
- * Overlays enter with the tactile ease-out and leave faster. Only opacity and transform, but for the
- * backdrop of a dialog: the dialog sits inside it, so it fades its colour and blur instead, or the dialog
- * would fade twice. It also leaves no sooner than the slowest dialog (a drawer's 200ms), which goes with it.
- * Exit animations use `forwards` so the end state holds until Radix unmounts the node.
+ * Overlays enter with the tactile ease-out and leave faster. Only opacity and transform.
+ * Exit animations use `forwards` so the end state holds until Radix unmounts the node. A dialog sits inside
+ * its overlay, which leaves no sooner than the slowest dialog in it (a drawer's 200ms).
  */
 @theme {
   --animate-cennge-fade-in: cennge-fade-in 200ms cubic-bezier(0.23, 1, 0.32, 1);
   --animate-cennge-fade-out: cennge-fade-out 140ms ease-in forwards;
-  --animate-cennge-backdrop-in: cennge-backdrop-in 200ms cubic-bezier(0.23, 1, 0.32, 1);
-  --animate-cennge-backdrop-out: cennge-backdrop-out 200ms ease-in forwards;
+  --animate-cennge-backdrop-out: cennge-fade-out 200ms ease-in forwards;
   --animate-cennge-pop-in: cennge-pop-in 160ms cubic-bezier(0.23, 1, 0.32, 1);
   --animate-cennge-pop-out: cennge-pop-out 110ms ease-in forwards;
   --animate-cennge-dialog-in: cennge-dialog-in 240ms cubic-bezier(0.23, 1, 0.32, 1);
@@ -524,12 +522,6 @@
   }
   @keyframes cennge-fade-out {
     to { opacity: 0; }
-  }
-  @keyframes cennge-backdrop-in {
-    from { background-color: transparent; backdrop-filter: blur(0); }
-  }
-  @keyframes cennge-backdrop-out {
-    to { background-color: transparent; backdrop-filter: blur(0); }
   }
   @keyframes cennge-pop-in {
     from { opacity: 0; transform: scale(0.96); }

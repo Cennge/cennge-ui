@@ -32,7 +32,8 @@ test.describe("Dialog", () => {
     await page.keyboard.press("Escape");
     await expect(dialog).toBeHidden();
     await expect(button(page, "Open dialog")).toBeFocused();
-    expect(await bodyStyle(page)).toEqual({ overflow: "visible", pointerEvents: "auto" });
+    // The lock goes with the backdrop, which fades out a moment after the dialog in it.
+    await expect.poll(() => bodyStyle(page)).toEqual({ overflow: "visible", pointerEvents: "auto" });
   });
 
   test("closes when the backdrop is clicked or tapped", async ({ page, isMobile }) => {

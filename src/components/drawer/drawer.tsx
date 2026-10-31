@@ -31,9 +31,12 @@ export type DrawerPlacement = "left" | "right" | "top" | "bottom";
 
 const drawer = tv({
   slots: {
+    // As the dialog's: the backdrop is the overlay's ::before (see dialogStyles).
     overlay: [
-      "fixed inset-0 z-50 bg-black/55 backdrop-blur-[2px]",
-      "data-[state=open]:animate-cennge-backdrop-in data-[state=closed]:animate-cennge-backdrop-out motion-reduce:animate-none",
+      "fixed inset-0 z-50",
+      "before:absolute before:inset-0 before:bg-black/55 before:backdrop-blur-[2px]",
+      "data-[state=open]:before:animate-cennge-fade-in data-[state=closed]:animate-cennge-backdrop-out",
+      "motion-reduce:animate-none motion-reduce:before:animate-none",
     ],
     content: [
       "fixed z-50 flex flex-col border-border bg-surface-2 pb-6 text-foreground shadow-floating outline-none",

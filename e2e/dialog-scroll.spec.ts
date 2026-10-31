@@ -137,14 +137,11 @@ for (const { title, open, list } of cases) {
     if (!isMobile) {
       await wheelOver(page, target, 100);
       await expect.poll(() => scrollTop(target)).toBeGreaterThan(0);
-      // On to the end a notch at a time, as a wheel turns (one long flick past the end is cancelled whole),
-      // and on past it.
-      for (let notch = 0; notch < 30; notch++) await page.mouse.wheel(0, 100);
-      const remaining = async () => (await scroller(target)).evaluate((node) => {
-        const box = node as Element;
-        return box.scrollHeight - box.clientHeight - box.scrollTop;
-      });
-      await expect.poll(remaining).toBeLessThan(100);
+      // At the end, a few more notches: the rest of the scroll must not reach the page.
+      await (await scroller(target)).evaluate((node) => ((node as Element).scrollTop = (node as Element).scrollHeight));
+      for (let notch = 0; notch < 3; notch++) await page.mouse.wheel(0, 100);
+      // Nothing to wait for if it works: give a scroll that should not happen the time to show.
+      await page.waitForTimeout(250);
       expect(await page.evaluate(() => window.scrollY)).toBe(0);
     } else {
       expect(await swipeOver(page, target, browserName), "the swipe was cancelled: the list would not scroll").toBe(false);

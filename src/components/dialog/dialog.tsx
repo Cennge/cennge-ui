@@ -91,8 +91,13 @@ export function useFocusReturn(
 export const dialogStyles = tv({
   slots: {
     overlay: [
-      "fixed inset-0 z-50 bg-black/55 backdrop-blur-[2px]",
-      "data-[state=open]:animate-cennge-backdrop-in data-[state=closed]:animate-cennge-backdrop-out motion-reduce:animate-none",
+      "fixed inset-0 z-50",
+      // The backdrop is the overlay's ::before, painted beside the dialog in it rather than around it: WebKit on
+      // Linux stops drawing a page whose dialog sits inside a backdrop-filter, and the dialog must not fade
+      // in twice. On close the overlay fades as a whole, dialog included.
+      "before:absolute before:inset-0 before:bg-black/55 before:backdrop-blur-[2px]",
+      "data-[state=open]:before:animate-cennge-fade-in data-[state=closed]:animate-cennge-backdrop-out",
+      "motion-reduce:animate-none motion-reduce:before:animate-none",
     ],
     content: [
       "fixed top-1/2 left-1/2 z-50 flex w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 flex-col",
