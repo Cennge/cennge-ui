@@ -15,12 +15,28 @@ export interface DialogProps {
   children?: React.ReactNode;
 }
 
+const DialogModalContext = React.createContext(true);
+
+/** Internal: used by DialogContent and DrawerContent. */
+export const useIsModalDialog = () => React.useContext(DialogModalContext);
+
 export function Dialog({ isOpen, defaultOpen, onOpenChange, isModal = true, children }: DialogProps) {
   return (
     <DialogPrimitive.Root open={isOpen} defaultOpen={defaultOpen} onOpenChange={onOpenChange} modal={isModal}>
-      {children}
+      <DialogModalContext.Provider value={isModal}>{children}</DialogModalContext.Provider>
     </DialogPrimitive.Root>
   );
+}
+
+/*
+ * A modal dialog's content goes inside its backdrop, not beside it. Radix keeps the page from scrolling by
+ * cancelling every scroll outside the backdrop's React tree, and a popup in a portal opened from the
+ * dialog (another library's, a list of suggestions) belongs to the content's tree: beside the backdrop it
+ * could not scroll at all (Radix #1159; Radix #3423 spares only Radix's own layers). Inside, it can.
+ * Internal: used by Dialog, Drawer, AlertDialog and CommandDialog.
+ */
+export function withinBackdrop(isModal: boolean, backdrop: React.ReactElement<{ children?: React.ReactNode }>, content: React.ReactNode) {
+  return isModal ? React.cloneElement(backdrop, undefined, content) : content;
 }
 
 /** Wraps the element that opens the dialog (usually a Button). */
@@ -76,7 +92,7 @@ export const dialogStyles = tv({
   slots: {
     overlay: [
       "fixed inset-0 z-50 bg-black/55 backdrop-blur-[2px]",
-      "data-[state=open]:animate-cennge-fade-in data-[state=closed]:animate-cennge-fade-out motion-reduce:animate-none",
+      "data-[state=open]:animate-cennge-backdrop-in data-[state=closed]:animate-cennge-backdrop-out motion-reduce:animate-none",
     ],
     content: [
       "fixed top-1/2 left-1/2 z-50 flex w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 flex-col",
@@ -157,24 +173,28 @@ export const DialogContent = React.forwardRef<HTMLDivElement, DialogContentProps
 ) {
   const slots = dialogStyles({ size, radius });
   const focusReturn = useFocusReturn(onOpenAutoFocus, onCloseAutoFocus);
+  const isModal = useIsModalDialog();
   return (
     <DialogPrimitive.Portal container={container}>
-      <DialogPrimitive.Overlay className={slots.overlay({ class: classNames?.overlay })} />
-      <DialogPrimitive.Content
-        ref={ref}
-        {...focusReturn}
-        className={slots.content({ class: [classNames?.content, className] })}
-        onPointerDownOutside={isDismissable ? undefined : (event) => event.preventDefault()}
-        onEscapeKeyDown={isKeyboardDismissDisabled ? (event) => event.preventDefault() : undefined}
-        {...rest}
-      >
-        {children}
-        {hideCloseButton ? null : (
-          <DialogPrimitive.Close aria-label="Close" className={slots.closeButton({ class: classNames?.closeButton })}>
-            <CloseIcon />
-          </DialogPrimitive.Close>
-        )}
-      </DialogPrimitive.Content>
+      {withinBackdrop(
+        isModal,
+        <DialogPrimitive.Overlay className={slots.overlay({ class: classNames?.overlay })} />,
+        <DialogPrimitive.Content
+          ref={ref}
+          {...focusReturn}
+          className={slots.content({ class: [classNames?.content, className] })}
+          onPointerDownOutside={isDismissable ? undefined : (event) => event.preventDefault()}
+          onEscapeKeyDown={isKeyboardDismissDisabled ? (event) => event.preventDefault() : undefined}
+          {...rest}
+        >
+          {children}
+          {hideCloseButton ? null : (
+            <DialogPrimitive.Close aria-label="Close" className={slots.closeButton({ class: classNames?.closeButton })}>
+              <CloseIcon />
+            </DialogPrimitive.Close>
+          )}
+        </DialogPrimitive.Content>,
+      )}
     </DialogPrimitive.Portal>
   );
 });

@@ -2,7 +2,7 @@ import * as React from "react";
 import { Dialog as DialogPrimitive } from "radix-ui";
 import { cn } from "../../utils/cn";
 import { useId } from "../../utils/use-id";
-import { dialogStyles } from "../dialog/dialog";
+import { dialogStyles, withinBackdrop } from "../dialog/dialog";
 import { groupLabelClass, optionClass } from "../listbox/styles";
 
 // useLayoutEffect warns during SSR on React 17/18; it only matters in the browser anyway.
@@ -388,33 +388,36 @@ export function CommandDialog({
   return (
     <DialogPrimitive.Root open={isOpen} onOpenChange={setOpen}>
       <DialogPrimitive.Portal>
-        <DialogPrimitive.Overlay className={slots.overlay()} />
-        <DialogPrimitive.Content
-          ref={contentRef}
-          aria-describedby={undefined}
-          onOpenAutoFocus={() => {
-            returnFocus.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
-          }}
-          onCloseAutoFocus={(event) => {
-            event.preventDefault();
-            returnFocus.current?.focus();
-          }}
-          onEscapeKeyDown={(event) => {
-            // Radix sees Escape before the search field does: with a query typed, Escape clears it instead.
-            const field = contentRef.current?.querySelector<HTMLInputElement>('[role="combobox"]');
-            if (field?.value) event.preventDefault();
-          }}
-          // Near the top, so the list grows downwards without moving the search field.
-          className={slots.content({ class: "top-[12vh] max-h-[min(32rem,76vh)] translate-y-0 overflow-hidden pb-0" })}
-        >
-          <DialogPrimitive.Title className="sr-only">{label}</DialogPrimitive.Title>
-          <CloseContext.Provider value={closeOnAction ? () => setOpen(false) : null}>
-            {/* No autoFocus: Radix focuses the search itself, after noting where focus came from. */}
-            <Command label={label} {...rest}>
-              {children}
-            </Command>
-          </CloseContext.Provider>
-        </DialogPrimitive.Content>
+        {withinBackdrop(
+          true,
+          <DialogPrimitive.Overlay className={slots.overlay()} />,
+          <DialogPrimitive.Content
+            ref={contentRef}
+            aria-describedby={undefined}
+            onOpenAutoFocus={() => {
+              returnFocus.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+            }}
+            onCloseAutoFocus={(event) => {
+              event.preventDefault();
+              returnFocus.current?.focus();
+            }}
+            onEscapeKeyDown={(event) => {
+              // Radix sees Escape before the search field does: with a query typed, Escape clears it instead.
+              const field = contentRef.current?.querySelector<HTMLInputElement>('[role="combobox"]');
+              if (field?.value) event.preventDefault();
+            }}
+            // Near the top, so the list grows downwards without moving the search field.
+            className={slots.content({ class: "top-[12vh] max-h-[min(32rem,76vh)] translate-y-0 overflow-hidden pb-0" })}
+          >
+            <DialogPrimitive.Title className="sr-only">{label}</DialogPrimitive.Title>
+            <CloseContext.Provider value={closeOnAction ? () => setOpen(false) : null}>
+              {/* No autoFocus: Radix focuses the search itself, after noting where focus came from. */}
+              <Command label={label} {...rest}>
+                {children}
+              </Command>
+            </CloseContext.Provider>
+          </DialogPrimitive.Content>,
+        )}
       </DialogPrimitive.Portal>
     </DialogPrimitive.Root>
   );

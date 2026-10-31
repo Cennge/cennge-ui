@@ -11,6 +11,8 @@ import {
   DialogTitle,
   DialogTrigger,
   useFocusReturn,
+  useIsModalDialog,
+  withinBackdrop,
   type DialogProps,
 } from "../dialog/dialog";
 
@@ -31,7 +33,7 @@ const drawer = tv({
   slots: {
     overlay: [
       "fixed inset-0 z-50 bg-black/55 backdrop-blur-[2px]",
-      "data-[state=open]:animate-cennge-fade-in data-[state=closed]:animate-cennge-fade-out motion-reduce:animate-none",
+      "data-[state=open]:animate-cennge-backdrop-in data-[state=closed]:animate-cennge-backdrop-out motion-reduce:animate-none",
     ],
     content: [
       "fixed z-50 flex flex-col border-border bg-surface-2 pb-6 text-foreground shadow-floating outline-none",
@@ -94,25 +96,29 @@ export const DrawerContent = React.forwardRef<HTMLDivElement, DrawerContentProps
 ) {
   const slots = drawer({ placement, size });
   const focusReturn = useFocusReturn(onOpenAutoFocus, onCloseAutoFocus);
+  const isModal = useIsModalDialog();
   return (
     <DialogPrimitive.Portal container={container}>
-      <DialogPrimitive.Overlay className={slots.overlay({ class: classNames?.overlay })} />
-      <DialogPrimitive.Content
-        ref={ref}
-        {...focusReturn}
-        className={slots.content({ class: [classNames?.content, className] })}
-        {...rest}
-      >
-        {placement === "bottom" ? <div aria-hidden="true" className={slots.handle()} /> : null}
-        {children}
-        {hideCloseButton ? null : (
-          <DialogPrimitive.Close aria-label="Close" className={slots.closeButton({ class: classNames?.closeButton })}>
-            <svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="2.25" aria-hidden="true">
-              <path d="M18 6 6 18M6 6l12 12" strokeLinecap="round" />
-            </svg>
-          </DialogPrimitive.Close>
-        )}
-      </DialogPrimitive.Content>
+      {withinBackdrop(
+        isModal,
+        <DialogPrimitive.Overlay className={slots.overlay({ class: classNames?.overlay })} />,
+        <DialogPrimitive.Content
+          ref={ref}
+          {...focusReturn}
+          className={slots.content({ class: [classNames?.content, className] })}
+          {...rest}
+        >
+          {placement === "bottom" ? <div aria-hidden="true" className={slots.handle()} /> : null}
+          {children}
+          {hideCloseButton ? null : (
+            <DialogPrimitive.Close aria-label="Close" className={slots.closeButton({ class: classNames?.closeButton })}>
+              <svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="2.25" aria-hidden="true">
+                <path d="M18 6 6 18M6 6l12 12" strokeLinecap="round" />
+              </svg>
+            </DialogPrimitive.Close>
+          )}
+        </DialogPrimitive.Content>,
+      )}
     </DialogPrimitive.Portal>
   );
 });

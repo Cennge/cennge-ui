@@ -5,7 +5,7 @@ import { useCenngeDefaults } from "../../provider";
 import type { CenngeRadius } from "../../types";
 import { Button, type ButtonProps } from "../button";
 import { Spinner } from "../spinner";
-import { DialogBody, DialogFooter, dialogStyles, useFocusReturn } from "../dialog/dialog";
+import { DialogBody, DialogFooter, dialogStyles, useFocusReturn, withinBackdrop } from "../dialog/dialog";
 
 /* ------------------------------------------------------------------ root */
 
@@ -142,15 +142,18 @@ export const AlertDialogContent = React.forwardRef<HTMLDivElement, AlertDialogCo
   const focusReturn = useFocusReturn(onOpenAutoFocus, onCloseAutoFocus);
   return (
     <AlertDialogPrimitive.Portal container={container}>
-      <AlertDialogPrimitive.Overlay className={slots.overlay({ class: classNames?.overlay })} />
-      <AlertDialogPrimitive.Content
-        ref={ref}
-        {...focusReturn}
-        className={slots.content({ class: [classNames?.content, className] })}
-        {...rest}
-      >
-        {children}
-      </AlertDialogPrimitive.Content>
+      {withinBackdrop(
+        true,
+        <AlertDialogPrimitive.Overlay className={slots.overlay({ class: classNames?.overlay })} />,
+        <AlertDialogPrimitive.Content
+          ref={ref}
+          {...focusReturn}
+          className={slots.content({ class: [classNames?.content, className] })}
+          {...rest}
+        >
+          {children}
+        </AlertDialogPrimitive.Content>,
+      )}
     </AlertDialogPrimitive.Portal>
   );
 });
