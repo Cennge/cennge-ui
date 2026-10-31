@@ -46,11 +46,18 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(function 
     asChild = false,
     type,
     className,
+    onClickCapture,
     children,
     ...rest
   } = props;
 
   const isDisabled = isDisabledProp || Boolean(disabled) || isLoading;
+  // A disabled link stays focusable, so screen readers find it, but must not navigate: not on a click,
+  // and not on Enter, which clicks it. A <button> needs none of this, native disabled already blocks it.
+  const blockClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    event.stopPropagation();
+  };
   const Comp = asChild ? Slot.Root : "button";
   const loader = spinner ?? <Spinner size={size} />;
 
@@ -65,6 +72,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(function 
       data-disabled={isDisabled || undefined}
       data-loading={isLoading || undefined}
       className={button({ color, variant, size, radius, isIconOnly, fullWidth, className })}
+      onClickCapture={asChild && isDisabled ? blockClick : onClickCapture}
       {...rest}
     >
       {isIconOnly ? null : isLoading ? loader : startContent}

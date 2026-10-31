@@ -91,6 +91,58 @@ describe("Button", () => {
     expect(screen.getByRole("link")).toHaveAttribute("aria-disabled", "true");
   });
 
+  it("asChild + isDisabled or isLoading: the link neither navigates nor runs its own onClick", () => {
+    const onClick = vi.fn();
+    const outer = vi.fn();
+    render(
+      <div onClick={outer}>
+        <Button asChild isDisabled>
+          <a href="/docs" onClick={onClick}>
+            Docs
+          </a>
+        </Button>
+        <Button asChild isLoading>
+          <a href="/blog" onClick={onClick}>
+            Blog
+          </a>
+        </Button>
+      </div>,
+    );
+    for (const name of ["Docs", "Blog"]) {
+      // fireEvent returns false when the default action (navigation) was prevented.
+      expect(fireEvent.click(screen.getByRole("link", { name }))).toBe(false);
+    }
+    expect(onClick).not.toHaveBeenCalled();
+    expect(outer).not.toHaveBeenCalled();
+  });
+
+  it("asChild keeps the caller's onClickCapture while enabled", () => {
+    const onClickCapture = vi.fn();
+    render(
+      <Button asChild onClickCapture={onClickCapture}>
+        <a href="#docs">Docs</a>
+      </Button>,
+    );
+    fireEvent.click(screen.getByRole("link"));
+    expect(onClickCapture).toHaveBeenCalledTimes(1);
+  });
+
+  it("shows the pointer; a loading button the wait cursor, without hover or press effects", () => {
+    render(
+      <>
+        <Button color="primary">Save</Button>
+        <Button color="primary" isLoading>
+          Saving
+        </Button>
+      </>,
+    );
+    const [idle, loading] = screen.getAllByRole("button");
+    expect(idle).toHaveClass("cursor-pointer", "not-data-[loading]:hover:brightness-110");
+    expect(loading).toHaveClass("data-[loading]:cursor-wait");
+    // Disabled buttons drop pointer events, but a loading one keeps them so its cursor shows.
+    expect(loading).toHaveClass("data-[disabled]:not-data-[loading]:pointer-events-none");
+  });
+
   it("takes defaults from CenngeProvider, props still win", () => {
     render(
       <CenngeProvider color="danger" size="lg">

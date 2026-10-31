@@ -91,13 +91,15 @@ export const Pagination = React.forwardRef<HTMLElement, PaginationProps>(functio
   } as const;
   const idle = button({ ...common, variant: "light", color: "default", class: "font-medium" });
   const current = button({ ...common, variant: "solid", color: color ?? "primary" });
+  // Plain buttons, so the Button's data-disabled styles do not apply: dimmed, and no pointer or hover.
+  const off = "disabled:pointer-events-none disabled:opacity-(--cennge-disabled-opacity)";
 
   return (
     <nav ref={ref} aria-label={ariaLabel} className={cn("flex", className)} {...rest}>
       <ul className="flex flex-wrap items-center gap-1">
         {showControls ? (
           <li>
-            <button type="button" aria-label="Previous page" disabled={isDisabled || page <= 1} onClick={() => go(page - 1)} className={cn(idle, "disabled:opacity-(--cennge-disabled-opacity)")}>
+            <button type="button" aria-label="Previous page" disabled={isDisabled || page <= 1} onClick={() => go(page - 1)} className={cn(idle, off)}>
               <Arrow direction="left" />
             </button>
           </li>
@@ -111,7 +113,7 @@ export const Pagination = React.forwardRef<HTMLElement, PaginationProps>(functio
                 aria-current={item === page ? "page" : undefined}
                 disabled={isDisabled}
                 onClick={() => go(item)}
-                className={cn(item === page ? current : idle, "tabular-nums")}
+                className={cn(item === page ? current : idle, off, "tabular-nums")}
               >
                 {item}
               </button>
@@ -124,7 +126,7 @@ export const Pagination = React.forwardRef<HTMLElement, PaginationProps>(functio
         )}
         {showControls ? (
           <li>
-            <button type="button" aria-label="Next page" disabled={isDisabled || page >= total} onClick={() => go(page + 1)} className={cn(idle, "disabled:opacity-(--cennge-disabled-opacity)")}>
+            <button type="button" aria-label="Next page" disabled={isDisabled || page >= total} onClick={() => go(page + 1)} className={cn(idle, off)}>
               <Arrow direction="right" />
             </button>
           </li>
