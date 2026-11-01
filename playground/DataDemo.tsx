@@ -61,7 +61,9 @@ const repos: Repo[] = [
 ];
 
 type RepoColumn = "name" | "language" | "stars" | "release" | "updated";
-const dateFormat = new Intl.DateTimeFormat("ru-RU", { day: "numeric", month: "short", year: "numeric" });
+// Даты здесь — дни, записанные полночью UTC. Читать их в UTC: в местном поясе к западу от него они
+// стали бы предыдущим днём, и сервер с браузером показали бы разное.
+const dateFormat = new Intl.DateTimeFormat("ru-RU", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
 
 function Repositories() {
   const [query, setQuery] = useState("");
