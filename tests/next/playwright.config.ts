@@ -4,20 +4,21 @@ import { defineConfig, devices } from "@playwright/test";
 const app = process.env.NEXT_APP_DIR;
 if (!app) throw new Error("Run `pnpm check:next`: it builds the Next.js app and sets NEXT_APP_DIR.");
 
-// The browsers look at the server's pages from a time zone where it is another day already, and with a
-// third locale (the page itself is ru-RU, the server defaults to its own). Whatever reads the clock or
-// the default locale while rendering then differs between server and browser, and hydration says so.
-const serverDay = new Date().toLocaleDateString("en-CA");
-const timezoneId = ["Pacific/Kiritimati", "Pacific/Niue"].find(
-  (zone) => new Date().toLocaleDateString("en-CA", { timeZone: zone }) !== serverDay,
-);
+// The browsers look at the server's pages from far off its time zone, and with a third locale (the page
+// itself is ru-RU, the server defaults to its own). Whatever reads the clock, the time zone or the default
+// locale while rendering then differs between server and browser, and hydration says so. Production looks
+// from 14 hours east, development from 11 hours west: every run sees both slips, a date kept as midnight
+// UTC turning into the day before, and a late hour turning into the next day. And at any hour one of the
+// two is on another day than the server. (One zone picked by the hour missed the first slip until the
+// morning, UTC.)
+const timezones = { prod: "Pacific/Kiritimati", dev: "Pacific/Niue" } as const;
 
 // Production shows that `next build` works and the page hydrates; development adds React's own checks,
 // which also report mismatched attributes.
 const servers = [
   { mode: "prod", port: 3210, command: "npm run start" },
   { mode: "dev", port: 3211, command: "npm run dev" },
-];
+] as const;
 
 const browsers = [
   { name: "chromium", use: devices["Desktop Chrome"] },
@@ -41,11 +42,11 @@ export default defineConfig({
   forbidOnly: Boolean(process.env.CI),
   retries: process.env.CI ? 1 : 0,
   reporter: process.env.CI ? [["github"], ["html", { open: "never" }]] : [["list"]],
-  use: { trace: "retain-on-failure", timezoneId, locale: "de-DE" },
+  use: { trace: "retain-on-failure", locale: "de-DE" },
   projects: servers.flatMap((server) =>
     browsers.map((browser) => ({
       name: `${server.mode}-${browser.name}`,
-      use: { ...browser.use, baseURL: `http://localhost:${server.port}` },
+      use: { ...browser.use, baseURL: `http://localhost:${server.port}`, timezoneId: timezones[server.mode] },
     })),
   ),
   webServer: servers.map((server) => ({
