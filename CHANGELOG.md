@@ -1,5 +1,11 @@
 # cennge-ui
 
+## 0.3.1
+
+### Patch Changes
+
+- 20668ec: The README's map examples are set in New York.
+
 ## 0.3.0
 
 ### Minor Changes
