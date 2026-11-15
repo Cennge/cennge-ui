@@ -28,10 +28,10 @@ A regular npm package — `npm update` and every app gets the fix.
 - **Server Components ready.** `"use client"` ships in the build; helpers stay server-safe.
 
 > **Status:** early development (0.x).
-> **66 components.**
+> **69 components.**
 > Forms: Form · Button · Input · PasswordInput · OtpInput · Textarea · NumberInput · DatePicker · DateRangePicker · TimeInput · Select · Combobox · MultiSelect · TagsInput · FileUpload · Checkbox · RadioGroup · Switch · Slider · Rating · ToggleGroup.
 > Overlays: Dialog · AlertDialog · Command · Drawer · Popover · Dropdown · ContextMenu · HoverCard · Tooltip · Toast.
-> Display: Table · Tree · Calendar · RangeCalendar · Card · Badge · Avatar · Indicator · Alert · Progress · CircularProgress · Skeleton · Spinner · EmptyState · Kbd · Snippet · Separator · Timeline · ScrollArea · Prose · Carousel · VirtualList.
+> Display: Table · Tree · Calendar · RangeCalendar · Card · Badge · Avatar · Indicator · Alert · Progress · CircularProgress · ProgressRing · RangeMeter · StatTile · Skeleton · Spinner · EmptyState · Kbd · Snippet · Separator · Timeline · ScrollArea · Prose · Carousel · VirtualList.
 > Navigation: NavigationMenu · Sidebar · Tabs · Accordion · Breadcrumbs · Pagination · Stepper.
 > Theme: ThemeSwitch, with ThemeScript and useTheme.
 > Charts ([`cennge-ui/charts`](#charts-cennge-uicharts)): BarChart · LineChart · AreaChart · DonutChart · Sparkline.
@@ -611,6 +611,35 @@ Next.js and other bundlers: copy `maplibre-gl-worker.mjs` and `maplibre-gl-share
 
 `ContextMenu` and `HoverCard` follow the same pattern as `Dropdown` and `Popover`: a trigger plus content.
 
+### Goals: ProgressRing, RangeMeter, StatTile
+
+For dashboards and trackers: a goal to reach, an amount against a limit, a number and how it moved.
+
+```tsx
+<ProgressRing aria-label="Commits this week" value={34} max={40}>34</ProgressRing>
+<ProgressRing
+  aria-label="This week"
+  rings={[
+    { label: "Commits", value: 34, max: 40 },
+    { label: "Reviews", value: 9, max: 6 },      // past the goal: the ring laps over its start
+    { label: "Deploys", value: 2, max: 5 },
+  ]}
+/>
+
+<RangeMeter label="Protein" value={112} low={150} unit="g" />             {/* "38 g to go" */}
+<RangeMeter label="Calories" value={1940} low={1800} high={2200} unit="kcal" />  {/* "In range" */}
+<RangeMeter label="CI minutes" value={2136} high={2000} unit="min" />     {/* "136 min over", striped */}
+
+<StatTile label="Body weight" value={81.6} unit="kg" delta={-0.4} goodDirection="down" deltaLabel="this week" />
+```
+
+- **ProgressRing** is one meter per ring for screen readers ("9 of 6, 3 over"); the middle is yours to fill
+  and is hidden from them. Past the goal a ring goes round again with a shadow where it overlaps.
+- **RangeMeter** follows `<meter>`: `low` is a floor, `high` a ceiling. The status is written out, grey
+  short of the goal, green within it, amber and striped past it, so it never rests on colour alone.
+- **StatTile** colours the change by `goodDirection` and says "better" or "worse" to screen readers. A
+  Sparkline or a RangeMeter fits under it in `chart`.
+
 ### Form: errors from the server, under their fields
 
 ```tsx
@@ -660,7 +689,7 @@ const [state, action, isPending] = useActionState(saveProfile, {});   // a Next.
 
 ### Charts (`cennge-ui/charts`)
 
-Drawn in SVG by cennge-ui itself, no chart library underneath: 8.4 KB gzip for all of them, 5.2 KB for a
+Drawn in SVG by cennge-ui itself, no chart library underneath: 9.2 KB gzip for all of them, 5.9 KB for a
 bar chart alone. ESM only, like the map.
 
 ```tsx
@@ -677,6 +706,13 @@ import { AreaChart, BarChart, DonutChart, LineChart, Sparkline } from "cennge-ui
 <AreaChart isStacked series={[{ key: "passed", color: "success" }, …]} … />
 <DonutChart aria-label="Languages" data={languages} index="language" value="bytes" />
 <Sparkline aria-label="Downloads over 12 weeks, up by half" data={[40, 42, 39, 51, 72]} />
+
+<BarChart references={[{ value: 6, label: "Goal" }]} … />           {/* a dashed goal line */}
+<LineChart
+  series={[{ key: "kg", display: "dots" }, { key: "trend" }]}      // raw readings as dots, a trend over them
+  references={[{ from: 18.5, to: 25, label: "Healthy" }]}         // a shaded band
+  …
+/>
 ```
 
 - **Colours.** Series take the chart palette in order, `--cennge-chart-1…8` (Tailwind's `chart-1…8` for
@@ -693,6 +729,8 @@ import { AreaChart, BarChart, DonutChart, LineChart, Sparkline } from "cennge-ui
 - Numbers follow the provider's locale (`valueFormat` and `axisFormat` to change them); a missing value
   (`null`) breaks a line and reads "–" in the table.
 - A dot on a line sits in a ring of the colour behind the chart; off a Card, set `--cennge-chart-surface`.
+- **Goals.** `references` draws a dashed line at a goal or a band over a range, stretching the axis to show
+  them and reading them after the table. `movingAverage(values, 7)` gives the trend through daily readings.
 
 ## Provider (optional)
 
@@ -727,6 +765,22 @@ pnpm check:next     # after build: a Next.js app on the packed package, server-r
 pnpm size           # what typical imports cost after tree shaking (Button alone: ~2 KB gzip)
 pnpm changeset      # describe a change for the next release
 ```
+
+### The docs site
+
+`site/` is the documentation: a page for each component with a live example, its props read from the
+types, its measured size and the tests that cover it, built with cennge-ui itself. Next.js exports it as
+static files, so any static host serves it.
+
+```bash
+pnpm build                                   # the library first: the site uses dist/
+pnpm --filter cennge-ui-site dev             # http://localhost:3150
+pnpm --filter cennge-ui-site build           # static site in site/out/
+pnpm --filter cennge-ui-site serve           # serve site/out/ at http://localhost:3200
+pnpm --filter cennge-ui-site test:e2e        # every page in the five browser projects, axe in both themes
+```
+
+[site/AUTHORING.md](site/AUTHORING.md) explains how a page is written.
 
 ### How components are tested
 
