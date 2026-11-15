@@ -10,7 +10,7 @@ const fixtures = readdirSync(new URL("../playground/fixtures", import.meta.url))
   .filter((file) => file.endsWith(".tsx"))
   .map((file) => file.replace(/\.tsx$/, ""));
 /** Fixtures of pictures alone, with no control in them: Tab has nothing to reach. */
-const nothingToFocus = new Set(["kbd", "sparkline"]);
+const nothingToFocus = new Set(["kbd", "progress-ring", "range-meter", "sparkline", "stat-tile"]);
 
 declare global {
   interface Window {
