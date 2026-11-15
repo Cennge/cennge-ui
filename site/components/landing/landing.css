@@ -1,0 +1,714 @@
+/*
+ * The landing page. Colours are the library's tokens only, so the accent and the theme the visitor picks
+ * repaint everything. Five type steps: figure, display, headline, heading, then text sizes.
+ */
+.landing {
+  --gutter: clamp(16px, 2.25vw, 32px);
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --step-figure: clamp(112px, 19vw, 300px);
+  --step-display: clamp(48px, 6.4vw, 104px);
+  --step-headline: clamp(34px, 3.6vw, 56px);
+  --step-heading: clamp(22px, 2.1vw, 30px);
+  overflow-x: clip;
+}
+
+.landing-display {
+  font-size: var(--step-display);
+  font-weight: 600;
+  line-height: 0.95;
+  letter-spacing: -0.04em;
+}
+.landing-headline {
+  font-size: var(--step-headline);
+  font-weight: 500;
+  line-height: 1.02;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+.landing-heading {
+  font-size: var(--step-heading);
+  font-weight: 500;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+.landing-wordmark {
+  font-size: 1.125rem;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+}
+
+/* Links: the ink, underlined on hover; the focus ring is the accent. */
+.landing-link,
+.landing-wordmark {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-decoration-thickness: 0.07em;
+  text-underline-offset: 0.22em;
+  transition: text-decoration-color 180ms ease;
+  border-radius: 2px;
+}
+@media (hover: hover) and (pointer: fine) {
+  .landing-link:hover,
+  .landing-wordmark:hover {
+    text-decoration-color: currentColor;
+  }
+}
+.landing a:focus-visible,
+.landing-wordmark:focus-visible {
+  outline: 2px solid var(--cennge-primary);
+  outline-offset: 3px;
+}
+
+/* ------------------------------------------------------------------ hero */
+/* Wide screens: the stage holds for one screen of scrolling while the reel steps through four fixes. */
+.hero {
+  --frame-w: clamp(400px, 32vw, 560px);
+  --frame-h: calc(var(--frame-w) * 10 / 16);
+  --reel-gap: 24px;
+  position: relative;
+}
+.hero-stage {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 0 var(--gutter) 40px;
+}
+.hero-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+}
+.hero-h1 {
+  font-size: clamp(34px, 9vw, 60px);
+  font-weight: 500;
+  line-height: 1.04;
+  letter-spacing: -0.035em;
+  display: flex;
+  flex-direction: column;
+}
+.hero-line {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.1em;
+  margin-bottom: -0.1em;
+}
+.hero-line > span {
+  display: block;
+}
+.hero-line-b {
+  align-self: flex-end;
+  text-align: right;
+}
+.hero-lead {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 34rem;
+}
+.hero-live {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+/* Narrow screens: one fix at a time, chosen with the toggle above it. */
+.reel-window {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 36rem;
+}
+.reel-picker {
+  align-self: flex-start;
+  max-width: 100%;
+  overflow-x: auto;
+}
+.reel-frame {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 17rem;
+  padding: 20px;
+  border-radius: var(--cennge-radius-large);
+  background: var(--cennge-surface-2);
+}
+.reel-frame:not([data-active]) {
+  display: none;
+}
+.reel-fragment {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (min-width: 1024px) {
+  .hero {
+    height: 200svh;
+  }
+  .hero-stage {
+    position: sticky;
+    top: 0;
+    height: 100svh;
+    min-height: 620px;
+    display: block;
+    padding: 0;
+  }
+  .hero-nav {
+    position: absolute;
+    inset: 0 var(--gutter) auto;
+    z-index: 2;
+  }
+  .hero-h1 {
+    position: absolute;
+    inset-inline: var(--gutter);
+    top: 50%;
+    transform: translateY(-50%);
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    font-size: var(--step-headline);
+    pointer-events: none;
+  }
+  .hero-line {
+    max-width: calc(50% - var(--frame-w) / 2 - 20px);
+  }
+  .hero-lead,
+  .hero-live {
+    position: absolute;
+    bottom: 32px;
+    width: calc(50% - var(--frame-w) / 2 - var(--gutter) - 28px);
+    max-width: 30rem;
+  }
+  .hero-lead {
+    left: var(--gutter);
+  }
+  .hero-live {
+    right: var(--gutter);
+    align-items: flex-end;
+    text-align: right;
+  }
+  .hero-live-controls {
+    justify-content: flex-end;
+  }
+  /* The reel runs the full height of the stage, through the sentence: the frames before and after show above and below. */
+  .reel-window {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    display: block;
+    width: var(--frame-w);
+    max-width: none;
+    transform: translateX(-50%);
+    overflow: hidden;
+  }
+  .reel-picker {
+    display: none;
+  }
+  .reel {
+    display: flex;
+    flex-direction: column;
+    gap: var(--reel-gap);
+    padding: calc(max(50svh, 310px) - var(--frame-h) / 2) 0 0;
+    transform: translateY(calc(var(--active) * -1 * (var(--frame-h) + var(--reel-gap))));
+  }
+  .reel-frame,
+  .reel-frame:not([data-active]) {
+    display: flex;
+  }
+  .reel-frame {
+    flex: 0 0 var(--frame-h);
+    height: var(--frame-h);
+    min-height: 0;
+    transition:
+      background-color 400ms ease,
+      transform 640ms var(--ease);
+  }
+  /* The frame on the sentence is lit; the ones before and after recede a step. */
+  .reel-frame:not([data-active]) {
+    transform: scale(0.94);
+  }
+  .reel-frame[data-active] {
+    background: var(--cennge-surface-3);
+  }
+}
+
+/* -------------------------------------------------------------- showcase */
+/*
+ * A row of true-size panels; the one in the middle is lit, the others recede a step, do not respond, and
+ * come to the middle on a click. The row fades out at both edges, so the panels read as a strip that goes on.
+ */
+.showcase {
+  background: var(--cennge-surface-2);
+  padding-block: 64px;
+}
+.showcase-carousel {
+  gap: 0;
+}
+.showcase-row {
+  align-items: flex-start;
+  border-radius: 0;
+  padding-block: 4px;
+  /* Opaque over the lit panel, fading to nothing across the neighbours to each edge. */
+  --fade: max(12px, calc(50% - min(86vw, var(--panel-w)) / 2 - 24px));
+  mask-image: linear-gradient(to right, transparent, #000 var(--fade), #000 calc(100% - var(--fade)), transparent);
+}
+.showcase-item {
+  width: min(86vw, var(--panel-w));
+}
+.showcase-panel {
+  padding: 20px;
+  border-radius: var(--cennge-radius-large);
+  background: var(--cennge-background);
+  transition:
+    background-color 360ms ease,
+    transform 520ms var(--ease);
+}
+.showcase-panel[data-lit] {
+  background: var(--cennge-surface-4);
+}
+.showcase-item[data-neighbour] {
+  cursor: pointer;
+}
+.showcase-item[data-neighbour]:hover .showcase-panel {
+  background: var(--cennge-surface-3);
+}
+/* Under the lit panel, one width for every panel: it never moves, only its words change. */
+.showcase-caption {
+  width: min(86vw, var(--panel-w));
+  margin: 28px auto 0;
+}
+.showcase-foot {
+  padding: 56px var(--gutter) 0;
+}
+.showcase-row {
+  padding-inline: calc(50% - min(86vw, var(--panel-w)) / 2);
+}
+@media (min-width: 1200px) {
+  .showcase {
+    min-height: 96svh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .showcase-carousel {
+    --carousel-gap: 32px !important;
+  }
+  .showcase-panel:not([data-lit]) {
+    transform: scale(0.94);
+  }
+}
+
+/* ----------------------------------------------------------------- story */
+.story {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 32px;
+  padding: 120px var(--gutter) 40px;
+}
+.story-text {
+  display: flex;
+  flex-direction: column;
+}
+.story-step {
+  padding-block: 28px;
+}
+.story-statement {
+  font-size: var(--step-heading);
+  font-weight: 500;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+  color: var(--cennge-muted);
+  transition: color 320ms ease;
+}
+.story-step[data-active] .story-statement {
+  color: var(--cennge-foreground);
+}
+.story-fragment {
+  padding: clamp(20px, 3vw, 36px);
+  border-radius: var(--cennge-radius-large);
+  background: var(--cennge-surface-2);
+}
+@media (min-width: 1024px) {
+  .story {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: 24px;
+    padding-top: 160px;
+  }
+  .story-title {
+    grid-column: 1 / span 5;
+    grid-row: 1;
+  }
+  .story-text {
+    grid-column: 1 / span 5;
+    grid-row: 2;
+  }
+  .story-stage {
+    grid-column: 7 / span 6;
+    grid-row: 1 / span 2;
+  }
+  /* Held level with the statement in the middle of the screen, the box as tall as the step it shows. */
+  .story-sticky {
+    position: sticky;
+    top: max(14vh, calc(50vh - 10rem));
+  }
+  .story-step {
+    min-height: 58vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-block: 0;
+  }
+}
+
+/* ----------------------------------------------------------------- proof */
+.proof {
+  padding: 120px var(--gutter) 160px;
+}
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+}
+.tile {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 9.5rem;
+  padding: 20px;
+  border-radius: var(--cennge-radius-large);
+  background: var(--cennge-surface-2);
+}
+.tile-name {
+  font-size: var(--step-heading);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+.tile-head {
+  grid-column: 1 / -1;
+  min-height: 13rem;
+  background: var(--cennge-primary);
+  color: var(--cennge-primary-foreground);
+}
+@media (min-width: 1024px) {
+  .tiles {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .tile {
+    aspect-ratio: 3 / 2;
+    min-height: 0;
+    padding: 24px;
+  }
+  .tile-head {
+    grid-column: span 2;
+    aspect-ratio: auto;
+  }
+}
+
+/* ---------------------------------------------------------------- weight */
+.weight {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 72px;
+  min-height: 84svh;
+  padding: 96px var(--gutter) 56px;
+  background: var(--cennge-surface-2);
+}
+.weight-control {
+  margin-top: 28px;
+  width: 100%;
+  max-width: 25rem;
+}
+.weight-bottom {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.weight-figure {
+  font-size: var(--step-figure);
+  font-weight: 700;
+  line-height: 0.8;
+  letter-spacing: -0.055em;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.weight-number {
+  display: inline-block;
+}
+.weight-unit {
+  display: inline-block;
+  margin-left: 0.18em;
+  font-size: var(--step-heading);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.weight-note {
+  max-width: 34ch;
+  font-size: 16px;
+  line-height: 1.5;
+  text-wrap: pretty;
+}
+@media (min-width: 1024px) {
+  .weight {
+    min-height: 88svh;
+  }
+  .weight-bottom {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+  .weight-unit {
+    font-size: var(--step-headline);
+  }
+  .weight-note {
+    margin-bottom: 0.4em;
+  }
+}
+
+/* ------------------------------------------------------------------ deps */
+.deps {
+  padding: 160px var(--gutter);
+}
+.deps-columns {
+  display: grid;
+  gap: 40px;
+  max-width: 32.5rem;
+  margin-top: 32px;
+}
+.deps-group + .deps-group {
+  margin-top: 40px;
+}
+.deps-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 44px;
+  padding-block: 8px;
+}
+.deps-mark {
+  width: 16px;
+  height: 16px;
+  flex: none;
+  border-radius: 999px;
+}
+.deps-mark-accent {
+  background: var(--cennge-primary);
+}
+.deps-mark-ink {
+  background: var(--cennge-foreground);
+}
+.deps-mark-empty {
+  border: 2px solid var(--cennge-muted);
+}
+.deps-note {
+  margin-top: 40px;
+  max-width: 40ch;
+  font-size: 16px;
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+@media (min-width: 1024px) {
+  .deps {
+    padding-left: 22vw;
+  }
+  .deps-columns {
+    max-width: none;
+    grid-template-columns: repeat(2, minmax(0, 32.5rem));
+    column-gap: clamp(48px, 6vw, 96px);
+  }
+  .deps-row {
+    min-height: 36px;
+    padding-block: 4px;
+  }
+}
+
+/* ------------------------------------------------------------------- cta */
+.cta {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  min-height: 84svh;
+  padding: 72px var(--gutter) 40px;
+  background: var(--cennge-primary);
+  color: var(--cennge-primary-foreground);
+}
+.cta-dialog {
+  width: 100%;
+  max-width: 27.5rem;
+}
+@media (min-width: 1024px) {
+  .cta {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: 24px;
+    min-height: 90svh;
+    padding-block: 40px;
+  }
+  .cta-copy {
+    grid-column: 1 / span 6;
+    align-self: end;
+  }
+  .cta-dialog {
+    grid-column: 7 / span 5;
+    grid-row: 1;
+    align-self: center;
+    justify-self: end;
+  }
+}
+
+/* ---------------------------------------------------------------- footer */
+.foot {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+  padding: 8px var(--gutter) var(--gutter);
+}
+.foot-tile {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 20px;
+  min-height: 11rem;
+  padding: 20px;
+  border-radius: var(--cennge-radius-large);
+  background: var(--cennge-surface-2);
+}
+.foot-mark {
+  grid-column: 1 / -1;
+  order: -2;
+  min-height: 10rem;
+  justify-content: center;
+  align-items: center;
+  background: var(--cennge-foreground);
+  color: var(--cennge-background);
+}
+.foot-go {
+  grid-column: 1 / -1;
+  order: -1;
+  background: var(--cennge-primary);
+  color: var(--cennge-primary-foreground);
+  transition: background-color 180ms ease;
+}
+.foot-go:focus-visible {
+  outline: 2px solid var(--cennge-foreground) !important;
+  outline-offset: 3px;
+}
+.foot-arrow {
+  align-self: flex-end;
+  width: 48px;
+  height: 48px;
+  transition: transform 240ms var(--ease);
+}
+@media (hover: hover) and (pointer: fine) {
+  .foot-go:hover {
+    background: var(--cennge-primary-600);
+  }
+  .foot-go:hover .foot-arrow {
+    transform: translate(4px, -4px);
+  }
+}
+/* Narrow screens: the mark and the action run full width, the rest pair up so no tile is a wide empty band. */
+.foot-statement,
+.foot-live {
+  grid-column: 1 / -1;
+}
+.foot-live {
+  order: 1;
+}
+@media (min-width: 600px) {
+  .foot-statement,
+  .foot-live {
+    grid-column: auto;
+  }
+  .foot-live {
+    order: 0;
+  }
+}
+@media (min-width: 1280px) {
+  .foot {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .foot-tile {
+    min-height: 220px;
+    padding: 24px;
+  }
+  .foot-statement {
+    grid-column: 1 / span 4;
+  }
+  .foot-nav {
+    grid-column: 5 / span 2;
+  }
+  .foot-live {
+    grid-column: 7 / span 3;
+  }
+  .foot-source {
+    grid-column: 10 / span 3;
+  }
+  .foot-mark {
+    order: 0;
+    grid-column: 1 / span 8;
+    min-height: 320px;
+  }
+  .foot-go {
+    order: 0;
+    grid-column: 9 / span 4;
+    min-height: 320px;
+  }
+}
+
+/* ---------------------------------------------------------------- motion */
+@media (prefers-reduced-motion: no-preference) {
+  .reel {
+    transition: transform 720ms var(--ease);
+  }
+  .hero-line > span {
+    animation: landing-line 900ms var(--ease) both;
+    animation-delay: calc(var(--i, 0) * 110ms + 120ms);
+  }
+  .hero-rise {
+    animation: landing-rise 800ms var(--ease) both;
+    animation-delay: calc(var(--i, 0) * 90ms + 160ms);
+  }
+  .landing.is-revealing [data-reveal] {
+    opacity: 0;
+    translate: 0 24px;
+    transition:
+      opacity 700ms var(--ease),
+      translate 900ms var(--ease);
+    transition-delay: calc(var(--i, 0) * 80ms);
+  }
+  .landing.is-revealing [data-reveal].is-in {
+    opacity: 1;
+    translate: none;
+  }
+  .weight-number {
+    animation: landing-tick 420ms var(--ease) both;
+  }
+}
+@keyframes landing-line {
+  from {
+    translate: 0 105%;
+  }
+}
+@keyframes landing-rise {
+  from {
+    opacity: 0;
+    translate: 0 20px;
+  }
+}
+@keyframes landing-tick {
+  from {
+    opacity: 0.25;
+    translate: 0 0.06em;
+  }
+}

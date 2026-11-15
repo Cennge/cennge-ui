@@ -1,0 +1,101 @@
+@import "tailwindcss";
+@import "cennge-ui/styles.css";
+/* The library's classes, from the package as installed (a workspace link to its dist/). */
+@source "../node_modules/cennge-ui/dist";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  /* Code: tokens on the theme's own surfaces, keywords in the accent, so a code block repaints with it. */
+  --code-foreground: var(--cennge-foreground);
+  --code-background: transparent;
+  --code-token-keyword: var(--cennge-primary-text);
+  --code-token-constant: var(--cennge-info-text);
+  --code-token-string: var(--cennge-success-text);
+  --code-token-string-expression: var(--cennge-success-text);
+  --code-token-comment: var(--cennge-muted);
+  --code-token-function: var(--cennge-secondary-text);
+  --code-token-parameter: var(--cennge-foreground);
+  --code-token-punctuation: var(--cennge-muted);
+  --code-token-link: var(--cennge-primary-text);
+  --font-code: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+@theme inline {
+  --font-code: var(--font-code);
+}
+
+html {
+  scroll-padding-top: 5rem;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  @apply bg-background font-cennge text-foreground antialiased;
+}
+
+::selection {
+  background: color-mix(in oklab, var(--cennge-primary) 32%, transparent);
+  color: var(--cennge-foreground);
+}
+
+* {
+  scrollbar-color: var(--cennge-surface-4) transparent;
+  scrollbar-width: thin;
+}
+
+input,
+textarea {
+  caret-color: var(--cennge-primary);
+}
+
+/* Links in the reading column (not in its examples) and field marks: the accent's text tone, underlined so they never rely on colour. */
+.docs-link,
+[data-reading] a:not(.not-prose a, [data-example] a) {
+  color: var(--cennge-primary-text);
+  font-weight: 500;
+  text-decoration: underline;
+  text-decoration-color: color-mix(in oklab, var(--cennge-primary-text) 40%, transparent);
+  text-underline-offset: 3px;
+  border-radius: 2px;
+}
+.docs-link:hover,
+[data-reading] a:not(.not-prose a, [data-example] a):hover {
+  text-decoration-color: currentColor;
+}
+.docs-link:focus-visible,
+[data-reading] a:not(.not-prose a, [data-example] a):focus-visible {
+  outline: 2px solid var(--cennge-primary);
+  outline-offset: 2px;
+}
+
+/* Headings in the reading column carry an anchor that shows on hover and focus. */
+.heading-anchor {
+  margin-left: 0.35em;
+  color: var(--cennge-muted);
+  opacity: 0;
+  text-decoration: none;
+  transition: opacity var(--cennge-duration-fast);
+}
+:is(h2, h3):hover .heading-anchor,
+.heading-anchor:focus-visible {
+  opacity: 1;
+}
+
+/* The reading column: headings separate by space, not by rules. Prose examples keep the library's look. */
+[data-reading] > h2 {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+/* The cennge mark (components/brand-mark.tsx): sized by the text it sits in, coloured by it. */
+.brand-mark {
+  display: inline-block;
+  flex-shrink: 0;
+  height: 0.8em;
+  aspect-ratio: 960 / 481;
+  background-color: currentColor;
+  mask: url("/mark.png") center / contain no-repeat;
+  /* Forced colours repaint backgrounds to the canvas; the mark keeps the text's colour instead. */
+  forced-color-adjust: none;
+}
