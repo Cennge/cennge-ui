@@ -1,5 +1,14 @@
 # cennge-ui
 
+## 0.4.0
+
+### Minor Changes
+
+- 9947f8e: Charts: `references` on BarChart, LineChart and AreaChart draw a dashed goal line or a shaded band; LineChart series take `display: "dots"` for raw readings, and `movingAverage` gives a trend through them. `ChartLabels` gains the words for them.
+- 45b56dd: `ProgressRing`: progress towards a goal as a ring, or one ring per goal nested. Past the goal a ring goes round again over its start, with a shadow where it overlaps. Each ring is a meter for screen readers, its words in `labels`. `ChartColor` is now exported from `cennge-ui` too, and the provider's `reducedMotion="always"` cuts animation delays as well as durations.
+- eefb5ab: `RangeMeter`: an amount against a floor (`low`), a ceiling (`high`) or both, its status written out ("38 g to go", "In range", "640 kcal left", "136 kcal over") and the part past the ceiling striped.
+- e28c778: `StatTile`: one number with its unit and its change, coloured by `goodDirection` so a falling weight can be good news, with room for a chart under it.
+
 ## 0.3.1
 
 ### Patch Changes
