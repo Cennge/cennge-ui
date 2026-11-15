@@ -16,6 +16,12 @@ replica
 .next
 next-env.d.ts
 
+# design tooling (local)
+.impeccable
+.taste-skill
+site/.impeccable
+PRODUCT.md
+
 # Local secrets
 .env
 .env.*

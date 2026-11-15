@@ -1,2 +1,7 @@
+packages:
+  # The library is the root package; "." keeps it in the workspace (changesets reads this list).
+  - "."
+  - site
+
 allowBuilds:
   esbuild: true
