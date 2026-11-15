@@ -1,0 +1,210 @@
+import { Example, Guide } from "@/components/docs";
+import Uncontrolled from "@/examples/forms/uncontrolled";
+import Controlled from "@/examples/forms/controlled";
+import ServerErrors from "@/examples/forms/server-errors";
+
+export const metadata = { title: "Forms" };
+
+<Guide
+  slug="forms"
+  lede="Fields work with your state or without it, send their values under their names, and show the server's errors under themselves."
+>
+
+## Uncontrolled: the form holds the values
+
+Give each field a `name`, and a `defaultValue` if it starts filled (`defaultSelected` for Checkbox and Switch). On submit, `new FormData(form)` holds every value, and you keep no state of your own. Press Publish to see what this form sends.
+
+<Example file="forms/uncontrolled">
+  <Uncontrolled />
+</Example>
+
+What each field adds to the `FormData`:
+
+- Input, Textarea, PasswordInput and OtpInput send their text. NumberInput sends the number, not the formatted text: `1234.5` where a German page shows `1.234,5`.
+- Select, Combobox and RadioGroup send the chosen item's `value`. A Combobox with `selectionMode="multiple"` and a TagsInput send one entry per value: read them with `data.getAll(name)`.
+- DatePicker and TimeInput send ISO strings, `2026-11-20` and `14:30`. DateRangePicker sends two dates, under `startName` and `endName`.
+- Checkbox sends `on`, or its `value`, while ticked; Switch sends `on` while on. Neither sends anything while off.
+- Rating sends the number of stars. Slider sends its value; a range slider sends both ends as `name[]`.
+- FileUpload keeps its files in a file input with its `name`.
+
+## Controlled: your state holds them
+
+Pass `value` and `onValueChange` (`isSelected` for Checkbox and Switch) when something else on the page reads the value or sets it. `onValueChange` gets the value itself, not an event: a string, a number, `true` or `false`, an array, an ISO date or a `{ start, end }` range, and `null` for an empty Select, Combobox, NumberInput, DatePicker, DateRangePicker or TimeInput. Input and Textarea also fire the native `onChange` with the event.
+
+Here the change you pick writes the next version into the field, and you can still type over it.
+
+<Example file="forms/controlled">
+  <Controlled />
+</Example>
+
+A field is controlled when its `value` is anything but `undefined`, so pass `null` or `""` to empty it, never `undefined`.
+
+## Errors from the server
+
+`<Form validationErrors>` takes messages by field name, such as `{ version: "Already on npm" }`, and shows each one under the field with that `name`. Publish this form as it is: the message lands under Version and the focus moves there. Type a newer version and the message goes as you type. Pick playwright-msi-scraper and publish, and the message moves to Repository.
+
+<Example file="forms/server-errors">
+  <ServerErrors />
+</Example>
+
+- The field gets `aria-invalid`, and its message is read with it through `aria-describedby`.
+- Every new object shows its whole set and focuses the first field that has a message, in the order of the form, not of the object.
+- Editing a field drops its server message; the others stay until the next answer.
+- A message is a string or an array of strings, joined with a space; `null`, `undefined` or `""` mean the field is fine.
+- A field's own `isInvalid` and `errorMessage` win over the form's.
+- Every field takes part: Input, PasswordInput, Textarea, NumberInput, OtpInput, Select, Combobox, TagsInput, DatePicker, DateRangePicker, TimeInput, FileUpload, RadioGroup, Checkbox and Rating.
+
+React 19 resets a form once its action returns, and Select, Checkbox, Switch, Slider and RadioGroup go back to the value they mounted with. So return what was sent along with the errors, and pass it back to each field as `defaultValue`, with that value as its `key`: the field mounts again holding it, as Repository and Version do above.
+
+There is no schema validation in the library. Keep zod or valibot on the server and return their messages by field name.
+
+### With a Next.js server action
+
+The function the example calls moves to a file marked `"use server"`. The form imports it and stays as it is: `useActionState(publish, initialState)`, `action={action}`, `validationErrors={state.errors}`.
+
+```ts
+// app/releases/actions.ts
+"use server";
+
+export interface PublishState {
+  values: { repository: string; version: string };
+  errors?: Record<string, string>;
+  published?: string;
+}
+
+export async function publish(
+  _previous: PublishState,
+  data: FormData,
+): Promise<PublishState> {
+  const repository = String(data.get("repository"));
+  const version = String(data.get("version"));
+  const values = { repository, version };
+
+  const current = await latestVersion(repository); // your registry or database
+  if (!current) {
+    return { values, errors: { repository: `${repository} is not published to npm` } };
+  }
+  if (!isNewer(version, current)) {
+    return { values, errors: { version: `${repository} is already at ${current}` } };
+  }
+  await release(repository, version);
+  return { values, published: `${repository}@${version}` };
+}
+```
+
+The [Next.js check](/docs/server-rendering/#how-it-is-checked) runs a round trip like this one in every browser it tests: the server's message under its field, the focus on it, the typed value kept, then a toast from the layout's Toaster.
+
+## The browser's own checks
+
+`isRequired`, `type="email"`, `minLength`, `pattern` and the other constraints still run in the browser and still block the submit. Inside a `<Form>` their messages show under the field instead of in the browser's bubble, and the focus goes to the first field to fix. The text is the browser's own `validationMessage`, in the reader's language, and it follows the field as it is fixed: it changes while the value is still wrong and goes once it is right.
+
+Empty Version in the form above and press Publish to see one.
+
+## Fields of your own
+
+`useFormField(name)` gives your component the form's error for `name` and a `markEdited()` to call when the value changes. Send the value with a hidden input, and put `data-field-name` on the wrapper so the form can move the focus into it.
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { ToggleGroup, ToggleGroupItem, useFormField } from "cennge-ui";
+
+export function Visibility({ name }: { name: string }) {
+  const [value, setValue] = useState<string | null>(null);
+  const field = useFormField(name);
+
+  return (
+    <div data-field-name={name} className="flex flex-col gap-1.5">
+      <ToggleGroup
+        aria-label="Visibility"
+        value={value}
+        onValueChange={(next) => {
+          setValue(next);
+          field.markEdited();
+        }}
+      >
+        <ToggleGroupItem value="public">Public</ToggleGroupItem>
+        <ToggleGroupItem value="private">Private</ToggleGroupItem>
+      </ToggleGroup>
+      <input type="hidden" name={name} value={value ?? ""} />
+      {field.isInvalid ? (
+        <p className="text-xs text-danger-text">{field.errorMessage}</p>
+      ) : null}
+    </div>
+  );
+}
+```
+
+## react-hook-form
+
+Connect each field through `Controller`: `field.value` goes to `value` (`isSelected` for Checkbox and Switch), `field.onChange` to `onValueChange`, and `fieldState` to `isInvalid` and `errorMessage`. Pass `ref` where a field takes one, so react-hook-form can focus the first field with an error. Select, RadioGroup, Rating, Slider and FileUpload take no `ref`, and OtpInput and DateRangePicker give theirs to a wrapper that does not take focus, so the focus passes over them.
+
+```tsx
+"use client";
+
+import { Controller, useForm } from "react-hook-form";
+import { Button, Input, Select, SelectItem } from "cennge-ui";
+
+interface Release {
+  repository: string | null;
+  version: string;
+}
+
+export function ReleaseForm({ onSave }: { onSave: (release: Release) => void }) {
+  const { control, handleSubmit } = useForm<Release>({
+    defaultValues: { repository: "payload-cache", version: "" },
+  });
+
+  return (
+    <form onSubmit={handleSubmit(onSave)} className="flex flex-col gap-4">
+      <Controller
+        name="repository"
+        control={control}
+        rules={{ required: "Pick a repository" }}
+        render={({ field, fieldState }) => (
+          <Select
+            label="Repository"
+            value={field.value}
+            onValueChange={field.onChange}
+            isInvalid={fieldState.invalid}
+            errorMessage={fieldState.error?.message}
+          >
+            <SelectItem value="cennge-ui">cennge-ui</SelectItem>
+            <SelectItem value="payload-cache">payload-cache</SelectItem>
+          </Select>
+        )}
+      />
+      <Controller
+        name="version"
+        control={control}
+        rules={{
+          required: "Enter a version",
+          pattern: { value: /^\d+\.\d+\.\d+$/, message: "Use major.minor.patch" },
+        }}
+        render={({ field, fieldState }) => (
+          <Input
+            ref={field.ref}
+            name={field.name}
+            label="Version"
+            value={field.value}
+            onValueChange={field.onChange}
+            onBlur={field.onBlur}
+            isInvalid={fieldState.invalid}
+            errorMessage={fieldState.error?.message}
+          />
+        )}
+      />
+      <Button type="submit" color="primary" className="self-start">
+        Save
+      </Button>
+    </form>
+  );
+}
+```
+
+Give Input and Textarea a `Controller` too, not `register`. They pass `ref`, `name`, `onChange` and `onBlur` on to their native element, so typing and validation work, but they keep their value in React state and write it back on every render: what `register` puts straight into the DOM, from `defaultValues`, `reset()` or `setValue()`, does not stay.
+
+The props of `<Form>` itself are on the [Form](/docs/form/) page.
+
+</Guide>

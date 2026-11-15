@@ -1,0 +1,115 @@
+import { Entry, Example, Plate, Props } from "@/components/docs";
+import LineChartPlate from "@/examples/line-chart/plate";
+import Basic from "@/examples/line-chart/basic";
+import Series from "@/examples/line-chart/series";
+import Gaps from "@/examples/line-chart/gaps";
+import Fit from "@/examples/line-chart/fit";
+import Smooth from "@/examples/line-chart/smooth";
+import Trend from "@/examples/line-chart/trend";
+
+export const metadata = { title: "LineChart" };
+
+<Entry
+  slug="line-chart"
+  lede="Change over time, a line per series, read at any point with a crosshair."
+  plate={
+    <Plate
+      notes={[
+        "Hover a day or tap it: the crosshair snaps to the nearest day and reads every series there.",
+        "A missing value breaks its line, and reads as a dash in the readout and the table.",
+        "With startAtZero off the axis fits the data, so a change small next to the values still shows.",
+      ]}
+      caption="Live: hover it, tap it, use the keys."
+    >
+      <LineChartPlate />
+    </Plate>
+  }
+  marks={{
+    pattern: (
+      <>
+        A <code>&lt;figure&gt;</code> with a focusable group over the plot and a hidden <code>&lt;table&gt;</code> of the data
+      </>
+    ),
+    keyboard: [{ keys: "left" }, { keys: "right" }, { keys: "up" }, { keys: "down" }, "Home", "End", { keys: "escape" }],
+    extra: [{ term: "Lines", detail: <>2px, straight or a <code>smooth</code> curve that never overshoots its points</> }],
+  }}
+>
+
+## When to use
+
+Use a LineChart when the order of the values matters: days, weeks, releases, hours. The line shows the shape of a change across many points, and the crosshair gives the exact values at any one of them. Each series is a line in its own colour, named in the legend beside a sample of its stroke.
+
+## Similar
+
+- [AreaChart](/docs/area-chart/) is the same chart with the area under each line washed in its colour, and it can stack series into a whole.
+- [BarChart](/docs/bar-chart/) takes the same `data`, `index` and `series` and compares amounts by length, from an axis that takes in zero unless you set a `domain`.
+- [Sparkline](/docs/sparkline/) is a trend without axes or a readout, small enough to sit beside a number.
+
+## One line
+
+A single series has no legend; the `aria-label` names the chart and its table. The numbers on this page are sample data.
+
+<Example file="line-chart/basic">
+  <Basic />
+</Example>
+
+## Several series
+
+Series take the palette's slots in the order of `series`, the first in the accent, so a series added at the end never repaints the others. The readout lists them in the same order.
+
+<Example file="line-chart/series">
+  <Series />
+</Example>
+
+## A gap in the data
+
+playwright-msi-scraper did not run over the weekend. Give `null` where there is no value: the line stops and starts again after it instead of diving to zero, and the readout and the table show a dash. A value alone between two gaps is drawn as a dot.
+
+<Example file="line-chart/gaps">
+  <Gaps />
+</Example>
+
+## Small changes, fitted axis
+
+The value axis starts at zero by default. With `startAtZero={false}` it fits round ends around the data, which suits a rate that never leaves the nineties. `showDots` marks every value, and `axisFormat` writes the axis as `valueFormat` writes the readout.
+
+Each dot sits in a 2px ring of the colour behind the chart, so it stays clear of the line. The ring takes `--cennge-chart-surface`, which falls back to a Card's surface; set it when the chart sits on another one, as here.
+
+<Example file="line-chart/fit">
+  <Fit />
+</Example>
+
+## A smooth curve
+
+`curve="smooth"` bends through the points without overshooting them: between two equal values the curve stays flat, and a count of zero never dips below the axis.
+
+<Example file="line-chart/smooth">
+  <Smooth />
+</Example>
+
+## A trend through daily readings
+
+Noisy readings, a build time or a body weight, read better as a trend. `movingAverage` averages each value with the six before it; give the raw values `display: "dots"` so they sit faintly under the line. A band in `references` shades the target range, from `from` to `to`.
+
+<Example file="line-chart/trend">
+  <Trend />
+</Example>
+
+## Accessibility
+
+- The figure and its plot are named by `aria-label`; the plot is a focusable group described by `labels.keyboardHint`.
+- Focus from the keyboard puts the crosshair on the first point. The arrows move it, Home and End jump to the ends, Escape hides it, and a polite live region reads each place, as "Oct 2: cennge-ui 10.8 min, payload-cache 4.3 min".
+- The readout is for the eye only: screen readers get every value in a table captioned with the chart's name, a missing value written as a dash.
+- A finger scrubs along the chart while the page still scrolls up and down; a tap leaves the readout up until a tap elsewhere.
+
+## Server rendering
+
+The legend, the axes, the grid and the data table come from the server. The lines are drawn once the browser has measured the plot and draw in from the left; with reduced motion they appear at once.
+
+## Props
+
+Each entry of `series` is `{ key, label, color }`: the field that holds its values, its name (the key without one), and a palette slot from `chart-1` to `chart-8`, a theme colour or any CSS colour.
+
+<Props of="LineChartProps" />
+
+</Entry>

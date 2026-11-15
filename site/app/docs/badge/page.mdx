@@ -1,0 +1,73 @@
+import { Entry, Example, Plate, Props } from "@/components/docs";
+import BadgePlate from "@/examples/badge/plate";
+import Variants from "@/examples/badge/variants";
+import Counts from "@/examples/badge/counts";
+import Sizes from "@/examples/badge/sizes";
+
+export const metadata = { title: "Badge" };
+
+<Entry
+  slug="badge"
+  lede="A short label in the line of text: a status, a count, a category. Five variants in seven colours."
+  plate={
+    <Plate
+      caption="Live: switch the accent at the top of the page; the count follows it."
+      notes={[
+        "Labels are flat, the default; the branch is faded, the count solid, the checks a dot.",
+        "The dot is hidden from screen readers, so the word beside it says the status.",
+        "The branch badge has a max width: a longer name ends in an ellipsis instead of widening the row.",
+      ]}
+    >
+      <BadgePlate />
+    </Plate>
+  }
+  marks={{
+    pattern: <>A <code>&lt;span&gt;</code>: no role, not focusable</>,
+    extra: [
+      { term: "Defaults", detail: <>Colour and size from <code>CenngeProvider</code> when you set them there</> },
+    ],
+  }}
+>
+
+## When to use
+
+Use a Badge for a word or a number that labels something next to it: the state of a CI run, an issue's labels, the count on a tab. It is text, not a control. If clicking it should do something, use a [Button](/docs/button/) with `size="sm"`.
+
+## Similar
+
+- [Indicator](/docs/indicator/) pins a dot or a count to the corner of another element, such as an icon button or an avatar; a Badge sits in the line.
+- [TagsInput](/docs/tags-input/) makes tags you add and remove; a Badge only shows one.
+
+## Variants and colours
+
+`flat` is the default. `solid` is the loudest, for the one badge that must be seen; `dot` keeps the text neutral and puts the colour in a dot before it. `primary` takes the accent, the other colours keep their meaning.
+
+<Example file="badge/variants">
+  <Variants />
+</Example>
+
+## Counts and icons
+
+A count after a tab's name is a small Badge inside the trigger. `startContent` and `endContent` put an icon before or after the text; mark the icon `aria-hidden`, the text already says it.
+
+<Example file="badge/counts">
+  <Counts />
+</Example>
+
+## Sizes, radius and long text
+
+Three sizes, and `radius` from `none` to `full`, the default. The text sits in its own truncating span, so a narrow parent cuts it with an ellipsis instead of pushing the layout wider.
+
+<Example file="badge/sizes">
+  <Sizes />
+</Example>
+
+## Accessibility
+
+A Badge is a plain `<span>` that screen readers read with the text around it: a tab named "Issues 4". Its colour is not announced and the dot of `variant="dot"` is `aria-hidden`, so the words must carry the meaning: "Failing", not a red badge alone.
+
+## Props
+
+<Props of="BadgeProps" />
+
+</Entry>

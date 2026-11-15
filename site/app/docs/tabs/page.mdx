@@ -1,0 +1,87 @@
+import { Entry, Example, Plate, Props } from "@/components/docs";
+import TabsPlate from "@/examples/tabs/plate";
+import Variants from "@/examples/tabs/variants";
+import PullRequestTabs from "@/examples/tabs/controlled";
+import AccountTabs from "@/examples/tabs/full-width";
+
+export const metadata = { title: "Tabs" };
+
+<Entry
+  slug="tabs"
+  lede="A row of tabs over panels of the same subject: one panel shows at a time, and the page stays where it is."
+  plate={
+    <Plate
+      caption="Live: click it, use the keys."
+      notes={[
+        "Click a tab, or focus one and use the arrows: each panel opens as the focus reaches its tab. Home and End go to the ends.",
+        "Tab from the selected tab moves into its panel.",
+        "The package-manager tabs are underlined in the primary colour, so they change with the accent of these docs.",
+      ]}
+    >
+      <TabsPlate />
+    </Plate>
+  }
+  marks={{
+    pattern: "WAI-ARIA tabs: a tablist whose tabs each control a tabpanel",
+    keyboard: [{ keys: "left" }, { keys: "right" }, "Home", "End"],
+    state: <>Controlled with <code>value</code> and <code>onValueChange</code>, or <code>defaultValue</code></>,
+    extra: [
+      { term: "Activation", detail: "A tab opens its panel as soon as it is focused" },
+      { term: "Panels", detail: "Only the open one has its content rendered" },
+    ],
+  }}
+>
+
+## When to use
+
+Tabs hold a few panels about one thing, a package's readme, versions and dependencies say, and show one at a time without leaving the page. Every `TabsTrigger` needs a `TabsContent` with the same `value`: screen readers go from the tab to the panel it controls.
+
+## Similar
+
+- [ToggleGroup](/docs/toggle-group/) switches a filter or a view with no panels behind it; when nothing would go in a `TabsContent`, use it instead.
+- [Accordion](/docs/accordion/) opens sections in place, several at once if you like, all readable in one scroll; Tabs show one panel and hide the rest.
+- [Sidebar](/docs/sidebar/) and [NavigationMenu](/docs/navigation-menu/) take the reader to another page; Tabs change what this page shows and leave the address alone.
+
+## Variants and colours
+
+`solid` sets the tabs on a sunken track and raises the selected one, `underlined` draws a line under the list and a bolder one under the selected tab, `light` tints the selected tab and nothing else. `color` paints the selected tab; `primary` follows the accent.
+
+<Example file="tabs/variants">
+  <Variants />
+</Example>
+
+## Controlled
+
+With `value` and `onValueChange` the open tab is yours to set, from a button in one of the panels here, or from the address of the page.
+
+<Example file="tabs/controlled">
+  <PullRequestTabs />
+</Example>
+
+## Full width
+
+`fullWidth` stretches the list across its container and gives every tab an equal share. Only the open panel's content is rendered, so a field in a panel you leave starts empty when you come back; keep its value in state above the Tabs if it should last.
+
+<Example file="tabs/full-width">
+  <AccountTabs />
+</Example>
+
+## Accessibility
+
+Name the list with `aria-label` on `TabsList`. Only the selected tab is in the tab order: the arrows move between tabs, skipping those with `isDisabled`, and Tab goes on into the open panel, which takes focus itself so its content is reachable even when it holds nothing focusable.
+
+## Props
+
+### Tabs
+
+<Props of="TabsProps" />
+
+### TabsTrigger
+
+<Props of="TabsTriggerProps" />
+
+### TabsContent
+
+<Props of="TabsContentProps" />
+
+</Entry>

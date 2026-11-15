@@ -1,0 +1,85 @@
+import { Entry, Example, Plate, Props } from "@/components/docs";
+import CheckboxPlate from "@/examples/checkbox/plate";
+import Description from "@/examples/checkbox/description";
+import SelectAll from "@/examples/checkbox/select-all";
+import InAForm from "@/examples/checkbox/in-a-form";
+import Colors from "@/examples/checkbox/colors";
+
+export const metadata = { title: "Checkbox" };
+
+<Entry
+  slug="checkbox"
+  lede="A box for a yes-or-no choice, with a third, mixed state for a box that stands for a list."
+  plate={
+    <Plate
+      notes={[
+        "Click a box or its label; Space toggles the box in focus.",
+        "While only some events are checked, Everything shows a dash and reads as mixed.",
+        "Click the mixed box: every event is checked. Click again to clear them all.",
+      ]}
+    >
+      <CheckboxPlate />
+    </Plate>
+  }
+  marks={{
+    pattern: <>WAI-ARIA checkbox (Radix Checkbox): a <code>&lt;button role="checkbox"&gt;</code> named by its label</>,
+    keyboard: [{ keys: "space" }],
+    state: <>Controlled with <code>isSelected</code> and <code>onValueChange</code>, or uncontrolled with <code>defaultSelected</code></>,
+    extra: [
+      { term: "Mixed", detail: <><code>isIndeterminate</code> draws a dash and reads as <code>aria-checked="mixed"</code></> },
+      { term: "Forms", detail: <>Submits <code>value</code>, <code>"on"</code> by default, under <code>name</code> while checked</> },
+    ],
+  }}
+>
+
+## When to use
+
+A Checkbox is a choice that takes effect when the form around it is sent: agree to the terms, publish with provenance, include these labels. Several boxes in a list are independent of each other, and one more box above them can stand for the whole list.
+
+## Similar
+
+- [Switch](/docs/switch/) turns a setting on or off the moment it flips, with no form to submit.
+- [Radio](/docs/radio/) is for one choice out of several; checkboxes allow any number.
+- [Table](/docs/table/) selects rows with this Checkbox; `useTableSelection` tells the header box when all or some rows are checked.
+
+## With a description
+
+`description` sits under the label in smaller, muted text and is linked to the box with `aria-describedby`, so it is read after the label.
+
+<Example file="checkbox/description">
+  <Description />
+</Example>
+
+## Some, all or none
+
+A parent box is checked when all its children are, mixed when some are, and empty when none are. Pass `isIndeterminate` for the mixed case; a click on a mixed box reports `true`, so the parent checks everything first.
+
+<Example file="checkbox/select-all">
+  <SelectAll />
+</Example>
+
+## Required, in a form
+
+Inside a [Form](/docs/form/), `isRequired` stops a submit while the box is empty. The box turns red, the browser's message shows under the label, and focus moves to the box; checking it clears the error. A checked box submits `"on"` under its `name`, or your own `value`.
+
+<Example file="checkbox/in-a-form">
+  <InAForm />
+</Example>
+
+## Colours and sizes
+
+`color` paints the checked and mixed box; `primary` follows the accent. Sizes keep the box aligned with the first line of its label.
+
+<Example file="checkbox/colors">
+  <Colors />
+</Example>
+
+## Accessibility
+
+The label is a real `<label>` for the box, so a click on the text toggles it and screen readers name the box by it. Without visible text, pass `aria-label`. <kbd>Space</kbd> toggles; <kbd>Enter</kbd> does nothing, as the WAI-ARIA checkbox pattern says. While `isInvalid`, the box carries `aria-invalid` and the error replaces the description.
+
+## Props
+
+<Props of="CheckboxProps" />
+
+</Entry>

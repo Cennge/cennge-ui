@@ -1,0 +1,87 @@
+import { Entry, Example, Plate, Props } from "@/components/docs";
+import DrawerPlate from "@/examples/drawer/plate";
+import Placements from "@/examples/drawer/placements";
+import BottomSheet from "@/examples/drawer/bottom-sheet";
+import Settings from "@/examples/drawer/settings";
+
+export const metadata = { title: "Drawer" };
+
+<Entry
+  slug="drawer"
+  lede="A dialog that slides in from an edge of the screen and keeps the page in sight beside it."
+  plate={
+    <Plate
+      notes={[
+        "Filters slides in from the right; on a phone it takes the whole width.",
+        "Tab stays inside. Escape, the cross or a click on the backdrop closes it, and focus goes back to Filters.",
+        "Open Labels and scroll the list: it moves, the page behind does not.",
+      ]}
+    >
+      <DrawerPlate />
+    </Plate>
+  }
+  marks={{
+    pattern: <>WAI-ARIA modal dialog: <code>role="dialog"</code>, named by its title</>,
+    keyboard: [{ keys: "tab" }, { keys: ["shift", "tab"] }, { keys: "escape" }],
+    state: <>Controlled with <code>isOpen</code> and <code>onOpenChange</code>, or uncontrolled</>,
+    extra: [{ term: "Placement", detail: "Left, right, top or bottom; right by default" }],
+  }}
+>
+
+## When to use
+
+Use a Drawer for a task that belongs next to the page rather than in front of it: filters for a list, the settings of the thing on screen, details of a row. A side drawer leaves part of the page in view; on a phone a bottom drawer is a sheet the thumb can reach.
+
+A Drawer is a [Dialog](/docs/dialog/) placed at an edge: the same parts, the same focus trap, Escape and scroll lock, and the same handling of lists opened inside it.
+
+## Similar
+
+- [Dialog](/docs/dialog/) sits in the middle of the screen, for a task that needs the reader's full attention.
+- [Sidebar](/docs/sidebar/) is the app's navigation; it turns into a drawer on phones by itself.
+- [Popover](/docs/popover/) is a small panel next to its button that leaves the page usable.
+
+## From any edge
+
+`placement` picks the edge. A left or right drawer is as tall as the screen and as wide as `size` says: `sm` 20rem, `md` 28rem, `lg` 42rem, or the whole width on a screen narrower than that. A top or bottom drawer spans the width and grows with its content up to 85% of the screen's height.
+
+<Example file="drawer/placements">
+  <Placements />
+</Example>
+
+## A sheet from the bottom
+
+A bottom drawer has rounded top corners and a handle. The handle is drawn, not dragged: the sheet closes with the cross, Escape or a tap on the backdrop. Past 85% of the screen's height the body scrolls.
+
+<Example file="drawer/bottom-sheet">
+  <BottomSheet />
+</Example>
+
+## Settings with a footer
+
+In a side drawer `DrawerBody` takes the height left between the header and the footer and scrolls on its own, so the buttons stay at the bottom edge. `DrawerClose` makes any button close the drawer.
+
+<Example file="drawer/settings">
+  <Settings />
+</Example>
+
+## Accessibility
+
+- The drawer has `role="dialog"`, its name from `DrawerTitle` and its description from `DrawerDescription`.
+- While it is open, Tab and Shift+Tab cycle inside it and the page behind is hidden from screen readers. On close, focus goes back to the trigger, or, for a drawer opened from code, to the element that had it, if that element is still on the page.
+- The end-to-end tests open a right drawer in Chromium, Firefox and WebKit, on desktop and phone profiles. After the slide they measure its right edge against the screen's, check that focus has moved inside, close it with Escape and look for focus back on the trigger; axe runs with it open. A Combobox opened in a drawer passes the same scroll tests as one in a [Dialog](/docs/dialog/#lists-and-menus-inside): its list scrolls, the page behind does not.
+
+## Styling
+
+`classNames` takes `overlay`, `content` and `closeButton`. The dimmed backdrop is the overlay's `::before`, so your own backdrop takes the `before:` variant, as in `classNames={{ overlay: "before:bg-black/70" }}`. A side drawer rounds its inner corners from 640px wide; a top or bottom drawer always does.
+
+## Props
+
+### Drawer
+
+<Props of="DrawerProps" />
+
+### DrawerContent
+
+<Props of="DrawerContentProps" />
+
+</Entry>

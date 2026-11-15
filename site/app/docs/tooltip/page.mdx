@@ -1,0 +1,85 @@
+import { Entry, Example, Plate, Props } from "@/components/docs";
+import TooltipPlate from "@/examples/tooltip/plate";
+import IconButtons from "@/examples/tooltip/icon-buttons";
+import Colors from "@/examples/tooltip/colors";
+import Provider from "@/examples/tooltip/provider";
+
+export const metadata = { title: "Tooltip" };
+
+<Entry
+  slug="tooltip"
+  lede="A short label for a control, shown when the pointer rests on it and when it takes keyboard focus."
+  plate={
+    <Plate
+      notes={[
+        "Rest the pointer on a button: its name shows after 300 ms and goes when the pointer leaves.",
+        "Tab to a button: the name shows at once, and Escape hides it.",
+        "A click hides it too. A tap shows no tooltip, so every button also has an aria-label.",
+      ]}
+    >
+      <TooltipPlate />
+    </Plate>
+  }
+  marks={{
+    pattern: <>WAI-ARIA tooltip: <code>role="tooltip"</code>, the trigger's <code>aria-describedby</code> while shown</>,
+    keyboard: [{ keys: "escape" }],
+    state: <>Controlled with <code>isOpen</code> and <code>onOpenChange</code>, or uncontrolled</>,
+    extra: [
+      { term: "Delay", detail: "300 ms on hover, none on keyboard focus" },
+      { term: "Touch", detail: "Not shown: touch pointers, and the focus a tap gives, do not open it" },
+    ],
+  }}
+>
+
+## When to use
+
+Use a Tooltip to name an icon button, to show the shortcut of a command, or to say where a link goes. It holds a few words, perhaps a shortcut: there is nothing inside to click, and it goes when the pointer leaves.
+
+A tap never shows it, so put nothing there that the reader needs to finish a task. A field's rules belong in its description, an error in its error message.
+
+## Similar
+
+- [Popover](/docs/popover/) opens on a click and can hold buttons, fields and links.
+- [HoverCard](/docs/hover-card/) previews what a link points to, a card rather than a label.
+
+## Name an icon button
+
+The tooltip describes its trigger, it does not name it: give an icon-only button an `aria-label` as well. The trigger is your own element, a Button or a link through `asChild`, and must take a ref.
+
+<Example file="tooltip/icon-buttons">
+  <IconButtons />
+</Example>
+
+## Colour, side and arrow
+
+`color` takes the seven colours of the library, `placement` the side, `align` the edge it lines up with, and `showArrow` draws an arrow in the tooltip's colour. When its side has no room it flips to the opposite one, and along its side it slides to stay 8px inside the screen.
+
+<Example file="tooltip/colors">
+  <Colors />
+</Example>
+
+## One delay for the whole app
+
+On its own, every Tooltip waits 300 ms before it opens on hover, and `delay` changes that for one. Under [CenngeProvider](/docs/provider/) the tooltips share a provider: `tooltipDelay` sets the delay for all of them, and once one has opened, moving straight to the next opens it without the wait. Rest on one script below, then slide along the row.
+
+<Example file="tooltip/provider">
+  <Provider />
+</Example>
+
+## Accessibility
+
+- While it is shown, the tooltip has `role="tooltip"` and the trigger's `aria-describedby` points at it, so screen readers read it after the trigger's name.
+- It opens on hover after the delay and on keyboard focus at once. Escape, a click on the trigger or the pointer leaving closes it; the pointer can move onto the tooltip without closing it. One tooltip shows at a time.
+- A scroll of the page or of any box around the trigger closes it. That includes the scroll the browser makes when Tab reaches a trigger below the fold, so that trigger shows no tooltip until it is focused again.
+- `isDisabled` renders the trigger alone, with no tooltip.
+- The end-to-end tests hover a button and leave it in Chromium, Firefox and WebKit on desktop, and on every profile, the phones included, Tab to it and press Escape. Hover is not tested on the phone profiles: touch screens have no hover.
+
+## Styling
+
+`className` goes to the tooltip, which is at most 20rem wide, in `text-xs`. The default colour is `bg-surface-4` with a border; the other colours fill it with the colour and its foreground.
+
+## Props
+
+<Props of="TooltipProps" />
+
+</Entry>

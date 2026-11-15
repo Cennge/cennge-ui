@@ -1,0 +1,100 @@
+import { Entry, Example, Plate, Props } from "@/components/docs";
+import DropdownPlate from "@/examples/dropdown/plate";
+import Actions from "@/examples/dropdown/actions";
+import Account from "@/examples/dropdown/account";
+import KeepOpen from "@/examples/dropdown/keep-open";
+import DialogFromMenu from "@/examples/dropdown/dialog";
+
+export const metadata = { title: "Dropdown" };
+
+<Entry
+  slug="dropdown"
+  lede="A menu of actions behind a button, with icons, second lines and shortcut hints, and destructive items in red."
+  plate={
+    <Plate
+      notes={[
+        "Open a menu with a click, or with Enter, Space or ↓ while its button has focus.",
+        "Arrows move between items and pass over the disabled one; a typed letter jumps to the item that starts with it.",
+        "Enter runs the item and closes the menu; Escape closes it and puts focus back on the button.",
+      ]}
+    >
+      <DropdownPlate />
+    </Plate>
+  }
+  marks={{
+    pattern: "WAI-ARIA menu button",
+    keyboard: [{ keys: "enter" }, { keys: "space" }, { keys: "down" }, { keys: "up" }, "Home", "End", { keys: "escape" }],
+    state: <>Uncontrolled, or <code>isOpen</code> with <code>onOpenChange</code></>,
+    extra: [
+      { term: "Typeahead", detail: "A typed letter focuses the next item that starts with it" },
+      { term: "Modal", detail: <>Blocks the page while open; <code>isModal={"{false}"}</code> lets it through</> },
+    ],
+  }}
+>
+
+## When to use
+
+A Dropdown holds the actions that do not each earn a button of their own: the actions of a table row, the overflow of a toolbar, an account. Each item runs once and the menu closes behind it.
+
+## Similar
+
+- [Select](/docs/select/) picks a value and keeps it in its trigger; a Dropdown's items run actions and leave nothing selected.
+- [ContextMenu](/docs/context-menu/) takes the same items and opens at the pointer on right click or long press; a Dropdown opens from a button that everyone can see and reach.
+- [Command](/docs/command/) finds an action by typing, for more actions than fit in a short menu.
+- [NavigationMenu](/docs/navigation-menu/) holds links for getting around a site; a Dropdown holds actions.
+
+## Actions and a destructive one
+
+`shortcut` shows a key at the right of the item. It is only a hint: binding the key is up to you. `color="danger"` keeps an item red at rest, not only when it is highlighted, and a separator sets it apart from the rest.
+
+<Example file="dropdown/actions">
+  <Actions />
+</Example>
+
+## An account menu
+
+The trigger can be any single element that takes a ref and focus, here a plain `<button>` around an Avatar. `align="end"` lines the menu up with the trigger's right edge. `DropdownLabel` is a line of text above the items, not an item, so the arrows pass over it; `DropdownGroup` wraps related items in a `group`.
+
+<Example file="dropdown/account">
+  <Account />
+</Example>
+
+## Keep the menu open
+
+An item with `keepOpen` runs and leaves the menu open, for steps people repeat, like changing the text size one pixel at a time. The label above the items shows the size as it changes.
+
+<Example file="dropdown/keep-open">
+  <KeepOpen />
+</Example>
+
+## An item that opens a dialog
+
+Keep the Dialog outside the menu, open it from `onAction`, and set `isModal={false}` on the Dropdown so the menu and the dialog do not both hold the page. By the time the dialog closes, the item that opened it is gone, so `onCloseAutoFocus` sends focus back to the menu's button.
+
+<Example file="dropdown/dialog">
+  <DialogFromMenu />
+</Example>
+
+## Accessibility
+
+The trigger gets `aria-haspopup="menu"` and `aria-expanded`; the menu and its items have the roles `menu` and `menuitem`, and a disabled item is `aria-disabled`. While a modal Dropdown is open, the rest of the page is hidden from screen readers and ignores the pointer, so the menu is all there is until it closes.
+
+## Styling
+
+`DropdownContent` is at least 13rem wide and never taller than the room between the trigger and the edge of the window; a longer menu scrolls. Its `className` and each item's `className` are merged last, so they win over the defaults.
+
+## Props
+
+### Dropdown
+
+<Props of="DropdownProps" />
+
+### DropdownContent
+
+<Props of="DropdownContentProps" />
+
+### DropdownItem
+
+<Props of="DropdownItemProps" />
+
+</Entry>

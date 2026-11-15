@@ -1,0 +1,74 @@
+import { Entry, Example, Plate, Props } from "@/components/docs";
+import PasswordInputPlate from "@/examples/password-input/plate";
+import SignUp from "@/examples/password-input/sign-up";
+import SharedVisibility from "@/examples/password-input/shared-visibility";
+
+export const metadata = { title: "PasswordInput" };
+
+<Entry
+  slug="password-input"
+  lede="A password field with a button to show what you typed and a hint when Caps Lock is on."
+  plate={
+    <Plate
+      notes={[
+        "The eye shows the password; the caret stays where it was, so you can keep typing.",
+        "Show it, then press Sign in: submitting the form hides it again.",
+        "Type with Caps Lock on: a hint appears under the field until it goes off or you leave.",
+      ]}
+    >
+      <PasswordInputPlate />
+    </Plate>
+  }
+  marks={{
+    pattern: <>Native <code>&lt;input type="password"&gt;</code> and a toggle button with <code>aria-pressed</code></>,
+    keyboard: [{ keys: "space" }, { keys: "enter" }],
+    state: <>Value and visibility, each controlled or uncontrolled</>,
+    extra: [
+      { term: "Autofill", detail: <><code>current-password</code> by default; <code>new-password</code> on sign-up</> },
+      { term: "Hidden again", detail: "When its form is submitted or reset" },
+    ],
+  }}
+>
+
+## When to use
+
+Use a PasswordInput wherever a password is typed: sign-in, sign-up, a change of password. Showing the password lets people check a long one before they send it; the caret stays where it was when it switches, and the field goes back to dots as soon as the form is sent.
+
+Set `autoComplete="new-password"` on sign-up and change-password forms, so password managers offer to generate one; the default, `current-password`, is for signing in. Give the email or username field in the same form `autoComplete="username"`, so the manager knows which account the password belongs to.
+
+## Similar
+
+- [Input](/docs/input/) is the plain text field; it has no show/hide button and no Caps Lock hint.
+- [OtpInput](/docs/otp-input/) is for one-time codes from an authenticator app, an email or a text message.
+
+## Sign-up form
+
+Inside a [Form](/docs/form/), the browser's own checks (`isRequired`, `minLength`) show their message under the field. Press Create account with a short password.
+
+<Example file="password-input/sign-up">
+  <SignUp />
+</Example>
+
+## One switch for both fields
+
+`isVisible` and `onVisibilityChange` control the visibility from outside. Here one Switch and either eye show or hide both fields together.
+
+<Example file="password-input/shared-visibility">
+  <SharedVisibility />
+</Example>
+
+## Accessibility
+
+The eye is a button named "Show password" whatever the state; its `aria-pressed` says whether the password is shown, and `aria-controls` points at the field. It is in the Tab order after the field and works with <kbd>Space</kbd> and <kbd>Enter</kbd>.
+
+The Caps Lock hint joins the field's `aria-describedby`, before the description, so it is read with the field. A browser only tells the state of Caps Lock in a key event, so the hint appears with the first key pressed in the field, not on focus. Translate the button with `toggleLabel` and the hint with `capsLockWarning`, or turn the hint off with `capsLockWarning={false}`.
+
+## Styling
+
+It shares the Input's box: `variant`, `color`, `size`, `radius` and `startContent`; the end of the box belongs to the eye. `classNames` reaches `base`, `label`, `inputWrapper`, `input`, `toggle`, `capsLock`, `description` and `errorMessage`.
+
+## Props
+
+<Props of="PasswordInputProps" />
+
+</Entry>

@@ -1,0 +1,86 @@
+import { Entry, Example, Plate, Props } from "@/components/docs";
+import FormPlate from "@/examples/form/plate";
+import ServerErrors from "@/examples/form/server-errors";
+import Action from "@/examples/form/action";
+import BrowserChecks from "@/examples/form/browser-checks";
+import OwnField from "@/examples/form/own-field";
+
+export const metadata = { title: "Form" };
+
+<Entry
+  slug="form"
+  lede="A form that shows every error under its field: your server's, matched by name, and the browser's own checks instead of its tooltips."
+  plate={
+    <Plate
+      caption="Live: fill it in, submit, fix what it says."
+      notes={[
+        "Press Create repository with nothing filled in: each required field shows the browser's reason, and focus goes to the first.",
+        "Name it cennge-ui and pick a visibility: the browser lets it through, and the server's answer lands under the name.",
+        "Edit the name and its error goes at once. Below the form is the object the server returned.",
+      ]}
+    >
+      <FormPlate />
+    </Plate>
+  }
+  marks={{
+    pattern: <>Native <code>&lt;form&gt;</code>, with <code>action</code> or <code>onSubmit</code></>,
+    state: <>Errors by field name in <code>validationErrors</code>; values stay in the fields</>,
+    extra: [
+      { term: "Validation", detail: "The browser's checks, shown under each field; schemas stay on your server" },
+      { term: "Fields", detail: <>Every named field in Inputs and in Dates and times except Switch and Slider; your own through <code>useFormField</code></> },
+    ],
+  }}
+>
+
+## When to use
+
+Wrap fields in a Form when some of their errors come from elsewhere: a server action, an API, a check only the server can make, such as whether a name is taken. Return the errors as an object keyed by field name and pass it as `validationErrors`. Each one shows under its field and goes away as soon as that field is edited.
+
+Form adds no validation of its own. `isRequired`, `type="email"`, `minLength` and `pattern` stay the browser's checks, shown under the field rather than in a tooltip; a schema library such as zod stays on the server and sends its errors back by name.
+
+## Similar
+
+- A plain `<form>` takes the same fields. The browser then shows its checks as tooltips, and a server error reaches a field only through that field's own `isInvalid` and `errorMessage`.
+- [Forms](/docs/forms/) is the guide to fields in forms: controlled or not, and with react-hook-form. This page is about the component.
+
+## Errors from your server
+
+Pass the errors the server returned, keyed by `name`. Each new object shows its whole set and moves focus to the first field with an error, in the order of the form. Several messages for one field, as an array, show together. Send it as it is: dev@example.com is a collaborator already. Then try another address.
+
+<Example file="form/server-errors">
+  <ServerErrors />
+</Example>
+
+## With a React 19 action
+
+With `useActionState` the errors are part of the action's state. React empties the form after every action, so give the field the submitted value back as `defaultValue`, with a `key` that makes it take it. Server errors survive that reset: they arrive at the same moment.
+
+<Example file="form/action">
+  <Action />
+</Example>
+
+## The browser's checks
+
+Publish it empty. The form cancels the browser's `invalid` events, so each message appears under its field, in the browser's own words and language, and focus goes to the first field to fix. While you type, the message follows the field and goes once the value passes.
+
+<Example file="form/browser-checks">
+  <BrowserChecks />
+</Example>
+
+## Your own field
+
+`useFormField(name)` hands a field of yours the form's error for that name, and its `markEdited` drops the error once the value changes. Set `data-field-name` on the field's wrapper, so the form can find the field and focus it.
+
+<Example file="form/own-field">
+  <OwnField />
+</Example>
+
+## Accessibility
+
+A field with an error gets `aria-invalid`, and the message is tied to it with `aria-describedby`, so screen readers read the two together. Focus goes to the first field with an error both when the browser blocks a submit and when a new set of errors arrives.
+
+## Props
+
+<Props of="FormProps" />
+
+</Entry>

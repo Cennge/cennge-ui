@@ -1,0 +1,107 @@
+import { Entry, Example, Plate, Props } from "@/components/docs";
+import SidebarPlate from "@/examples/sidebar/plate";
+import DocsShell from "@/examples/sidebar/next-links";
+import RepositoryShell from "@/examples/sidebar/remember-collapsed";
+import ThemeInFooter from "@/examples/sidebar/footer-theme";
+
+export const metadata = { title: "Sidebar" };
+
+<Entry
+  slug="sidebar"
+  lede="The column of places beside every page of an app: collapses to icons on desktop, opens as a drawer on phones."
+  plate={
+    <Plate
+      caption="Live: click it, use the keys."
+      notes={[
+        "The panel button at the top collapses the column to icons; rest the pointer on an icon for its name.",
+        "Narrower than 768 pixels, the same spot holds a menu button: the column opens as a drawer and closes once you choose a page.",
+        "Escape closes the drawer and puts focus back on the menu button.",
+      ]}
+    >
+      <SidebarPlate />
+    </Plate>
+  }
+  marks={{
+    pattern: <>A named <code>&lt;aside&gt;</code> holding a <code>&lt;nav&gt;</code>; on phones a modal dialog</>,
+    keyboard: [{ keys: "enter" }, { keys: "escape" }],
+    state: <>Collapsed: <code>isCollapsed</code> and <code>onCollapsedChange</code>, or <code>defaultCollapsed</code>; the drawer through <code>useSidebar()</code></>,
+    extra: [
+      { term: "Breakpoint", detail: "A column from 768px (Tailwind's md), a drawer below it" },
+      { term: "Width", detail: "16rem, or 4rem collapsed to icons" },
+    ],
+  }}
+>
+
+## When to use
+
+A Sidebar is the frame of an app: the list of places that stays beside every page. On desktop it is a column that stays in view while the page scrolls and collapses to its icons; on phones the same children open in a drawer from the left. These docs are built on it.
+
+`SidebarLayout` puts the Sidebar next to your content and holds the state. Inside the Sidebar go `SidebarHeader`, `SidebarNav` with `SidebarGroup`s of `SidebarItem`s, and `SidebarFooter`; `SidebarTrigger` goes in your page's header.
+
+## Similar
+
+- [NavigationMenu](/docs/navigation-menu/) is the links bar at the top of a site, its links in panels; a Sidebar keeps an app's sections in view.
+- [Drawer](/docs/drawer/) slides any content in from any edge; the Sidebar's phone drawer is one, and it closes by itself once a page is chosen.
+- [Tabs](/docs/tabs/) switch panels inside one page; a Sidebar moves between pages.
+
+## Next.js links
+
+`asChild` puts the item's look, icon and count inside your own link, here Next.js `Link`. Set `isActive` from the current path: the item is highlighted and read as the current page. On phones a click closes the drawer even though `Link` cancels the click to navigate by itself; a Ctrl- or Cmd-click that opens a new tab leaves it open.
+
+<Example file="sidebar/next-links">
+  <DocsShell />
+</Example>
+
+## Remember the collapsed width
+
+Collapsing is uncontrolled unless you pass `isCollapsed`. Save it from `onCollapsedChange`, here in a cookie, read the cookie on the server and pass it back as `defaultCollapsed`, so the first paint already has the right width. Collapsed, each item shows its icon and its name in a tooltip, and screen readers still hear the name and the count.
+
+<Example file="sidebar/remember-collapsed">
+  <RepositoryShell />
+</Example>
+
+## A setting in the footer
+
+An item without `href` is a button. On phones any item closes the drawer when clicked, which suits a page but not a setting: `keepDrawerOpen` keeps it open so the change can be seen. This one switches the theme of these docs.
+
+<Example file="sidebar/footer-theme">
+  <ThemeInFooter />
+</Example>
+
+When the page changes some other way, from a search result for instance, close the drawer with `setMobileOpen(false)` from `useSidebar()`.
+
+## Accessibility
+
+The column is an `<aside>` named by the Sidebar's `label`, and SidebarNav is a `<nav>` named by its own `label` ("Main" unless you say otherwise): give both names that tell them from the other navigation on the page. The phone drawer is a modal dialog with the Sidebar's name; Escape and its close button close it and put focus back on the menu button.
+
+## Server rendering
+
+`SidebarTrigger` is two buttons switched by CSS at the breakpoint, a menu button for phones and a collapse button for desktop, so each has its name and `aria-expanded` right in the server's HTML, before any script runs.
+
+## Props
+
+### SidebarLayout
+
+<Props of="SidebarLayoutProps" />
+
+### Sidebar
+
+<Props of="SidebarProps" />
+
+### SidebarNav
+
+<Props of="SidebarNavProps" />
+
+### SidebarGroup
+
+<Props of="SidebarGroupProps" />
+
+### SidebarItem
+
+<Props of="SidebarItemProps" />
+
+### SidebarTrigger
+
+<Props of="SidebarTriggerProps" />
+
+</Entry>

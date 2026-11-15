@@ -1,0 +1,84 @@
+import { Entry, Example, Plate, Props } from "@/components/docs";
+import OtpInputPlate from "@/examples/otp-input/plate";
+import Verify from "@/examples/otp-input/verify";
+import Recovery from "@/examples/otp-input/recovery";
+import AutoSubmit from "@/examples/otp-input/auto-submit";
+
+export const metadata = { title: "OtpInput" };
+
+<Entry
+  slug="otp-input"
+  lede="A one-time code, a box per character: type it, paste it or let the phone fill it in from a text message."
+  plate={
+    <Plate
+      notes={[
+        "Type the code, or paste 907-214: every slot fills and the dash is left out.",
+        "One Tab stop, landing on the next empty slot; arrows move between slots, Backspace deletes and steps back.",
+        "Click a later empty slot: typing still starts at the first empty one.",
+      ]}
+    >
+      <OtpInputPlate />
+    </Plate>
+  }
+  marks={{
+    pattern: <>A labelled <code>group</code> of one-character text inputs</>,
+    keyboard: [{ keys: "left" }, { keys: "right" }, "Home", "End", { keys: "backspace" }, { keys: "delete" }, { keys: "enter" }],
+    state: <>Controlled with <code>value</code> and <code>onValueChange</code>, or uncontrolled with <code>defaultValue</code></>,
+    extra: [
+      { term: "Autofill", detail: <><code>autocomplete="one-time-code"</code>: a code from a text message fills every slot</> },
+      { term: "Characters", detail: <>Digits by default; others are ignored, pasted ones too</> },
+    ],
+  }}
+>
+
+## When to use
+
+Use an OtpInput for a short code someone copies from elsewhere: a sign-in code from an authenticator app, an email or a text message. The boxes show at a glance how long the code is and how much is left, and the field takes the code whichever way it arrives: typed one character at a time, pasted whole, or filled in by the phone's keyboard.
+
+`onComplete` fires once every slot is filled, so the check can start without a button.
+
+## Similar
+
+- [PasswordInput](/docs/password-input/) is for a secret the person chose and remembers.
+- [NumberInput](/docs/number-input/) is for a quantity; a code is not a number, and its leading zeros count.
+- [Input](/docs/input/) fits codes of no fixed length, such as a coupon.
+
+## Check the code when it is complete
+
+`onComplete` gets the code as soon as the last slot is filled. Here the field is read-only while the code is checked, so focus stays in it, and a wrong one (try 000000) shows the error until the code is edited.
+
+<Example file="otp-input/verify">
+  <Verify />
+</Example>
+
+## Letters and hidden characters
+
+`allowedCharacters="alphanumeric"` takes letters and digits, `alpha` only letters. `isMasked` hides each character as a password field does; `length` sets the number of slots and `groupSize` draws a separator between groups.
+
+<Example file="otp-input/recovery">
+  <Recovery />
+</Example>
+
+## Submit when complete
+
+With a `name`, the code goes with the form in a hidden input. `autoSubmit` sends the form as soon as the last character is in; without it, <kbd>Enter</kbd> in any slot sends it.
+
+<Example file="otp-input/auto-submit">
+  <AutoSubmit />
+</Example>
+
+## Accessibility
+
+The slots sit in a `group` labelled by the label and described by the description or the error. Each slot is named "Character 1 of 6" and so on; translate that with `formatSlotLabel`. While `isInvalid`, every slot has `aria-invalid`. The separators are hidden from screen readers.
+
+The label is not a `<label>`, since it names a group, but a click on it still puts the caret where typing continues. `autoFocus` does the same when the field mounts.
+
+## Styling
+
+Each slot is the Input's box made square, with the same `variant`, `color`, `size` and `radius`. `classNames` reaches `base`, `label`, `group`, `slot`, `separator`, `description` and `errorMessage`.
+
+## Props
+
+<Props of="OtpInputProps" />
+
+</Entry>

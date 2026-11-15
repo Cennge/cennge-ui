@@ -1,0 +1,72 @@
+import { Entry, Example, Plate, Props } from "@/components/docs";
+import SwitchPlate from "@/examples/switch/plate";
+import Basic from "@/examples/switch/basic";
+import Description from "@/examples/switch/description";
+import Colors from "@/examples/switch/colors";
+
+export const metadata = { title: "Switch" };
+
+<Entry
+  slug="switch"
+  lede="An on/off setting that takes effect the moment it flips."
+  plate={
+    <Plate
+      notes={[
+        "Click a switch or its title; Space or Enter flips the one in focus.",
+        "Turn on Maintenance mode: the status above changes at once, with nothing to save.",
+        "Deploy on push is disabled meanwhile: it shows off and Tab passes it by.",
+      ]}
+    >
+      <SwitchPlate />
+    </Plate>
+  }
+  marks={{
+    pattern: <>WAI-ARIA switch (Radix Switch): a <code>&lt;button role="switch"&gt;</code></>,
+    keyboard: [{ keys: "space" }, { keys: "enter" }],
+    state: <>Controlled with <code>isSelected</code> and <code>onValueChange</code>, or uncontrolled with <code>defaultSelected</code></>,
+    extra: [{ term: "Forms", detail: <>Submits <code>"on"</code> under <code>name</code> while on</> }],
+  }}
+>
+
+## When to use
+
+A Switch is a setting that applies as soon as it changes: notifications, preview deployments, a maintenance page. If the change waits for a Save button, use a [Checkbox](/docs/checkbox/) instead, so nobody expects the flip alone to do it.
+
+## Similar
+
+- [Checkbox](/docs/checkbox/) is a choice sent with a form, and can be mixed for a list.
+- [ToggleGroup](/docs/toggle-group/) switches between named options, such as Code and Preview, rather than on and off.
+
+## A labelled switch
+
+`children` become a `<label>` next to the track, so a click on the text flips it too. `onValueChange` gets the new state as a boolean.
+
+<Example file="switch/basic">
+  <Basic />
+</Example>
+
+## With a description
+
+For a settings list, put the title and its description beside the switch yourself: a `<label htmlFor>` for the title, and `aria-describedby` on the switch for the description. Every other prop passes to the switch's button, so `id` and `aria-*` land where screen readers look.
+
+<Example file="switch/description">
+  <Description />
+</Example>
+
+## Colours and sizes
+
+`color` paints the track when it is on; `primary` follows the accent. A disabled switch keeps its state, fades, and leaves the tab order.
+
+<Example file="switch/colors">
+  <Colors />
+</Example>
+
+## Accessibility
+
+The switch is a `<button role="switch">` with `aria-checked`, so screen readers announce it as a switch that is on or off. Without visible text, give it an `aria-label`. The thumb's movement follows the reduced-motion setting: with it, the thumb jumps rather than slides.
+
+## Props
+
+<Props of="SwitchProps" />
+
+</Entry>

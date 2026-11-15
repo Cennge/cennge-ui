@@ -1,0 +1,79 @@
+import { Entry, Example, Plate, Props } from "@/components/docs";
+import BreadcrumbsPlate from "@/examples/breadcrumbs/plate";
+import CollapsedTrail from "@/examples/breadcrumbs/collapse";
+import DocsTrail from "@/examples/breadcrumbs/next-links";
+import TrailSizes from "@/examples/breadcrumbs/separators";
+
+export const metadata = { title: "Breadcrumbs" };
+
+<Entry
+  slug="breadcrumbs"
+  lede="The trail from the top of a hierarchy down to the current page, every level above it one click away."
+  plate={
+    <Plate
+      caption="Live: click it, use the keys."
+      notes={[
+        "The last item is the page you are on: plain text, marked as the current page for screen readers.",
+        "In the file header, click … to bring back the folders it hides.",
+        "Out of room on its line, the full trail below wraps between items.",
+      ]}
+    >
+      <BreadcrumbsPlate />
+    </Plate>
+  }
+  marks={{
+    pattern: <>WAI-ARIA breadcrumb: a named <code>&lt;nav&gt;</code> around an ordered list, <code>aria-current="page"</code> on the last item</>,
+    keyboard: [{ keys: "tab" }, { keys: "enter" }],
+    state: "None to hold: the collapsed middle opens on a click and stays open",
+    extra: [{ term: "Separators", detail: "Hidden from screen readers; a chevron unless you pass your own" }],
+  }}
+>
+
+## When to use
+
+Breadcrumbs show where a page sits in a hierarchy, a file in a repository or a page in a documentation site, and make each level above it one click away. They sit at the top of the page, under the main navigation, and they do not replace it: they only lead upwards.
+
+## Similar
+
+- [Pagination](/docs/pagination/) moves along a sequence of pages at the same level; Breadcrumbs move up the hierarchy.
+- [Stepper](/docs/stepper/) shows how far a task has gone and what is left; Breadcrumbs show where the reader is, not what comes next.
+
+## Collapse a long trail
+
+With `maxItems`, a longer trail shows only that many items: `itemsBeforeCollapse` from the start (one unless you say otherwise), the rest from the end, and a … button between them. A click on it shows the whole trail.
+
+<Example file="breadcrumbs/collapse">
+  <CollapsedTrail />
+</Example>
+
+## Next.js links
+
+With `asChild` a `BreadcrumbItem` gives its look to your own link, here Next.js `Link`. `startContent` is not drawn in that case: put an icon inside the link, as the home icon here.
+
+<Example file="breadcrumbs/next-links">
+  <DocsTrail />
+</Example>
+
+## Separators and sizes
+
+`separator` takes any node, a slash here, in place of the chevron. `size` sets the text: `sm`, `md` or `lg`.
+
+<Example file="breadcrumbs/separators">
+  <TrailSizes />
+</Example>
+
+## Accessibility
+
+The trail is a `<nav>` named "Breadcrumb", and the items are an ordered list, so screen readers say how many levels there are. Rename it with `aria-label` when a page has more than one trail or speaks another language. The last item becomes the current page unless you set its `isCurrent` yourself; `isCurrent={false}` keeps it a link. The … button is named "Show all breadcrumbs".
+
+## Props
+
+### Breadcrumbs
+
+<Props of="BreadcrumbsProps" />
+
+### BreadcrumbItem
+
+<Props of="BreadcrumbItemProps" />
+
+</Entry>

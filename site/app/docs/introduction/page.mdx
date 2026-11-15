@@ -1,0 +1,81 @@
+import Link from "next/link";
+import { Example, Guide } from "@/components/docs";
+import { nav, pages } from "@/lib/nav";
+import ReleaseCard from "@/examples/introduction/release-card";
+
+export const metadata = { title: "Introduction" };
+
+<Guide
+  slug="introduction"
+  lede="Tactile, dark-first React components on Radix UI and Tailwind CSS v4, installed from npm and updated like any other package."
+>
+
+## A package you update
+
+Copy-paste kits such as shadcn/ui put each component's source in your repository. You own every line, and a fix made upstream reaches an app only when someone copies it in again.
+
+cennge-ui aims for that kind of finish, but ships the way Mantine does: as a regular npm package. The components live in `node_modules`, a fix is made once in the library, and `npm update` brings it to every app that uses it. You still restyle them as much as you like, without forking: every colour, surface and radius is a `--cennge-*` CSS variable, `className` is merged with tailwind-merge so your classes win, and components with inner parts, such as Input and Dialog, take classes for them through `classNames`.
+
+## What it looks like
+
+A Card, an Input, a Select, a Switch, a Badge and a Button, as they come. Change the version and publish: the button waits, then a toast confirms. Switch the site's theme and accent and the card follows.
+
+<Example file="introduction/release-card">
+  <ReleaseCard />
+</Example>
+
+## What is inside
+
+These docs run to {pages.length} pages in {nav.length} families. The first {nav[0].pages.length}, under Getting started, are guides like this one; the other {nav.length - 1} families cover the components:
+
+<ul>
+  {nav.slice(1).map((family) => (
+    <li key={family.title}>
+      <Link href={`/docs/${family.pages[0].slug}/`}>{family.title}</Link>, {family.pages.length} {family.pages.length === 1 ? "page" : "pages"}. {family.summary}
+    </li>
+  ))}
+</ul>
+
+Everything above comes from the main entry, `cennge-ui`, except charts and maps, which have their own: `cennge-ui/charts` and `cennge-ui/map`. In the ESM build each component is a chunk of its own, so a page pays only for what it imports; every component's page gives the gzip size of its import in its field marks.
+
+## What it is built on
+
+The package has four dependencies:
+
+- `radix-ui`, for behaviour, focus management and keyboard handling. Where Radix has no primitive (the calendar, the tree, the ⌘K palette), the keyboard follows the WAI-ARIA Authoring Practices.
+- `tailwind-variants`, `tailwind-merge` and `clsx`, for class names: each component's variants, and your `className` winning over them.
+
+It also expects what your app already has: `react` and `react-dom` 17, 18 or 19, and `tailwindcss` 4. `maplibre-gl` 6 is needed only for maps, and is loaded when the first map mounts.
+
+## What it leaves out
+
+- No animation library such as framer-motion. Motion is plain CSS, keyframes and transitions, and respects `prefers-reduced-motion`.
+- No CSS-in-JS. Styles are Tailwind classes and the theme is CSS variables, so retheming is a change to your stylesheet, with nothing to configure in JavaScript.
+- No chart library. Charts are drawn in SVG by cennge-ui itself, with a palette checked for colour blindness.
+- No date library. Dates are ISO strings such as `"2026-10-19"`; names of months and days, the first day of the week and the order of a typed date come from `Intl`.
+- No carousel or virtualization package either: the Carousel runs on native scroll snapping, and long lists use the library's own virtualizer.
+
+Fewer packages underneath means fewer upstream releases that can break a component you did not touch.
+
+## How it is checked
+
+- Unit tests with Vitest and Testing Library, for logic, roles and labels.
+- End-to-end tests with Playwright in Chromium, Firefox and WebKit, on desktop and phone viewports: real keyboard, mouse, touch, file choosers and drag events.
+- axe-core against WCAG 2.2 AA on every fixture, in the dark and the light theme.
+- Any error or warning in the browser console fails a test.
+- A Next.js App Router app, built on the packed package, renders the whole playground on the server and hydrates it in every browser.
+- CI runs the unit tests on React 17 and 18 as well; the other jobs run React 19.
+
+Where a component has end-to-end specs, the field marks on its page link to them.
+
+## Status
+
+cennge-ui is in early development, at version 0.x, under the MIT licence. Every release lists its changes in the [changelog](https://github.com/Cennge/cennge-ui/blob/main/CHANGELOG.md): read it before you update.
+
+## Next
+
+- [Installation](/docs/installation/): the package, two CSS imports, and a first component.
+- [Theming](/docs/theming/): tokens, surfaces, colour roles and the accent presets.
+- [Dark mode](/docs/dark-mode/): the stored theme on the page before the first paint.
+
+</Guide>

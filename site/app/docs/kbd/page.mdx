@@ -1,0 +1,75 @@
+import { Kbd } from "cennge-ui";
+import { Entry, Example, Plate, Props } from "@/components/docs";
+import KbdPlate from "@/examples/kbd/plate";
+import Shortcuts from "@/examples/kbd/shortcuts";
+import Platform from "@/examples/kbd/platform";
+import NamedKeys from "@/examples/kbd/named-keys";
+
+export const metadata = { title: "Kbd" };
+
+<Entry
+  slug="kbd"
+  lede="Keys and shortcuts as key caps: drawn symbols for the eye, key names for screen readers."
+  plate={
+    <Plate
+      caption="Live: hover a key to read its name."
+      notes={[
+        "Hover a drawn key: its title names it, Command or Arrow down.",
+        <>A screen reader reads each drawn key by name: <Kbd keys={["shift", "tab"]} size="sm" /> is "Shift Tab".</>,
+        "Ctrl, Alt, Esc and Space are written as words; the other eleven are drawn, the same size in every font.",
+      ]}
+    >
+      <KbdPlate />
+    </Plate>
+  }
+  marks={{
+    pattern: <>Native <code>&lt;kbd&gt;</code>; each named key an <code>&lt;abbr&gt;</code> with its full name</>,
+    extra: [
+      { term: "Named keys", detail: <>Fifteen, from <code>command</code> to <code>right</code>; any other key as text</> },
+      { term: "Symbols", detail: "Drawn in SVG, so they fill the cap in any font" },
+    ],
+  }}
+>
+
+## When to use
+
+Use Kbd wherever the page tells the reader to press something: a shortcut beside a menu item, a hint under a search field, a step in a guide. One Kbd holds one shortcut, modifiers and key together, and screen readers hear it as one phrase: "Command Shift P".
+
+## Similar
+
+- [Snippet](/docs/snippet/) is a command to copy and paste, not a key to press.
+- [Prose](/docs/prose/) styles a bare `<kbd>` from Markdown as plain text in a box. Kbd draws the symbols and names them.
+
+## Keys and shortcuts
+
+`keys` takes the named keys, shown in order; children add anything else, such as a letter. A key that has no name, like F5 or PageDown, is plain text. At `size="sm"` a cap fits in a line of text.
+
+<Example file="kbd/shortcuts">
+  <Shortcuts />
+</Example>
+
+## Command on a Mac, Ctrl elsewhere
+
+The server does not know the reader's platform. Render the Ctrl version first and switch after hydration, so the server's HTML and the first render agree. The search box at the top of this page does the same.
+
+<Example file="kbd/platform">
+  <Platform />
+</Example>
+
+## Every named key
+
+Fifteen names; `ctrl`, `alt`, `escape` and `space` are written as words, as they are on the key itself.
+
+<Example file="kbd/named-keys">
+  <NamedKeys />
+</Example>
+
+## Accessibility
+
+A drawn symbol is `aria-hidden`; its key's full name is visually hidden text beside it, followed by a space, so <Kbd keys={["command", "shift"]} size="sm">K</Kbd> reads "Command Shift K" rather than one word. Each named key is an `<abbr>` whose `title` gives its full name on hover, Control for Ctrl and Escape for Esc. Kbd takes no focus and handles no keys: it only shows them.
+
+## Props
+
+<Props of="KbdProps" />
+
+</Entry>

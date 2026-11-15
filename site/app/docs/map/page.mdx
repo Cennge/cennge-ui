@@ -1,0 +1,147 @@
+import { Entry, Example, Plate, Props } from "@/components/docs";
+import { MapWorker } from "@/examples/map/map-worker";
+import MapPlate from "@/examples/map/plate";
+import Bounds from "@/examples/map/bounds";
+import FlyTo from "@/examples/map/fly-to";
+import ScrollZoom from "@/examples/map/scroll-zoom";
+import Still from "@/examples/map/still";
+import Styles from "@/examples/map/styles";
+
+export const metadata = { title: "Map" };
+
+<MapWorker />
+
+<Entry
+  slug="map"
+  lede="A vector map drawn by MapLibre in your theme's colours, with buttons to zoom, point north, find the reader and fill the screen."
+  plate={
+    <Plate
+      notes={[
+        "Drag to pan, double-click to zoom in. Drag with the right button to turn it: the compass follows, and a click on it points north.",
+        "Tab to the map: arrows move it, + and − zoom, Shift with the arrows turns and tilts it.",
+        "Move it, then copy the props that open a map on that view.",
+      ]}
+    >
+      <MapPlate />
+    </Plate>
+  }
+  marks={{
+    pattern: <>A <code>role="region"</code> named by your <code>aria-label</code>; the canvas in it takes focus; controls are native buttons</>,
+    keyboard: [{ keys: "up" }, { keys: "down" }, { keys: "left" }, { keys: "right" }, "+", "−", { keys: ["shift", "left"] }],
+    state: <>Uncontrolled: opens on <code>defaultCenter</code> and <code>defaultZoom</code>, or <code>defaultBounds</code>; <code>onViewChange</code> reports each move</>,
+    extra: [
+      { term: "Loads", detail: "maplibre-gl 6, fetched when the first map mounts" },
+      { term: "Base map", detail: "OpenFreeMap: no key, no usage limits" },
+    ],
+  }}
+>
+
+## When to use
+
+Use a Map when where something is matters: offices, stores, a route, numbers by area. Markers, popups, routes and data layers go inside it as children, and so do its controls.
+
+maplibre-gl 6 is an optional peer dependency: `npm install maplibre-gl` in the apps that show a map. It is fetched when the first map mounts, so pages without a map never download it. The base map is OpenFreeMap's Positron recoloured with your tokens: land in the surfaces, water and parks touched with info and success, labels in the text colours. It follows the theme; the accent is left to what you draw on it.
+
+## Similar
+
+- A [BarChart](/docs/bar-chart/) compares numbers by name; a map with [data layers](/docs/map-data/) shows where they are. When the place does not matter, use the chart.
+- The other map pages are its parts: [markers and popups](/docs/map-markers/) for places, [routes and arcs](/docs/map-routes/) for the ways between them.
+
+## Open on an area
+
+`defaultBounds` takes the south-west and north-east corners and picks the zoom that fits them on any screen; `boundsPadding` keeps room for the buttons. It wins over `defaultCenter` and `defaultZoom`.
+
+<Example file="map/bounds">
+  <Bounds />
+</Example>
+
+## Move it from your code
+
+`mapRef` hands you the MapLibre map, as `onLoad` does and `useMap()` does inside the map, for anything the props do not cover: here `flyTo`. When the reader asks for reduced motion, MapLibre jumps instead of flying.
+
+<Example file="map/fly-to">
+  <FlyTo />
+</Example>
+
+## In a page that scrolls
+
+With `scrollZoom={false}` the mouse wheel scrolls the page past the map, and the buttons, a double-click, the keys and a pinch on a touch screen still zoom it. Every map on these pages starts that way. `scrollZoom` can change after the map has mounted; `isInteractive`, `minZoom` and `maxZoom` are read once, when it is created.
+
+<Example file="map/scroll-zoom">
+  <ScrollZoom />
+</Example>
+
+## A still picture
+
+`isInteractive={false}` draws the place and nothing more: no panning, no zooming, and the canvas leaves the tab order. Markers on it are still read out by name.
+
+<Example file="map/still">
+  <Still />
+</Example>
+
+## Other base maps
+
+`mapStyle` takes any MapLibre style, as a URL or an object, or one per theme as `{ light, dark }`. `openFreeMapStyles` has OpenFreeMap's styles as published, and `blankMapStyle(color)` draws nothing but a background, for data that stands on its own. Routes and data layers are added again after a swap, and markers stay where they are.
+
+<Example file="map/styles">
+  <Styles />
+</Example>
+
+## Accessibility
+
+- Give every map an `aria-label`: it is a region with that name. The canvas inside is in the tab order and says how to move it; its focus ring is drawn around the whole frame.
+- Each control is a button with a name and a tooltip. Zoom in and zoom out are disabled at `maxZoom` and `minZoom`. When the reader's location is not available, the locate button is renamed to say so, and a status message announces it.
+- When the reader asks for reduced motion, or inside `<CenngeProvider reducedMotion="always">`, the buttons move the map without animating it, and the location dot does not pulse.
+- `labels` translates the names and messages the map, its controls and its popups add, the canvas's instructions included. Street and place names are pixels on the canvas: when the place is the information, write it out as text too.
+
+## Server rendering
+
+On the server the map is its frame: the region at its size, with `data-state="loading"` and a shimmer. Its children render once maplibre-gl has loaded in the browser, and the page does not shift when it does.
+
+MapLibre draws in a worker, and bundlers do not find its file on their own. In Next.js, copy the worker's two files to `public/maplibre/`, say in a `postinstall` script:
+
+```bash
+mkdir -p public/maplibre
+cp node_modules/maplibre-gl/dist/maplibre-gl-worker.mjs public/maplibre/
+cp node_modules/maplibre-gl/dist/maplibre-gl-shared.mjs public/maplibre/
+```
+
+Then point the maps to them from a client component rendered once in the root layout:
+
+```tsx
+// app/map-worker.tsx; <MapWorker /> goes in app/layout.tsx
+"use client";
+
+import { setMapWorkerUrl } from "cennge-ui/map";
+
+setMapWorkerUrl("/maplibre/maplibre-gl-worker.mjs");
+
+export function MapWorker() {
+  return null;
+}
+```
+
+With Vite, import the worker's URL instead. Unlike maplibre-gl's own `setWorkerUrl`, `setMapWorkerUrl` does not import maplibre-gl, so it still loads only with a map.
+
+```ts
+import workerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url";
+import { setMapWorkerUrl } from "cennge-ui/map";
+
+setMapWorkerUrl(workerUrl);
+```
+
+## Styling
+
+The frame is `w-full h-80`, with the large radius and a border. Set its size with `className`, say `h-96` or `aspect-video`. `MapControls` go in any corner with `position`. The base map's credits stay in the bottom-right corner, as its licences ask.
+
+## Props
+
+### Map
+
+<Props of="MapProps" />
+
+### MapControls
+
+<Props of="MapControlsProps" />
+
+</Entry>

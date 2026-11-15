@@ -1,0 +1,59 @@
+import { Entry, Example, Plate, Props } from "@/components/docs";
+import ComboboxPlate from "@/examples/combobox/plate";
+import Basic from "@/examples/combobox/basic";
+import LongList from "@/examples/combobox/long-list";
+
+export const metadata = { title: "Combobox" };
+
+<Entry
+  slug="combobox"
+  lede="A text field with a list under it: type to filter, pick one value or many."
+  plate={
+    <Plate
+      notes={[
+        "Type to filter; the list opens under the field.",
+        "Arrows move the active option, Enter picks it, Escape closes.",
+        "In multiple mode values become tags; Backspace removes the last.",
+      ]}
+    >
+      <ComboboxPlate />
+    </Plate>
+  }
+  marks={{
+    pattern: "WAI-ARIA combobox with a listbox popup",
+    keyboard: [{ keys: "up" }, { keys: "down" }, "Home", "End", { keys: "enter" }, { keys: "escape" }],
+    state: <>Controlled with <code>value</code> and <code>onValueChange</code>, or uncontrolled</>,
+    extra: [{ term: "Virtualizes", detail: "Past 100 options, by itself" }],
+  }}
+>
+
+## When to use
+
+Reach for a Combobox when the list is long enough that people would rather type than scroll. It filters as you type, virtualizes itself past 100 options, and with `isClearable` one click returns it to the placeholder.
+
+## Similar
+
+- [Select](/docs/select/) is a fixed short list with nothing to type.
+- [TagsInput](/docs/tags-input/) makes tags from any free text; a Combobox with `selectionMode="multiple"` only takes tags from its list.
+
+## Pick one repository
+
+`value` is the chosen item's `value`, or `null` when nothing is chosen. `isClearable` adds a button that sets it back to `null`.
+
+<Example file="combobox/basic">
+  <Basic />
+</Example>
+
+## A thousand options
+
+Past 100 items the list renders only the rows in view, so typing stays instant. The active option is always in the DOM, so screen readers follow it.
+
+<Example file="combobox/long-list">
+  <LongList />
+</Example>
+
+## Props
+
+<Props of="ComboboxProps" />
+
+</Entry>

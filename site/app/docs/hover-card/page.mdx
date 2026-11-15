@@ -1,0 +1,88 @@
+import { Entry, Example, Plate, Props } from "@/components/docs";
+import HoverCardPlate from "@/examples/hover-card/plate";
+import Mention from "@/examples/hover-card/mention";
+import Placement from "@/examples/hover-card/placement";
+import Delays from "@/examples/hover-card/delays";
+
+export const metadata = { title: "HoverCard" };
+
+<Entry
+  slug="hover-card"
+  lede="A preview of where a link leads, shown while the pointer rests on it or the link has focus."
+  plate={
+    <Plate
+      caption="Live: point at a name, or tab to it."
+      notes={[
+        "Rest the pointer on a name: the card opens after half a second and stays while the pointer is on the link or the card.",
+        "Tab to a link: focus opens the card too, and Escape closes it.",
+        "On a touch screen a tap goes straight to the link's page.",
+      ]}
+    >
+      <HoverCardPlate />
+    </Plate>
+  }
+  marks={{
+    pattern: <>Your own <code>&lt;a&gt;</code>, unchanged; the card is not announced</>,
+    keyboard: [{ keys: "tab" }, { keys: "escape" }],
+    state: <>Uncontrolled, or <code>isOpen</code> with <code>onOpenChange</code></>,
+    extra: [
+      { term: "Delays", detail: "500 ms to open, 200 ms to close" },
+      { term: "Touch", detail: "A tap follows the link at once" },
+    ],
+  }}
+>
+
+## When to use
+
+Use a HoverCard to preview what is behind a link: the person behind a mention, the repository behind its name, the release behind its tag. People pointing at the link, or tabbing to it, get a look without leaving the page; on a touch screen the link works as usual.
+
+Put nothing in the card that the linked page does not also have. On a touch screen a tap goes straight to that page, and keyboard users can see the card but not reach into it.
+
+## Similar
+
+- [Tooltip](/docs/tooltip/) names a control in a few words; a HoverCard previews where a link leads, with room for a picture and a few lines.
+- [Popover](/docs/popover/) opens on a click and moves focus inside, so it can hold fields and buttons; a HoverCard is for looking, not for using.
+
+## A profile behind a mention
+
+`HoverCardTrigger` passes its events to the one element inside it, so the link keeps its `href`, its focus and its own styles. `HoverCardContent` renders in a portal, so a parent with hidden overflow cannot cut the card off.
+
+<Example file="hover-card/mention">
+  <Mention />
+</Example>
+
+## Above the link
+
+At the foot of a page, `placement="top"` opens the card upwards and `showArrow` points it at its link. When there is no room on the chosen side, the card flips to the other one and keeps 8 pixels from the edge of the window.
+
+<Example file="hover-card/placement">
+  <Placement />
+</Example>
+
+## Delays
+
+`openDelay` waits 500 ms, so the card does not flash up while the pointer only crosses the link; `closeDelay` gives the pointer 200 ms to travel from the link into the card. In a row of small tags that people point at on purpose, shorter delays feel quicker.
+
+<Example file="hover-card/delays">
+  <Delays />
+</Example>
+
+## Accessibility
+
+The link is the accessible part. No ARIA attribute ties the card to it, so screen readers do not announce it, and links or buttons inside the card are taken out of the tab order. Keyboard users see the card when the link takes focus, after the same `openDelay`, and <kbd>Escape</kbd> closes it.
+
+## Styling
+
+`HoverCardContent` is 18rem wide and never wider than the window less 1rem, on `surface-3` with a border and a 1rem padding. Its `className` is merged last, so `w-60` or `p-3` replace those values.
+
+## Props
+
+### HoverCard
+
+<Props of="HoverCardProps" />
+
+### HoverCardContent
+
+<Props of="HoverCardContentProps" />
+
+</Entry>

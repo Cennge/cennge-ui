@@ -1,0 +1,82 @@
+import { Entry, Example, Plate, Props } from "@/components/docs";
+import RadioPlate from "@/examples/radio/plate";
+import Descriptions from "@/examples/radio/descriptions";
+import Horizontal from "@/examples/radio/horizontal";
+import InAForm from "@/examples/radio/in-a-form";
+
+export const metadata = { title: "Radio" };
+
+<Entry
+  slug="radio"
+  lede="A group of round buttons where choosing one clears the others."
+  plate={
+    <Plate
+      notes={[
+        "Tab enters a group on its chosen radio; the arrow keys move and choose, round from the last to the first.",
+        "A click on a label or its description chooses that radio.",
+        "Version bump is vertical and answers ↑ and ↓; Publish under is horizontal and answers ← and →.",
+      ]}
+    >
+      <RadioPlate />
+    </Plate>
+  }
+  marks={{
+    pattern: "WAI-ARIA radio group (Radix RadioGroup)",
+    keyboard: [{ keys: "up" }, { keys: "down" }, { keys: "left" }, { keys: "right" }, { keys: "space" }],
+    state: <>Controlled with <code>value</code> and <code>onValueChange</code> on <code>RadioGroup</code>, or uncontrolled with <code>defaultValue</code></>,
+    extra: [
+      { term: "Tab stops", detail: "One per group: the chosen radio, or the first one before a choice" },
+      { term: "Orientation", detail: <>Vertical by default; <code>"horizontal"</code> wraps onto more lines when narrow</> },
+    ],
+  }}
+>
+
+## When to use
+
+Use radios when there are a few options, only one can be chosen, and people decide better with all of them in view: a visibility, a version bump, a plan. Each option can carry a line of description that stays in view, where a Select shows it only while its list is open.
+
+## Similar
+
+- [Select](/docs/select/) keeps the options in a list until it is opened; better when there are many of them or space is short.
+- [ToggleGroup](/docs/toggle-group/) is a row of buttons for switching a view; it has no `name` and sends nothing with a form.
+- [Checkbox](/docs/checkbox/) allows any number of choices at once.
+
+## Descriptions and a disabled option
+
+`description` sits under a radio's label, inside the same `<label>`, so a click on it chooses the radio too. A disabled radio stays visible and the arrow keys skip it.
+
+<Example file="radio/descriptions">
+  <Descriptions />
+</Example>
+
+## Horizontal
+
+`orientation="horizontal"` lays the radios out in a row that wraps when it runs out of room, and the left and right arrows move between them.
+
+<Example file="radio/horizontal">
+  <Horizontal />
+</Example>
+
+## Required, in a form
+
+With a `name`, the chosen value goes into the form's data. Inside a [Form](/docs/form/), `isRequired` stops a submit with nothing chosen: the label and the circles turn red, the browser's message shows under the group, and focus moves to the first radio.
+
+<Example file="radio/in-a-form">
+  <InAForm />
+</Example>
+
+## Accessibility
+
+The group is a `radiogroup` named by its `label`, with the description or error linked by `aria-describedby` and `aria-invalid` while it has an error. Each radio is named by its own `<label>`. Moving with the arrow keys chooses as it goes, as the WAI-ARIA pattern says; <kbd>Space</kbd> chooses the radio in focus, and <kbd>Enter</kbd> does nothing.
+
+## Props
+
+### RadioGroup
+
+<Props of="RadioGroupProps" />
+
+### Radio
+
+<Props of="RadioProps" />
+
+</Entry>

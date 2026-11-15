@@ -1,0 +1,77 @@
+import { Entry, Example, Plate, Props } from "@/components/docs";
+import ProgressPlate from "@/examples/progress/plate";
+import Scale from "@/examples/progress/scale";
+import Indeterminate from "@/examples/progress/indeterminate";
+import Circular from "@/examples/progress/circular";
+
+export const metadata = { title: "Progress" };
+
+<Entry
+  slug="progress"
+  lede="How far a task has got, as a bar or a ring: with a value when you know it, sweeping or spinning when you do not."
+  plate={
+    <Plate
+      notes={[
+        "Press Upload again: the bar eases to each new value. With reduced motion it jumps.",
+        "Without a value the bar sweeps across and the ring spins; screen readers hear no number.",
+        <>
+          <code>formatValue</code> writes the text shown and read out: "3 of 5" instead of "60%".
+        </>,
+      ]}
+      caption="Live: run the upload."
+    >
+      <ProgressPlate />
+    </Plate>
+  }
+  marks={{
+    pattern: <><code>role="progressbar"</code> with <code>aria-valuetext</code>; no <code>aria-valuenow</code> while indeterminate</>,
+    state: <>Controlled: pass <code>value</code>, or leave it out until you know it</>,
+    extra: [{ term: "Reduced motion", detail: "The bar stops sweeping and shows dimmed at full width; the ring turns more slowly" }],
+  }}
+>
+
+## When to use
+
+Use Progress for a task with an end: an upload, a clone, a run of CI jobs. `Progress` is the bar for a row or a form; `CircularProgress` is the ring for a tile or a tight corner. Until you know how much is done, leave `value` out: both still say that work is under way.
+
+## Similar
+
+- [Spinner](/docs/spinner/) is a small turning ring with no value and no progressbar role, sized to sit in a line of text.
+- [Skeleton](/docs/skeleton/) stands in for content whose shape you already know.
+- [Stepper](/docs/stepper/) counts named steps a person moves through, not the share of a task that is done.
+
+## Any scale, any text
+
+`value` counts up to `max`, 100 unless you set it. With a label the value shows beside it, as `formatValue` writes it, and screen readers read the same text. Without a visible label, name the bar with `aria-label`.
+
+<Example file="progress/scale">
+  <Scale />
+</Example>
+
+## Still working
+
+Leave `value` out, or pass `null`, while the amount is unknown. Pass a number once it is, and the bar or ring changes in place.
+
+<Example file="progress/indeterminate">
+  <Indeterminate />
+</Example>
+
+## Circular
+
+Four sizes, from 32 to 96 pixels. `showValue` puts the value in the middle; the `label` sits under the ring and names it for screen readers. `strokeWidth` changes the thickness of the ring.
+
+<Example file="progress/circular">
+  <Circular />
+</Example>
+
+## Props
+
+### Progress
+
+<Props of="ProgressProps" />
+
+### CircularProgress
+
+<Props of="CircularProgressProps" />
+
+</Entry>

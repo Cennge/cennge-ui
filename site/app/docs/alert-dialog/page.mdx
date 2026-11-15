@@ -1,0 +1,96 @@
+import { Entry, Example, Plate, Props } from "@/components/docs";
+import AlertDialogPlate from "@/examples/alert-dialog/plate";
+import Discard from "@/examples/alert-dialog/discard";
+import Retry from "@/examples/alert-dialog/retry";
+import TypeToConfirm from "@/examples/alert-dialog/type-to-confirm";
+
+export const metadata = { title: "AlertDialog" };
+
+<Entry
+  slug="alert-dialog"
+  lede="A question before something hard to undo. It waits for an answer, and for the action to finish."
+  plate={
+    <Plate
+      notes={[
+        "Archive: focus starts on Cancel. A click outside does nothing; Escape is the same as Cancel.",
+        "Delete: focus starts in the field, and the button unlocks once the name is typed.",
+        "While it deletes, the button spins and keeps keyboard focus; Cancel and Escape do nothing until it is done.",
+      ]}
+    >
+      <AlertDialogPlate />
+    </Plate>
+  }
+  marks={{
+    pattern: <>WAI-ARIA alert dialog: <code>role="alertdialog"</code>, named by its title, described by its description</>,
+    keyboard: [{ keys: "tab" }, { keys: ["shift", "tab"] }, { keys: "escape" }],
+    state: <>Controlled with <code>isOpen</code> and <code>onOpenChange</code>, or uncontrolled</>,
+    extra: [{ term: "Async actions", detail: <>A promise from <code>onAction</code> keeps it open and busy until it settles</> }],
+  }}
+>
+
+## When to use
+
+Ask with an AlertDialog before an action that destroys something or is hard to take back: deleting, archiving, transferring. It interrupts on purpose. There is no close button, a click outside does nothing, and focus starts on Cancel, so a stray Enter cancels rather than deletes.
+
+When the action can be undone, it is often kinder not to ask at all: do it, and offer Undo in a [toast](/docs/toast/).
+
+## Similar
+
+- [Dialog](/docs/dialog/) holds a task rather than a question: it has a close button, and a click on the backdrop closes it.
+- [Toast](/docs/toast/) with an `action` offers to undo after the fact instead of asking first.
+
+## Confirm, then act
+
+`onAction` runs when the action button is pressed, then the dialog closes. Cancel and Escape close it without running anything. Buttons named after what they do, "Keep editing" and "Discard", read faster than "No" and "Yes".
+
+<Example file="alert-dialog/discard">
+  <Discard />
+</Example>
+
+## A request that can fail
+
+Return a promise from `onAction` and the dialog stays open until it settles. Meanwhile the action shows a spinner and sets `aria-busy`, Cancel is disabled, Escape does nothing, and another press does not send the request twice. When the promise resolves the dialog closes; when it rejects the dialog stays open, ready for another try, and showing the error is up to you. This request fails every other time.
+
+<Example file="alert-dialog/retry">
+  <Retry />
+</Example>
+
+## Type the name to confirm
+
+For the worst cases, ask for the name. `onOpenAutoFocus` with `event.preventDefault()` starts focus in the field instead of on Cancel, and `isDisabled` keeps the action locked until the text matches. `onOpenChange` clears the field when the dialog closes.
+
+<Example file="alert-dialog/type-to-confirm">
+  <TypeToConfirm />
+</Example>
+
+## Accessibility
+
+- The dialog has `role="alertdialog"`. Screen readers read its title and its description as it opens, so give it both.
+- Focus starts on Cancel, the harmless answer, and Tab and Shift+Tab stay inside. Escape is the same as Cancel. On close, focus goes back to the button that opened the dialog.
+- While an action runs, its button is `aria-disabled` rather than disabled, so keyboard focus stays on it instead of falling to the page. If the action fails, focus is still there for another try. The end-to-end tests press Enter on it and check both.
+- Below 640px wide the footer stacks its buttons in reverse order, so the action, written after Cancel, sits on top; from 640px they sit in a row at the right, the action last.
+- The end-to-end tests run in Chromium, Firefox and WebKit, on desktop and phone profiles: focus on Cancel and still inside after six Tabs, Escape back to the trigger, a click or a tap outside that changes nothing, the action pressed with the pointer and with Enter, Escape ignored while it runs, and axe in both themes. A Combobox opened inside scrolls as in a [Dialog](/docs/dialog/#lists-and-menus-inside).
+
+## Styling
+
+`classNames` takes `overlay` and `content`. As in [Dialog](/docs/dialog/#styling), the dimmed backdrop is the overlay's `::before`, so your own backdrop takes the `before:` variant. `size` sets the width (`sm` 24rem, `md` 28rem, `lg` 32rem) and `radius` the corners. `AlertDialogAction` is a [Button](/docs/button/) in the primary colour unless you pass `color`; `AlertDialogCancel` is a flat one.
+
+## Props
+
+### AlertDialog
+
+<Props of="AlertDialogProps" />
+
+### AlertDialogContent
+
+<Props of="AlertDialogContentProps" />
+
+### AlertDialogAction
+
+<Props of="AlertDialogActionProps" />
+
+### AlertDialogCancel
+
+<Props of="AlertDialogCancelProps" />
+
+</Entry>

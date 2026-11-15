@@ -1,0 +1,97 @@
+import { Entry, Example, Plate, Props } from "@/components/docs";
+import AreaChartPlate from "@/examples/area-chart/plate";
+import Basic from "@/examples/area-chart/basic";
+import Stacked from "@/examples/area-chart/stacked";
+import Smooth from "@/examples/area-chart/smooth";
+import NoAxes from "@/examples/area-chart/no-axes";
+
+export const metadata = { title: "AreaChart" };
+
+<Entry
+  slug="area-chart"
+  lede="A line with the area under it washed in its colour: one quantity over time, or a whole split into the parts it is made of."
+  plate={
+    <Plate
+      notes={[
+        "Stacked, each part fills down to the one below it, so the top line is the total.",
+        "Hover a month or tap it: the readout gives each part's own value, not the running sum.",
+        "Tab to a chart: the arrows move the crosshair, Home and End jump to the ends, Escape hides it.",
+      ]}
+      caption="Live: hover it, tap it, use the keys."
+    >
+      <AreaChartPlate />
+    </Plate>
+  }
+  marks={{
+    pattern: (
+      <>
+        A <code>&lt;figure&gt;</code> with a focusable group over the plot and a hidden <code>&lt;table&gt;</code> of the data
+      </>
+    ),
+    keyboard: [{ keys: "left" }, { keys: "right" }, { keys: "up" }, { keys: "down" }, "Home", "End", { keys: "escape" }],
+    extra: [{ term: "Fill", detail: <>The series' colour, fading towards the floor; the axis takes in zero unless you set <code>domain</code></> }],
+  }}
+>
+
+## When to use
+
+Use an AreaChart for one quantity over time when its size matters as much as its shape: the wash down to zero gives the line weight. With `isStacked` it shows how a whole is split, and how that split changes: minutes per repository adding up to the month's total.
+
+## Similar
+
+- [LineChart](/docs/line-chart/) is the same chart without the wash. Its axis can fit the data with `startAtZero={false}`; an AreaChart has no such prop, and its axis takes in zero unless you set a `domain`.
+- [BarChart](/docs/bar-chart/) stacks parts too, one bar per category, when the categories are not a sequence in time.
+- [DonutChart](/docs/donut-chart/) splits a single whole, at one moment, into parts.
+
+## One quantity
+
+A single series has no legend; the `aria-label` names the chart and its table. The numbers on this page are sample data.
+
+<Example file="area-chart/basic">
+  <Basic />
+</Example>
+
+## Stacked, in colours that mean something
+
+`isStacked` piles the series up in the order of `series`, the first at the bottom. Each part fills down to the one below it, so the top edge is the total, and the readout and the table give each part's own value. In a stack a missing value counts as zero, so the parts above it still rest on something.
+
+Without a `color` a series takes the palette slot of its place, as on the plate. Here theme colours carry a meaning instead: passed in `success`, flaky in `warning`, failed in `danger`.
+
+<Example file="area-chart/stacked">
+  <Stacked />
+</Example>
+
+## A smooth curve
+
+`curve="smooth"` bends through the points without overshooting them, so the wash never dips below zero where spredo-crypto-screener stops scanning, and stays flat between two equal values.
+
+<Example file="area-chart/smooth">
+  <Smooth />
+</Example>
+
+## Without axes, in a card
+
+`showXAxis`, `showYAxis` and `showGrid` turn off for a chart that sits under a number. The readout, the keyboard and the table stay: hover the chart to read the requests in each two hours. On a Card the dots of the readout sit in a ring of its surface by themselves.
+
+<Example file="area-chart/no-axes">
+  <NoAxes />
+</Example>
+
+## Accessibility
+
+- The figure and its plot are named by `aria-label`; the plot is a focusable group described by `labels.keyboardHint`.
+- Focus from the keyboard puts the crosshair on the first point, and a polite live region reads each place as the arrows move it, as "Apr: cennge-ui 910, playwright-msi-scraper 290, payload-cache 260, ai-niche-scout 210, spredo-crypto-screener 140".
+- Screen readers get every value in a table captioned with the chart's name. In a stack the table holds each part, never the sums.
+- The legend names each series beside a sample of its colour, so colour never says which is which alone.
+
+## Server rendering
+
+The legend, the axes, the grid and the data table come from the server. The areas are drawn once the browser has measured the plot and draw in from the left; with reduced motion they appear at once.
+
+## Props
+
+Each entry of `series` is `{ key, label, color }`: the field that holds its values, its name (the key without one), and a palette slot from `chart-1` to `chart-8`, a theme colour or any CSS colour.
+
+<Props of="AreaChartProps" />
+
+</Entry>

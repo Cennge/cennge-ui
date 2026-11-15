@@ -1,0 +1,86 @@
+import { Entry, Example, Plate, Props } from "@/components/docs";
+import DateRangePickerPlate from "@/examples/date-range-picker/plate";
+import Basic from "@/examples/date-range-picker/basic";
+import FromToday from "@/examples/date-range-picker/from-today";
+import InAForm from "@/examples/date-range-picker/in-a-form";
+import Translated from "@/examples/date-range-picker/translated";
+
+export const metadata = { title: "DateRangePicker" };
+
+<Entry
+  slug="date-range-picker"
+  lede="Two date fields, start and end, typed with any separators or picked with two clicks in one calendar."
+  plate={
+    <Plate
+      notes={[
+        "Type both ends and press Tab or Enter; the range is saved once both are dates and the end is not before the start.",
+        "In the calendar the first click sets the start and the band follows the pointer to the second; Escape in between starts over.",
+        "Try to run the beta into the holidays: the frozen days are crossed out and a range cannot cross them.",
+      ]}
+    >
+      <DateRangePickerPlate />
+    </Plate>
+  }
+  marks={{
+    pattern: "A group of two text fields, and a range calendar in a popover dialog",
+    keyboard: [{ keys: ["alt", "down"] }, { keys: "enter" }, { keys: "escape" }],
+    state: <>Controlled with <code>value</code> and <code>onValueChange</code> (<code>{"{ start, end }"}</code> or <code>null</code>), or uncontrolled</>,
+    extra: [
+      { term: "Form values", detail: <>Two ISO dates, in hidden inputs under <code>startName</code> and <code>endName</code></> },
+      { term: "Calendar", detail: "Two months side by side; on a phone they stack" },
+    ],
+  }}
+>
+
+## When to use
+
+Use a DateRangePicker for a period with a start and an end: a sprint, a beta, a code freeze, a report's dates. Each end is a field of its own that reads typed dates in the locale's order, and one calendar with two months picks both ends in two clicks.
+
+The value is a pair of ISO dates, `{ start: "2026-11-23", end: "2026-12-11" }`, or `null`. It changes only when the whole range is valid: both ends are dates, inside the limits, in order and clear of unavailable days. Until then the text stays in the fields, with the reason under them when there is one.
+
+## Similar
+
+- [DatePicker](/docs/date-picker/) is the same field for one date.
+- [RangeCalendar](/docs/calendar/#a-range-over-two-months) is this calendar on its own, always open on the page.
+
+## Pick a range
+
+Type the start, then the end, or open the calendar. After the second click the calendar closes, the fields show both dates and focus returns to the calendar button. Empty both fields to set the value back to `null`.
+
+<Example file="date-range-picker/basic">
+  <Basic />
+</Example>
+
+## Limits counted from today
+
+`minValue` and `maxValue` bound both ends: days outside are disabled in the calendar, and a typed date outside them is turned down with the reason. Only the browser knows the reader's today, so read it after mount; until then `null` means no limit.
+
+<Example file="date-range-picker/from-today">
+  <FromToday />
+</Example>
+
+## In a form
+
+`startName` and `endName` put the two ISO dates in hidden inputs, and <kbd>Enter</kbd> in either field reads what was typed before the form is submitted. Inside a [Form](/docs/form/), an error your server returns for either name shows under the pair.
+
+<Example file="date-range-picker/in-a-form">
+  <InAForm />
+</Example>
+
+## In another language
+
+`formatError` receives one more reason than the DatePicker's: `order`, for an end before the start. `labels` names the two fields, the calendar button and the calendar's controls; the order and the separators of the dates follow the `locale`.
+
+<Example file="date-range-picker/translated">
+  <Translated />
+</Example>
+
+## Accessibility
+
+The pair is a group named by the label, and the fields are named "Start date" and "End date". A refusal marks both fields with `aria-invalid` and describes the group and the fields with the reason. In the calendar, the first <kbd>Escape</kbd> drops a half-chosen range or closes an open month or year grid, and the next one closes the calendar.
+
+## Props
+
+<Props of="DateRangePickerProps" />
+
+</Entry>

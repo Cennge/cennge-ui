@@ -1,0 +1,76 @@
+import { Entry, Example, Plate, Props } from "@/components/docs";
+import PaginationPlate from "@/examples/pagination/plate";
+import FolderPages from "@/examples/pagination/list";
+import NarrowPagination from "@/examples/pagination/narrow";
+import PaginationStyles from "@/examples/pagination/styles";
+
+export const metadata = { title: "Pagination" };
+
+<Entry
+  slug="pagination"
+  lede="Page numbers with previous and next: the first and last page, the pages around the current one, and an ellipsis for the rest."
+  plate={
+    <Plate
+      caption="Live: click it, use the keys."
+      notes={[
+        "The first and last pages always show, with the current page and its neighbours (none on a phone) between them and … for the gaps; the row keeps the same number of slots on every page.",
+        "Previous is disabled on the first page, Next on the last.",
+        "Tab goes through the buttons; each is read as “Page 4”, and the current one as the current page.",
+      ]}
+    >
+      <PaginationPlate />
+    </Plate>
+  }
+  marks={{
+    pattern: <>A named <code>&lt;nav&gt;</code> of buttons; <code>aria-current="page"</code> on the current one</>,
+    keyboard: [{ keys: "tab" }, { keys: "enter" }, { keys: "space" }],
+    state: <>Controlled with <code>page</code> and <code>onPageChange</code>, or <code>defaultPage</code></>,
+    extra: [
+      { term: "Pages", detail: <>Buttons, not links: change the address yourself in <code>onPageChange</code> if you need to</> },
+      { term: "Slots", detail: <><code>siblings * 2 + 5</code>, seven by default</> },
+    ],
+  }}
+>
+
+## When to use
+
+Pagination splits a long list into pages and moves between them: a commit history, search results, the rows of a table. It suits lists that people jump around in and come back to, since a page number is a place they can return to.
+
+## Similar
+
+- [Stepper](/docs/stepper/) leads through the steps of one task in order, each step with its own content; Pagination moves through more of the same.
+- [Breadcrumbs](/docs/breadcrumbs/) lead up a hierarchy; Pagination moves along one level of it.
+
+## Pages of a list
+
+Keep the page in state and slice the list with it. Pages count from 1, and a `page` outside 1 to `total` is shown as the nearest one. With TanStack Table, pass `table.getPageCount()` as `total`, `pageIndex + 1` as `page`, and call `table.setPageIndex(page - 1)` from `onPageChange`.
+
+<Example file="pagination/list">
+  <FolderPages />
+</Example>
+
+## Narrow screens
+
+`siblings` sets how many pages show on each side of the current one, and with it the number of slots. At the default size, seven slots and two arrows take about 380 pixels, more than a phone has once the page has its margins, and the buttons wrap onto a second line. `siblings={0}` keeps five slots: the first and last pages, the current one and two ellipses.
+
+<Example file="pagination/narrow">
+  <NarrowPagination />
+</Example>
+
+## Colours, sizes and disabled
+
+`color` paints the current page, `primary` by default, so it follows the accent. `size` and `radius` take the Button's values, and `showControls={false}` drops the arrows. `isDisabled` dims every button and ignores the pointer, for instance while the next page loads.
+
+<Example file="pagination/styles">
+  <PaginationStyles />
+</Example>
+
+## Accessibility
+
+The control is a `<nav>` named "Pagination"; with more than one on a page, give each its own `aria-label`. The arrows are named "Previous page" and "Next page", and the ellipses are hidden from screen readers, so a reader hears only the pages there are buttons for.
+
+## Props
+
+<Props of="PaginationProps" />
+
+</Entry>

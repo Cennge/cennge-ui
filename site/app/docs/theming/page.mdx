@@ -1,0 +1,291 @@
+import { Example, Guide } from "@/components/docs";
+import Surfaces from "@/examples/theming/surfaces";
+import Roles from "@/examples/theming/roles";
+import Accents from "@/examples/theming/accents";
+import Radius from "@/examples/theming/radius";
+
+export const metadata = { title: "Theming" };
+
+<Guide
+  slug="theming"
+  lede="Every colour, surface and radius is a --cennge-* CSS variable. Change one in your stylesheet, for the whole page or for one element, and the components under it follow, with no rebuild."
+>
+
+## How it works
+
+`cennge-ui/styles.css` declares the theme as custom properties: the light theme on `:root`, the dark one on `.dark`. A Tailwind `@theme inline` block then maps them to utilities, so `bg-primary` compiles to `background-color: var(--cennge-primary)`. The utilities read the variable where the element is, at runtime: override it on `:root` and the whole app changes; override it on one element and only that part of the page does.
+
+There is no JavaScript theme object and no provider to wrap. Light and dark are a class, the accent is an attribute, and the rest is the tokens below.
+
+## Surfaces
+
+Depth comes from layered surfaces more than from shadows. Each step is a little lighter in the dark theme, and a little whiter in the light one.
+
+<Example file="theming/surfaces">
+  <Surfaces />
+</Example>
+
+<dl className="not-prose my-6 divide-y divide-border border-y border-border text-[15px] leading-normal">
+  <div className="grid gap-x-6 gap-y-1.5 py-3 sm:grid-cols-[15.5rem_minmax(0,1fr)]">
+    <dt className="flex flex-wrap content-start items-start gap-1.5">
+      <code className="rounded-small bg-surface-3 px-1.5 py-0.5 font-code text-[12.5px]">--cennge-background</code>
+      <code className="rounded-small bg-surface-3 px-1.5 py-0.5 font-code text-[12.5px]">bg-background</code>
+    </dt>
+    <dd className="text-pretty">The page. The same colour as surface 1.</dd>
+  </div>
+  <div className="grid gap-x-6 gap-y-1.5 py-3 sm:grid-cols-[15.5rem_minmax(0,1fr)]">
+    <dt className="flex flex-wrap content-start items-start gap-1.5">
+      <code className="rounded-small bg-surface-3 px-1.5 py-0.5 font-code text-[12.5px]">--cennge-surface-1</code>
+      <code className="rounded-small bg-surface-3 px-1.5 py-0.5 font-code text-[12.5px]">bg-surface-1</code>
+    </dt>
+    <dd className="text-pretty">The page, and what sits flush on it, such as the Sidebar.</dd>
+  </div>
+  <div className="grid gap-x-6 gap-y-1.5 py-3 sm:grid-cols-[15.5rem_minmax(0,1fr)]">
+    <dt className="flex flex-wrap content-start items-start gap-1.5">
+      <code className="rounded-small bg-surface-3 px-1.5 py-0.5 font-code text-[12.5px]">--cennge-surface-2</code>
+      <code className="rounded-small bg-surface-3 px-1.5 py-0.5 font-code text-[12.5px]">bg-surface-2</code>
+    </dt>
+    <dd className="text-pretty">Panels laid into the page: tables, faded fields and snippets.</dd>
+  </div>
+  <div className="grid gap-x-6 gap-y-1.5 py-3 sm:grid-cols-[15.5rem_minmax(0,1fr)]">
+    <dt className="flex flex-wrap content-start items-start gap-1.5">
+      <code className="rounded-small bg-surface-3 px-1.5 py-0.5 font-code text-[12.5px]">--cennge-surface-3</code>
+      <code className="rounded-small bg-surface-3 px-1.5 py-0.5 font-code text-[12.5px]">bg-surface-3</code>
+    </dt>
+    <dd className="text-pretty">Cards, menus, popovers, toasts and flat fields.</dd>
+  </div>
+  <div className="grid gap-x-6 gap-y-1.5 py-3 sm:grid-cols-[15.5rem_minmax(0,1fr)]">
+    <dt className="flex flex-wrap content-start items-start gap-1.5">
+      <code className="rounded-small bg-surface-3 px-1.5 py-0.5 font-code text-[12.5px]">--cennge-surface-4</code>
+      <code className="rounded-small bg-surface-3 px-1.5 py-0.5 font-code text-[12.5px]">bg-surface-4</code>
+    </dt>
+    <dd className="text-pretty">What is raised on those: the default Button, Switch tracks, the chosen segment, tooltips.</dd>
+  </div>
+  <div className="grid gap-x-6 gap-y-1.5 py-3 sm:grid-cols-[15.5rem_minmax(0,1fr)]">
+    <dt className="flex flex-wrap content-start items-start gap-1.5">
+      <code className="rounded-small bg-surface-3 px-1.5 py-0.5 font-code text-[12.5px]">--cennge-foreground</code>
+      <code className="rounded-small bg-surface-3 px-1.5 py-0.5 font-code text-[12.5px]">text-foreground</code>
+    </dt>
+    <dd className="text-pretty">Text.</dd>
+  </div>
+  <div className="grid gap-x-6 gap-y-1.5 py-3 sm:grid-cols-[15.5rem_minmax(0,1fr)]">
+    <dt className="flex flex-wrap content-start items-start gap-1.5">
+      <code className="rounded-small bg-surface-3 px-1.5 py-0.5 font-code text-[12.5px]">--cennge-muted</code>
+      <code className="rounded-small bg-surface-3 px-1.5 py-0.5 font-code text-[12.5px]">text-muted</code>
+    </dt>
+    <dd className="text-pretty">Secondary text: descriptions, hints, placeholders.</dd>
+  </div>
+  <div className="grid gap-x-6 gap-y-1.5 py-3 sm:grid-cols-[15.5rem_minmax(0,1fr)]">
+    <dt className="flex flex-wrap content-start items-start gap-1.5">
+      <code className="rounded-small bg-surface-3 px-1.5 py-0.5 font-code text-[12.5px]">--cennge-border</code>
+      <code className="rounded-small bg-surface-3 px-1.5 py-0.5 font-code text-[12.5px]">border-border</code>
+    </dt>
+    <dd className="text-pretty">Hairlines, and the borders of bordered and faded variants.</dd>
+  </div>
+  <div className="grid gap-x-6 gap-y-1.5 py-3 sm:grid-cols-[15.5rem_minmax(0,1fr)]">
+    <dt className="flex flex-wrap content-start items-start gap-1.5">
+      <code className="rounded-small bg-surface-3 px-1.5 py-0.5 font-code text-[12.5px]">--cennge-ring</code>
+      <code className="rounded-small bg-surface-3 px-1.5 py-0.5 font-code text-[12.5px]">outline-ring</code>
+    </dt>
+    <dd className="text-pretty">The keyboard focus ring: the page's primary colour unless you set it.</dd>
+  </div>
+</dl>
+
+## Colour roles
+
+Seven roles name what a colour means rather than what it is: `default`, `primary`, `secondary`, `success`, `warning`, `danger` and `info`. They are the values of the `color` prop, wherever a component has one. `primary` is the accent, `default` is neutral, and the other five are fixed: violet, green, amber, red and blue.
+
+<Example file="theming/roles">
+  <Roles />
+</Example>
+
+Each role is a set of variables, here for `primary`:
+
+<dl className="not-prose my-6 divide-y divide-border border-y border-border text-[15px] leading-normal">
+  <div className="grid gap-x-6 gap-y-1.5 py-3 sm:grid-cols-[15.5rem_minmax(0,1fr)]">
+    <dt className="flex flex-wrap content-start items-start gap-1.5">
+      <code className="rounded-small bg-surface-3 px-1.5 py-0.5 font-code text-[12.5px]">--cennge-primary-50 … -950</code>
+      <code className="rounded-small bg-surface-3 px-1.5 py-0.5 font-code text-[12.5px]">bg-primary-500</code>
+    </dt>
+    <dd className="text-pretty">The scale, eleven steps from 50 to 950, each a utility of its own.</dd>
+  </div>
+  <div className="grid gap-x-6 gap-y-1.5 py-3 sm:grid-cols-[15.5rem_minmax(0,1fr)]">
+    <dt className="flex flex-wrap content-start items-start gap-1.5">
+      <code className="rounded-small bg-surface-3 px-1.5 py-0.5 font-code text-[12.5px]">--cennge-primary</code>
+      <code className="rounded-small bg-surface-3 px-1.5 py-0.5 font-code text-[12.5px]">bg-primary</code>
+    </dt>
+    <dd className="text-pretty">The solid fill.</dd>
+  </div>
+  <div className="grid gap-x-6 gap-y-1.5 py-3 sm:grid-cols-[15.5rem_minmax(0,1fr)]">
+    <dt className="flex flex-wrap content-start items-start gap-1.5">
+      <code className="rounded-small bg-surface-3 px-1.5 py-0.5 font-code text-[12.5px]">--cennge-primary-foreground</code>
+      <code className="rounded-small bg-surface-3 px-1.5 py-0.5 font-code text-[12.5px]">text-primary-foreground</code>
+    </dt>
+    <dd className="text-pretty">Text on the solid fill.</dd>
+  </div>
+  <div className="grid gap-x-6 gap-y-1.5 py-3 sm:grid-cols-[15.5rem_minmax(0,1fr)]">
+    <dt className="flex flex-wrap content-start items-start gap-1.5">
+      <code className="rounded-small bg-surface-3 px-1.5 py-0.5 font-code text-[12.5px]">--cennge-primary-text</code>
+      <code className="rounded-small bg-surface-3 px-1.5 py-0.5 font-code text-[12.5px]">text-primary-text</code>
+    </dt>
+    <dd className="text-pretty">The role as text: step 800 in the light theme, 300 in the dark one.</dd>
+  </div>
+  <div className="grid gap-x-6 gap-y-1.5 py-3 sm:grid-cols-[15.5rem_minmax(0,1fr)]">
+    <dt className="flex flex-wrap content-start items-start gap-1.5">
+      <code className="rounded-small bg-surface-3 px-1.5 py-0.5 font-code text-[12.5px]">bg-primary-bg</code>
+    </dt>
+    <dd className="text-pretty">A 14% tint of the fill, mixed by the utility: the fill of flat variants.</dd>
+  </div>
+  <div className="grid gap-x-6 gap-y-1.5 py-3 sm:grid-cols-[15.5rem_minmax(0,1fr)]">
+    <dt className="flex flex-wrap content-start items-start gap-1.5">
+      <code className="rounded-small bg-surface-3 px-1.5 py-0.5 font-code text-[12.5px]">bg-primary-highlight</code>
+    </dt>
+    <dd className="text-pretty">A 26% tint of the fill: their hover.</dd>
+  </div>
+</dl>
+
+Every pair meets WCAG AA, 4.5:1: the foreground on the fill, and the text colour on every surface and on the role's own two tints. That is why the text step changes with the theme. `default` is the neutral role: its fill is surface 4 and its text is the foreground.
+
+## Accent presets
+
+`data-accent` swaps the accent for one of five presets: `orange`, the default, `blue`, `green`, `violet` and `red`. Put it on `<html>` for the whole page, or on any element for the part inside it. A preset sets only `primary` (its scale, fill, foreground and text) and the order of the chart palette; the other roles stay as they are. Each row below is a `<div>` with its own `data-accent`.
+
+<Example file="theming/accents">
+  <Accents />
+</Example>
+
+On orange and green the text on the fill is dark; on blue, violet and red it is white, so that every pair keeps its contrast. The site's accent switch sets `data-accent` on `<html>`, as an app would: every example on the page follows it except the rows above, which set their own.
+
+```tsx
+<html lang="en" data-accent="blue">
+```
+
+## Your own colour
+
+To use a colour of your own, override the role's variables in your CSS, after the import. Give all eleven steps of the scale, the fill, the text on the fill, and the text colour for each theme:
+
+```css
+:root {
+  --cennge-primary-50: #eef6ff; /* …through… */
+  --cennge-primary-950: #0b1f3a;
+  --cennge-primary: #1f6feb;            /* solid fill */
+  --cennge-primary-foreground: #ffffff; /* text on the fill */
+  --cennge-primary-text: #1a5fd0;       /* the colour as text, light theme */
+}
+.dark {
+  --cennge-primary-text: #6ea8ff;       /* the colour as text, dark theme */
+}
+```
+
+Check the same pairs the built-in roles meet: 4.5:1 for the foreground on the fill, and for the text colour on every surface and on the tints. Any role can be recoloured this way, not only `primary`.
+
+The chart palette does not follow such an override: its eight slots are set by the presets, so the first keeps the preset's colour, orange by default. Set `--cennge-chart-1` in the same rule if your charts should open with your colour.
+
+A preset of your own works like the built-in ones. Declare it under a `data-accent` value of your choosing; in the dark theme, the library already sets `--cennge-primary-text` to your 300 step on any element with `data-accent`:
+
+```css
+[data-accent="teal"] {
+  --cennge-primary-50: #f0fdfa; /* …through… */
+  --cennge-primary-950: #042f2e;
+  --cennge-primary: #14b8a6;
+  --cennge-primary-foreground: #140c06;
+  --cennge-primary-text: #115e59;
+}
+```
+
+The chart palette does not know such a preset either: inside it, the slots keep the order of the page around it. Set `--cennge-chart-1` to `--cennge-chart-8` in the same rule to choose your own.
+
+## Chart palette
+
+Series in `cennge-ui/charts` take eight colours in order, `--cennge-chart-1` to `--cennge-chart-8`, also as Tailwind's `bg-chart-1` and the like for legends of your own. The first follows the accent preset. The order after it is chosen for each preset, so that neighbours stay far apart: under violet, orange comes second and blue fourth, because violet next to blue blurs for colour-blind readers. The dots at the end of each row above show it.
+
+The eight are checked, not picked by eye: each keeps 3:1 on every surface, and neighbours stay distinguishable under simulated protanopia and deuteranopia, in both themes and for every preset. A ninth series is grey rather than a new colour. A dot on a line sits in a ring of the colour behind the chart; off a Card, set `--cennge-chart-surface` to that colour.
+
+## Radius, motion and type
+
+<dl className="not-prose my-6 divide-y divide-border border-y border-border text-[15px] leading-normal">
+  <div className="grid gap-x-6 gap-y-1.5 py-3 sm:grid-cols-[15.5rem_minmax(0,1fr)]">
+    <dt className="flex flex-wrap content-start items-start gap-1.5">
+      <code className="rounded-small bg-surface-3 px-1.5 py-0.5 font-code text-[12.5px]">--cennge-radius-small</code>
+      <code className="rounded-small bg-surface-3 px-1.5 py-0.5 font-code text-[12.5px]">rounded-small</code>
+      <code className="rounded-small bg-surface-3 px-1.5 py-0.5 font-code text-[12.5px]">radius="sm"</code>
+    </dt>
+    <dd className="text-pretty">0.5rem.</dd>
+  </div>
+  <div className="grid gap-x-6 gap-y-1.5 py-3 sm:grid-cols-[15.5rem_minmax(0,1fr)]">
+    <dt className="flex flex-wrap content-start items-start gap-1.5">
+      <code className="rounded-small bg-surface-3 px-1.5 py-0.5 font-code text-[12.5px]">--cennge-radius-medium</code>
+      <code className="rounded-small bg-surface-3 px-1.5 py-0.5 font-code text-[12.5px]">rounded-medium</code>
+      <code className="rounded-small bg-surface-3 px-1.5 py-0.5 font-code text-[12.5px]">radius="md"</code>
+    </dt>
+    <dd className="text-pretty">0.75rem: buttons and fields.</dd>
+  </div>
+  <div className="grid gap-x-6 gap-y-1.5 py-3 sm:grid-cols-[15.5rem_minmax(0,1fr)]">
+    <dt className="flex flex-wrap content-start items-start gap-1.5">
+      <code className="rounded-small bg-surface-3 px-1.5 py-0.5 font-code text-[12.5px]">--cennge-radius-large</code>
+      <code className="rounded-small bg-surface-3 px-1.5 py-0.5 font-code text-[12.5px]">rounded-large</code>
+      <code className="rounded-small bg-surface-3 px-1.5 py-0.5 font-code text-[12.5px]">radius="lg"</code>
+    </dt>
+    <dd className="text-pretty">1rem: cards.</dd>
+  </div>
+  <div className="grid gap-x-6 gap-y-1.5 py-3 sm:grid-cols-[15.5rem_minmax(0,1fr)]">
+    <dt className="flex flex-wrap content-start items-start gap-1.5">
+      <code className="rounded-small bg-surface-3 px-1.5 py-0.5 font-code text-[12.5px]">--cennge-disabled-opacity</code>
+    </dt>
+    <dd className="text-pretty">0.5: how far disabled fields and buttons fade.</dd>
+  </div>
+  <div className="grid gap-x-6 gap-y-1.5 py-3 sm:grid-cols-[15.5rem_minmax(0,1fr)]">
+    <dt className="flex flex-wrap content-start items-start gap-1.5">
+      <code className="rounded-small bg-surface-3 px-1.5 py-0.5 font-code text-[12.5px]">--cennge-font-sans</code>
+      <code className="rounded-small bg-surface-3 px-1.5 py-0.5 font-code text-[12.5px]">font-cennge</code>
+    </dt>
+    <dd className="text-pretty">Inter, then the system font.</dd>
+  </div>
+  <div className="grid gap-x-6 gap-y-1.5 py-3 sm:grid-cols-[15.5rem_minmax(0,1fr)]">
+    <dt className="flex flex-wrap content-start items-start gap-1.5">
+      <code className="rounded-small bg-surface-3 px-1.5 py-0.5 font-code text-[12.5px]">--cennge-ease-out</code>
+      <code className="rounded-small bg-surface-3 px-1.5 py-0.5 font-code text-[12.5px]">ease-tactile</code>
+    </dt>
+    <dd className="text-pretty">The tactile ease-out: <code className="font-code text-[13px]">cubic-bezier(0.23, 1, 0.32, 1)</code>.</dd>
+  </div>
+  <div className="grid gap-x-6 gap-y-1.5 py-3 sm:grid-cols-[15.5rem_minmax(0,1fr)]">
+    <dt className="flex flex-wrap content-start items-start gap-1.5">
+      <code className="rounded-small bg-surface-3 px-1.5 py-0.5 font-code text-[12.5px]">--cennge-duration-fast</code>
+      <code className="rounded-small bg-surface-3 px-1.5 py-0.5 font-code text-[12.5px]">--cennge-duration</code>
+    </dt>
+    <dd className="text-pretty">120ms and 180ms.</dd>
+  </div>
+  <div className="grid gap-x-6 gap-y-1.5 py-3 sm:grid-cols-[15.5rem_minmax(0,1fr)]">
+    <dt className="flex flex-wrap content-start items-start gap-1.5">
+      <code className="rounded-small bg-surface-3 px-1.5 py-0.5 font-code text-[12.5px]">--cennge-edge-light</code>
+      <code className="rounded-small bg-surface-3 px-1.5 py-0.5 font-code text-[12.5px]">--cennge-edge-dark</code>
+      <code className="rounded-small bg-surface-3 px-1.5 py-0.5 font-code text-[12.5px]">inset-shadow-tactile</code>
+    </dt>
+    <dd className="text-pretty">The raised edge of solid buttons: a light line on top, a darker lip below.</dd>
+  </div>
+  <div className="grid gap-x-6 gap-y-1.5 py-3 sm:grid-cols-[15.5rem_minmax(0,1fr)]">
+    <dt className="flex flex-wrap content-start items-start gap-1.5">
+      <code className="rounded-small bg-surface-3 px-1.5 py-0.5 font-code text-[12.5px]">--cennge-shadow-color</code>
+      <code className="rounded-small bg-surface-3 px-1.5 py-0.5 font-code text-[12.5px]">shadow-raised</code>
+      <code className="rounded-small bg-surface-3 px-1.5 py-0.5 font-code text-[12.5px]">shadow-floating</code>
+    </dt>
+    <dd className="text-pretty">Cards at rest; what floats, such as menus, popovers and dialogs.</dd>
+  </div>
+</dl>
+
+`font-cennge` is opt-in, so the library never replaces your own `font-sans`. The radius utilities have their own names, `rounded-small` to `rounded-large`, so they do not collide with Tailwind's `rounded-sm` to `rounded-lg`.
+
+A variable set on an element reaches everything inside it. The second form below sets the three radii with Tailwind's arbitrary properties, and its field, its button and its own corners follow:
+
+<Example file="theming/radius">
+  <Radius />
+</Example>
+
+## Beyond tokens
+
+- `className` on any component is merged with tailwind-merge, so your class wins over the variant's: `<Button className="rounded-full">`.
+- Components with inner parts, such as Input, Select, Dialog and Table, take classes for them through `classNames`, one key per slot: `<Input classNames={{ inputWrapper: "…" }} />`.
+- `CenngeProvider` sets the default `size`, `radius` and `color` for every component below it. See [Provider](/docs/provider/).
+- Light and dark are the `dark` class on `<html>`. See [Dark mode](/docs/dark-mode/).
+
+</Guide>

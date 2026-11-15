@@ -1,0 +1,96 @@
+import { Entry, Example, Plate, Props } from "@/components/docs";
+import ContextMenuPlate from "@/examples/context-menu/plate";
+import Basic from "@/examples/context-menu/basic";
+import SameActions from "@/examples/context-menu/same-actions";
+import BrowserMenu from "@/examples/context-menu/browser-menu";
+
+export const metadata = { title: "ContextMenu" };
+
+<Entry
+  slug="context-menu"
+  lede="A menu that opens at the pointer on right click, or on a long press on a touch screen, with the items of a Dropdown."
+  plate={
+    <Plate
+      caption="Live: right-click a file, or press and hold it."
+      notes={[
+        "Right-click a file: the menu opens where the pointer is. On a touch screen, press and hold the file.",
+        "The file stays marked while its menu is open; arrows, a typed letter and Enter work as in a Dropdown.",
+        "Right-click another file while a menu is open: the menu moves to it.",
+      ]}
+    >
+      <ContextMenuPlate />
+    </Plate>
+  }
+  marks={{
+    pattern: <>WAI-ARIA menu, opened by the <code>contextmenu</code> event</>,
+    keyboard: [{ keys: "down" }, { keys: "up" }, "Home", "End", { keys: "enter" }, { keys: "escape" }],
+    state: <>Uncontrolled; <code>onOpenChange</code> reports each change</>,
+    extra: [
+      { term: "Touch", detail: "Opens on a long press of 700 ms" },
+      { term: "Turned off", detail: <><code>isDisabled</code> on the trigger leaves the browser's own menu</> },
+    ],
+  }}
+>
+
+## When to use
+
+A ContextMenu puts actions where the pointer already is: on a file, a row, a picture. It suits tools people use every day and expect to behave like desktop apps.
+
+Treat it as a shortcut, never the only way to an action. Nothing on the page shows that a right click does something, and not everyone can right-click or long-press.
+
+## Similar
+
+- [Dropdown](/docs/dropdown/) has the same items and opens from a button that everyone can see; give the actions of a ContextMenu a Dropdown as well.
+- [Command](/docs/command/) finds any action in the app by typing; a ContextMenu offers the few that fit the thing under the pointer.
+
+## Right-click an area
+
+`ContextMenuTrigger` hands the right click, and the long press on touch screens, to the one element inside it. The items are the Dropdown's: shortcut hints, a disabled item, a destructive one in red.
+
+<Example file="context-menu/basic">
+  <Basic />
+</Example>
+
+## The same actions from a button
+
+One list of actions can render both menus: a Dropdown on the row for everyone, and a ContextMenu around it for people who right-click.
+
+<Example file="context-menu/same-actions">
+  <SameActions />
+</Example>
+
+## Let the browser's menu through
+
+With `isDisabled` the trigger stops taking the right click and the browser's own menu opens. Here that happens while part of the commit message is selected, so the browser's Copy and Search are there for it; with nothing selected, the right click opens the commit's actions.
+
+<Example file="context-menu/browser-menu">
+  <BrowserMenu />
+</Example>
+
+## Accessibility
+
+The trigger gets no role and no ARIA attribute, so nothing tells a screen reader that an area has a menu; that is why the same actions need a visible way in. Once open, the menu and its items have the roles `menu` and `menuitem` and the keyboard of a Dropdown, and <kbd>Escape</kbd> closes it. While it is open, the rest of the page is hidden from screen readers and ignores the pointer, unless `isModal` is `false`.
+
+## Styling
+
+While its menu is open, the trigger's element has `data-state="open"`. Style it to keep the thing marked, as the files on the plate do with `data-[state=open]:bg-primary-bg`. The menu itself looks like a Dropdown's: at least 13rem wide, and scrolling when it is taller than the room in the window.
+
+## Props
+
+### ContextMenu
+
+<Props of="ContextMenuProps" />
+
+### ContextMenuTrigger
+
+<Props of="ContextMenuTriggerProps" />
+
+### ContextMenuContent
+
+<Props of="ContextMenuContentProps" />
+
+### ContextMenuItem
+
+<Props of="ContextMenuItemProps" />
+
+</Entry>

@@ -1,0 +1,134 @@
+import { Example, Guide } from "@/components/docs";
+import FirstComponent from "@/examples/installation/first-component";
+
+export const metadata = { title: "Installation" };
+
+<Guide
+  slug="installation"
+  lede="One package and two CSS imports. The stylesheet tells Tailwind where the components' classes are, so there is nothing else to configure."
+>
+
+## Before you start
+
+cennge-ui needs an app with React 17, 18 or 19 and Tailwind CSS 4. If Tailwind is not set up yet, add it with the plugin for your build tool. In Next.js, that is the PostCSS plugin:
+
+```bash
+npm install tailwindcss @tailwindcss/postcss
+```
+
+```js
+// postcss.config.mjs
+export default {
+  plugins: { "@tailwindcss/postcss": {} },
+};
+```
+
+In Vite, it is the Vite plugin: `npm install tailwindcss @tailwindcss/vite`, then add `tailwindcss()` to the `plugins` of `vite.config.ts`.
+
+## Install the package
+
+```bash
+npm install cennge-ui
+```
+
+Or `pnpm add cennge-ui`, or `yarn add cennge-ui`. `react`, `react-dom` and `tailwindcss` are peer dependencies: the package uses the ones your app already has. The package itself brings `radix-ui`, `tailwind-variants`, `tailwind-merge` and `clsx`.
+
+## Add the styles
+
+Import Tailwind, then the package's stylesheet, in your app's main CSS file:
+
+```css
+/* app/globals.css in Next.js, src/index.css in Vite */
+@import "tailwindcss";
+@import "cennge-ui/styles.css";
+
+body {
+  @apply bg-background font-cennge text-foreground antialiased;
+}
+```
+
+The two imports are the whole setup. `cennge-ui/styles.css`:
+
+- registers the package's own files with Tailwind (an `@source` line inside it), so the classes the components use end up in your CSS;
+- declares the theme as `--cennge-*` variables, for the light theme on `:root` and the dark theme on `.dark`;
+- maps them to Tailwind utilities such as `bg-primary`, `text-primary-text`, `bg-surface-2` and `rounded-large`, which you can use in your own markup;
+- makes the `dark:` variant follow a `dark` class instead of the system setting.
+
+The `body` rule is optional, and yours to change: it gives the page the theme's background and text colours, so it switches with the theme. `font-cennge` is the theme's font stack, Inter first, then the system font. The components use your app's fonts, and the package does not ship Inter: load it yourself, for example with `@fontsource/inter`, or the system font takes its place. To use another font, set `--cennge-font-sans` to it.
+
+## Use a component
+
+Import components by name from `cennge-ui`. Paste this one into a page: if the setup works, the buttons look the same in your app as here, the first filled with the accent and glowing in it, the second a soft tint, both sinking a little when pressed.
+
+<Example file="installation/first-component">
+  <FirstComponent />
+</Example>
+
+## Server Components
+
+The components' files start with `"use client"`, so you import them straight into a Server Component page or layout, with no wrapper of your own. What has to run on the server, such as `cn` (class names joined, Tailwind conflicts resolved) and `tv` (variants), comes from `cennge-ui/utils`, which has no `"use client"`:
+
+```ts
+import { cn, tv } from "cennge-ui/utils";
+```
+
+[Next.js and SSR](/docs/server-rendering/) covers hydration and what renders on the server.
+
+## Entry points
+
+<table>
+  <thead>
+    <tr>
+      <th>Import</th>
+      <th>What it has</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td className="whitespace-nowrap"><code>cennge-ui</code></td>
+      <td>Every component, the theme helpers, CenngeProvider and <code>toast</code>. ESM and CommonJS, with types.</td>
+    </tr>
+    <tr>
+      <td className="whitespace-nowrap"><code>cennge-ui/styles.css</code></td>
+      <td>The tokens, their Tailwind utilities, the <code>dark:</code> variant and the Prose styles.</td>
+    </tr>
+    <tr>
+      <td className="whitespace-nowrap"><code>cennge-ui/utils</code></td>
+      <td><code>cn</code> and <code>tv</code>, safe on the server.</td>
+    </tr>
+    <tr>
+      <td className="whitespace-nowrap"><code>cennge-ui/charts</code></td>
+      <td>BarChart, LineChart, AreaChart, DonutChart and Sparkline. ESM only.</td>
+    </tr>
+    <tr>
+      <td className="whitespace-nowrap"><code>cennge-ui/map</code></td>
+      <td>The map and its layers. ESM only, and needs <code>maplibre-gl</code> 6.</td>
+    </tr>
+  </tbody>
+</table>
+
+In the ESM build every component is a chunk of its own, and the package has no side effects but its CSS, so your bundler keeps only what a page imports. Each component page gives the gzip size of its import in its field marks.
+
+Maps need one more package, only in apps that show a map:
+
+```bash
+npm install maplibre-gl
+```
+
+It is loaded when the first map mounts. The [Map](/docs/map/) page shows how to point MapLibre at its worker in Vite and in Next.js.
+
+## Optional pieces
+
+- `<Toaster />`, mounted once near the root, shows what `toast()` sends from anywhere: event handlers, data hooks, plain modules. See [Toast](/docs/toast/).
+- `<CenngeProvider>` sets defaults for every component below it (size, radius, colour), the locale for numbers and dates, and reduced motion. Components work without it. See [Provider](/docs/provider/).
+- `<ThemeScript>` in the `<head>` keeps the stored light or dark theme on the page before the first paint. See [Dark mode](/docs/dark-mode/).
+
+## If the components have no styles
+
+Buttons that render as plain text mean Tailwind did not generate the package's classes. Check that `cennge-ui/styles.css` is imported after `tailwindcss`, in the CSS file your app loads. If the classes are still missing, name the package's folder for Tailwind yourself, relative to that CSS file:
+
+```css
+@source "../node_modules/cennge-ui/dist";
+```
+
+</Guide>

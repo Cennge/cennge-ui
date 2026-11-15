@@ -1,0 +1,82 @@
+import { Entry, Example, Plate, Props } from "@/components/docs";
+import TimelinePlate from "@/examples/timeline/plate";
+import Progress from "@/examples/timeline/progress";
+import History from "@/examples/timeline/history";
+import Horizontal from "@/examples/timeline/horizontal";
+
+export const metadata = { title: "Timeline" };
+
+<Entry
+  slug="timeline"
+  lede="Events in order, each with its time: a history of what happened, or the steps of something still under way."
+  plate={
+    <Plate
+      notes={[
+        "Without activeIndex, a timeline is a history: every item is done and takes the colour.",
+        "Promote the deploy: activeIndex moves on, Production takes the colour and becomes the current step.",
+        "Items past activeIndex stay muted, and screen readers hear them as upcoming.",
+      ]}
+      caption="Live: press the button."
+    >
+      <TimelinePlate />
+    </Plate>
+  }
+  marks={{
+    pattern: <>Native <code>&lt;ol&gt;</code>; a time with a <code>dateTime</code> is a <code>&lt;time&gt;</code>; the current step is <code>aria-current="step"</code></>,
+    state: <>None to hold: <code>activeIndex</code> says how far it has got</>,
+    extra: [{ term: "Horizontal", detail: "Scrolls inside itself when too wide, and takes Tab so the arrows scroll it" }],
+  }}
+>
+
+## When to use
+
+Use a Timeline for events in the order they happened: releases, deploys, the life of an issue. With `activeIndex` it tracks something under way instead, colouring the steps that are done and muting those to come.
+
+Each `TimelineItem` has a `title`, an optional `time`, and anything you put inside it as the description. The list is an `<ol>` and every item an `<li>`, so the order is in the markup, not only on the screen.
+
+## Similar
+
+- [Stepper](/docs/stepper/) is a form or a task in steps that people move through and click; a Timeline only shows where things stand.
+- [Table](/docs/table/) suits events you compare by column or sort; a Timeline reads top to bottom.
+
+## Tracking progress
+
+`activeIndex` is the index of the current item. Items up to it are done and take the `color`; the current one is `aria-current="step"`; later ones are muted, and screen readers hear ", upcoming" after their title. `lineVariant="dashed"` draws the line to the next item dashed, here for a release that has no date yet.
+
+<Example file="timeline/progress">
+  <Progress />
+</Example>
+
+## Colours, icons and plans
+
+`color` on an item overrides the timeline's, so a failed deploy can be red in a history of green ones. `bullet` puts an icon in the dot. Give an item a `dateTime` beside its `time` and the time becomes a `<time>` element that machines can read; text such as "Next week" without one stays a `<span>`.
+
+<Example file="timeline/history">
+  <History />
+</Example>
+
+## Horizontal
+
+`orientation="horizontal"` lays the items out in a row, each at least 11rem wide. When they do not fit, as on a phone, the row scrolls inside itself rather than widening the page, and it is in the tab order so the arrow keys can scroll it.
+
+<Example file="timeline/horizontal">
+  <Horizontal />
+</Example>
+
+## Accessibility
+
+- Name the timeline with `aria-label` or `aria-labelledby`; it is a list, and screen readers say how many items it holds.
+- Bullets and lines are decoration, hidden from screen readers. The state is in the text: `aria-current="step"` on the current item and ", upcoming" after the titles to come. `upcomingLabel` changes that word, e.g. for another language.
+- A horizontal timeline has `tabIndex={0}` whether or not it overflows, so it is always one Tab stop.
+
+## Props
+
+### Timeline
+
+<Props of="TimelineProps" />
+
+### TimelineItem
+
+<Props of="TimelineItemProps" />
+
+</Entry>

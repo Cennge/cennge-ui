@@ -1,0 +1,85 @@
+import { Entry, Example, Plate, Props } from "@/components/docs";
+import { MapWorker } from "@/examples/map/map-worker";
+import RoutesPlate from "@/examples/map-routes/plate";
+import Basic from "@/examples/map-routes/basic";
+import Progress from "@/examples/map-routes/progress";
+import Arcs from "@/examples/map-routes/arcs";
+
+export const metadata = { title: "Routes and arcs" };
+
+<MapWorker />
+
+<Entry
+  slug="map-routes"
+  lede="Lines between places, drawn into the map under its place names: a route along points, or curves joining pairs of them."
+  plate={
+    <Plate
+      notes={[
+        "Switch the accent at the top of the page: the van's route takes the new colour, and the map does not reload.",
+        "Switch the theme: the base map is redrawn, and the routes come back over it in the new theme's colours.",
+        "Turn a route off below: it leaves the map with its component.",
+      ]}
+    >
+      <RoutesPlate />
+    </Plate>
+  }
+  marks={{
+    pattern: "MapLibre line layers in the canvas, under the place names; not in the page's DOM",
+    state: <>Props only: new <code>coordinates</code> or <code>arcs</code> replace the line's data in place</>,
+    extra: [
+      { term: "Colour", detail: "A colour token, read again when the theme or the accent changes" },
+      { term: "Arcs", detail: "Quadratic curves, the short way across the 180th meridian" },
+    ],
+  }}
+>
+
+## When to use
+
+Use a MapRoute for a way along points in order: a delivery, a track, a walk. Use a MapArc for pairs of places where the way between them does not matter, only that they are joined: shipments, transfers, flights.
+
+Both draw into the canvas below the map's labels, so street and borough names stay readable over them. Their colour is one of the library's roles, `primary` by default, which follows the accent. Neither is read out: name the places in text or with [markers](/docs/map-markers/), as the examples do.
+
+## Similar
+
+- [MapGeoJSON](/docs/map-data/) draws lines from GeoJSON too, with a tooltip on hover and a colour by value. Use it for many lines that carry data, a MapRoute for one way you draw.
+- A [Timeline](/docs/timeline/) lists the stops of a route in order, with times: a good companion for readers who cannot see the map.
+
+## A route through stops
+
+`coordinates` are the line's points in order, as `[longitude, latitude]`. An edge in the background's colour runs under the line, so it reads over any street or park; `hasOutline={false}` drops it.
+
+<Example file="map-routes/basic">
+  <Basic />
+</Example>
+
+## Travelled and still to go
+
+New `coordinates` replace the line's data without adding it again, so a line can follow a slider or live positions. Here two routes share the way: the part still to go is thin, dashed and grey, and the part travelled, drawn after it, lies on top.
+
+<Example file="map-routes/progress">
+  <Progress />
+</Example>
+
+## Arcs between places
+
+`arcs` takes pairs of points and joins each with a curve. `curvature` sets how far it bows, as a share of its length, `0.2` by default; a negative one bows the other way. A curve bows to the left of its way, so a trip there and one back are two curves, not one. Arcs are 2 px wide and, unlike routes, have no edge under them unless you pass `hasOutline`.
+
+<Example file="map-routes/arcs">
+  <Arcs />
+</Example>
+
+## Accessibility
+
+A line on the canvas is a picture: screen readers do not see it. Put what it shows in text as well: the stops in order, the places joined. Markers at the stops are read out by name, and the map's `aria-label` can say where the route goes.
+
+## Props
+
+### MapRoute
+
+<Props of="MapRouteProps" />
+
+### MapArc
+
+<Props of="MapArcProps" />
+
+</Entry>

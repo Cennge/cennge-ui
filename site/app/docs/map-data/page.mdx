@@ -1,0 +1,93 @@
+import { Entry, Example, Plate, Props } from "@/components/docs";
+import { MapWorker } from "@/examples/map/map-worker";
+import DataPlate from "@/examples/map-data/plate";
+import Choropleth from "@/examples/map-data/choropleth";
+import Zones from "@/examples/map-data/zones";
+import Clusters from "@/examples/map-data/clusters";
+
+export const metadata = { title: "Data layers" };
+
+<MapWorker />
+
+<Entry
+  slug="map-data"
+  lede="Your GeoJSON on the map, shaded by a number with a legend to read it, and thousands of points grouped where they crowd."
+  plate={
+    <Plate
+      notes={[
+        "Point at an area: it is outlined, and its tooltip follows the pointer. On a phone, tap it.",
+        "Switch the measure: the shades, their colour and the legend change together.",
+        "Switch the theme: on a dark map the shades run from dark to light, so the busiest areas stand out on either.",
+      ]}
+    >
+      <DataPlate />
+    </Plate>
+  }
+  marks={{
+    pattern: <>Canvas layers with a tooltip at the pointer; <code>MapClusterLayer</code>'s groups are buttons, and so are its points with <code>onItemClick</code></>,
+    keyboard: [{ keys: "tab" }, { keys: "enter" }, { keys: "space" }],
+    state: <>Props only; <code>onFeatureClick</code> and <code>onItemClick</code> report what was picked</>,
+    extra: [
+      { term: "Shades", detail: "Steps 100, 400 and 700 of the colour on a light map; 800, 500 and 300 on a dark one" },
+      { term: "In the page", detail: "Only the groups and points in view" },
+    ],
+  }}
+>
+
+## When to use
+
+Use MapGeoJSON to draw data you have as GeoJSON: areas, lines and points in one colour, or shaded by a number in their properties, a choropleth. Pair a choropleth with a MapLegend in the same colour and domain, so the shades can be read as numbers.
+
+Use MapClusterLayer for many points that people pick one of: stores, pickup points, sensors. It groups the points that crowd, and a group zooms in until it comes apart.
+
+## Similar
+
+- [MapMarker](/docs/map-markers/) is a place with a popup, for a handful of them; a MapClusterLayer makes markers of thousands.
+- [MapRoute](/docs/map-routes/) draws one line you build from points; MapGeoJSON draws whatever a GeoJSON file holds.
+- A [BarChart](/docs/bar-chart/) of the same numbers by area name is easier to compare exactly; the map shows where they are.
+
+## Shade areas by a number
+
+`valueProperty` names the number in each feature's properties; `domain` sets the values at the two ends of the scale, the data's lowest and highest when you leave it out. Give the legend the same `domain`. A click reports the feature's properties to `onFeatureClick`.
+
+<Example file="map-data/choropleth">
+  <Choropleth />
+</Example>
+
+## Areas, lines and points
+
+Without `valueProperty` everything is drawn in one colour, each feature as what it is: areas filled and edged, lines stroked, points as dots. `data` can also be the URL of a GeoJSON file; then give `domain` too, as the lowest and highest values are read only from data passed as an object.
+
+<Example file="map-data/zones">
+  <Zones />
+</Example>
+
+## Thousands of points
+
+MapClusterLayer takes your items and two functions: where each one is and what it is called. MapLibre builds the groups; the library draws them as markers sized by their count, and only the ones in view are in the page. A group's name comes from `clusterLabel`, so a reader can say the number they see to voice control.
+
+<Example file="map-data/clusters">
+  <Clusters />
+</Example>
+
+## Accessibility
+
+- What MapGeoJSON draws is a picture on the canvas: screen readers do not read it, and its tooltip shows for a pointer or a tap, not for the keyboard. Give the same numbers another way as well, say a [Table](/docs/table/) of the areas beside the map.
+- MapClusterLayer's groups are buttons in the tab order, named by `clusterLabel`. Its points are buttons too when you pass `onItemClick`, named by `getLabel`, which is also their tooltip.
+- MapLegend is a group named by its `title` when the title is a string. Its numbers follow the provider's `locale` unless you pass `format`.
+
+## Props
+
+### MapGeoJSON
+
+<Props of="MapGeoJSONProps" />
+
+### MapLegend
+
+<Props of="MapLegendProps" />
+
+### MapClusterLayer
+
+<Props of="MapClusterLayerProps" />
+
+</Entry>

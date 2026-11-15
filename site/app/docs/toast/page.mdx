@@ -1,0 +1,133 @@
+import { Entry, Example, Plate, Props } from "@/components/docs";
+import ToastPlate from "@/examples/toast/plate";
+import Basic from "@/examples/toast/basic";
+import Colors from "@/examples/toast/colors";
+import Action from "@/examples/toast/action";
+import PromiseToast from "@/examples/toast/promise";
+import Update from "@/examples/toast/update";
+
+export const metadata = { title: "Toast" };
+
+<Entry
+  slug="toast"
+  lede="Short notifications at the edge of the screen, sent with toast() from anywhere in your code."
+  plate={
+    <Plate
+      caption="Live: the toasts appear at the bottom of the window."
+      notes={[
+        "Publish: the toast shows a spinner while the request runs, then turns into the result in place.",
+        "Point at a toast and its timer stops until the pointer leaves. Swipe it to the right, or press its close button, to dismiss it.",
+        "Discard, then Undo: the action runs and closes the toast. F8 takes keyboard focus to the notifications.",
+      ]}
+    >
+      <ToastPlate />
+    </Plate>
+  }
+  marks={{
+    pattern: <>A labelled region of toasts; each one's text is read out as it appears</>,
+    keyboard: ["F8", { keys: "tab" }, { keys: "escape" }],
+    state: <>A store outside React: <code>toast()</code> works without a hook or a context</>,
+    extra: [
+      { term: "Timer", detail: "5 s by default; stops under the pointer and while focus is inside" },
+      { term: "On screen", detail: <>Four at most by default (<code>max</code>); older toasts wait for a free place</> },
+    ],
+  }}
+>
+
+## When to use
+
+A toast confirms something the person has done, or reports something that finished out of sight: a link copied, a deploy that went live, a build that failed. It comes and goes without taking focus, so use it for news that can be missed.
+
+When the person must answer before going on, use an [AlertDialog](/docs/alert-dialog/). When the message belongs to a part of the page and should stay there, use an [Alert](/docs/alert/).
+
+## Similar
+
+- [Alert](/docs/alert/) sits in the flow of the page, next to what it is about, and stays there; a toast floats over the page and leaves by itself.
+- [AlertDialog](/docs/alert-dialog/) stops everything until it is answered; a toast never takes focus.
+
+## Mount the Toaster once
+
+Put one `<Toaster />` near the root of the app, after the content. This site has one in its root layout, which is where the toasts on this page come from.
+
+```tsx
+import { Toaster } from "cennge-ui";
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="en">
+      <body>
+        {children}
+        <Toaster />
+      </body>
+    </html>
+  );
+}
+```
+
+`placement` puts the toasts in one of six places, `bottom-right` by default, and they are swiped away towards the nearest edge: right, left, or up and down for the centred ones. On a phone they take the full width, with the same margin on both sides, wherever they are placed. On React 17 toasts do not show yet: Radix Toast 1.3.1 drops its own state updates there ([radix-ui/primitives#4228](https://github.com/radix-ui/primitives/issues/4228)).
+
+## A message, with or without a description
+
+`toast("Link copied")` shows a title alone. A second argument adds options, here a `description` under the title. Each call returns the toast's id.
+
+<Example file="toast/basic">
+  <Basic />
+</Example>
+
+## Colours
+
+`toast.success`, `toast.info`, `toast.warning` and `toast.danger` set the toast's `color` and draw its icon; `toast.error` is another name for `toast.danger`. A plain `toast()` has no icon. `icon` replaces the drawn one, and `icon: false` leaves it out.
+
+<Example file="toast/colors">
+  <Colors />
+</Example>
+
+## An action
+
+`action` adds one button under the text. Pressing it runs `onClick` and closes the toast, which makes it the place for an undo: close the issue now, and reopen it if that was a slip.
+
+<Example file="toast/action">
+  <Action />
+</Example>
+
+## From a promise
+
+`toast.promise` shows the `loading` message with a spinner, and the toast does not close by itself while the promise runs. Then it turns into a success or danger toast in place. `success` and `error` can be functions of the result or the error, and the call returns the promise it was given.
+
+<Example file="toast/promise">
+  <PromiseToast />
+</Example>
+
+## Update a toast in place
+
+Call `toast()` again with the same `id` and that toast changes instead of a new one stacking up; the new options are merged into the old ones. `isLoading` shows a spinner and keeps the toast open until it is set back to `false`. `toast.dismiss(id)` closes a toast from code, and `toast.dismiss()` closes them all.
+
+<Example file="toast/update">
+  <Update />
+</Example>
+
+## Accessibility
+
+The Toaster is a region named “Notifications (F8)”. <kbd>F8</kbd> moves focus into it, <kbd>Tab</kbd> goes through the toasts and their buttons, and <kbd>Escape</kbd> closes the toast that has focus. Each toast's text is read out as soon as it appears, without moving focus. The timer stops while the pointer is over the toasts or focus is inside them, so there is time to read a toast and reach its action. The close button is a 28-pixel target.
+
+## Props
+
+### Toaster
+
+<Props of="ToasterProps" />
+
+### toast() options
+
+The second argument of `toast()` and its colour variants, or the first instead of a title.
+
+- `title`: the first line, in bold. `toast("Saved")` sets it.
+- `description`: a second line, in muted text.
+- `color`: `default`, `primary`, `secondary`, `success`, `warning`, `danger` or `info`. The last four draw an icon.
+- `duration`: milliseconds before the toast closes; `Infinity` keeps it open. Without it, the Toaster's `duration` applies.
+- `action`: `{ label, onClick }`, a button that runs `onClick` and closes the toast.
+- `icon`: replaces the colour's icon; `false` hides it.
+- `isLoading`: a spinner in place of the icon, and no closing by time.
+- `id`: an existing toast's id updates that toast instead of adding one.
+- `onClose`: runs when the toast closes by time, by a swipe, by Escape, by its close button or by its action; not after `toast.dismiss()`.
+
+</Entry>

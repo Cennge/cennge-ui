@@ -1,0 +1,93 @@
+import { Entry, Example, Plate, Props } from "@/components/docs";
+import DonutChartPlate from "@/examples/donut-chart/plate";
+import Basic from "@/examples/donut-chart/basic";
+import Pie from "@/examples/donut-chart/pie";
+import Other from "@/examples/donut-chart/other";
+import Empty from "@/examples/donut-chart/empty";
+
+export const metadata = { title: "DonutChart" };
+
+<Entry
+  slug="donut-chart"
+  lede="A whole and its parts at a glance: a ring with the total in the middle, or a pie, beside a legend of values and shares."
+  plate={
+    <Plate
+      notes={[
+        "The middle holds the total. Hover a part or tap it: the middle shows that part, and its legend row lights up.",
+        "Tab to the ring: the arrows step from part to part, Home and End jump to the first and the last, Escape returns the middle to the total.",
+        "The legend is where the values are read: each part's amount and its share of the whole.",
+      ]}
+      caption="Live: hover it, tap it, use the keys."
+    >
+      <DonutChartPlate />
+    </Plate>
+  }
+  marks={{
+    pattern: (
+      <>
+        A <code>&lt;figure&gt;</code> with a focusable group over the ring and a hidden <code>&lt;table&gt;</code> of the parts
+      </>
+    ),
+    keyboard: [{ keys: "left" }, { keys: "right" }, { keys: "up" }, { keys: "down" }, "Home", "End", { keys: "escape" }],
+    extra: [{ term: "Parts", detail: "Six at most read well; a part of zero or less is left out of the ring" }],
+  }}
+>
+
+## When to use
+
+Use a DonutChart to show how one whole splits into a few parts, six at most: minutes by repository, runs by result. The ring gives the proportions at a glance and the legend beside it gives each part's value and share, which is where the eye reads them.
+
+## Similar
+
+- [BarChart](/docs/bar-chart/) compares the same values by length, one bar each: the better choice when they are many or close.
+- [AreaChart](/docs/area-chart/) with `isStacked` shows how a whole splits over time, not at one moment.
+- [Progress](/docs/progress/) shows one part of one whole, such as a task 70% done.
+
+## A ring with its total
+
+`index` names each part and `value` holds its amount. The middle shows the total over `labels.total`; a hovered, tapped or focused part takes its place. The numbers on this page are sample data.
+
+<Example file="donut-chart/basic">
+  <Basic />
+</Example>
+
+## A pie
+
+`variant="pie"` fills the middle, so there is no total in it: the picked part's legend row lights up and the other parts fade. Here theme colours carry a meaning: passed in `success`, failed in `danger`, cancelled in the grey of `default`.
+
+<Example file="donut-chart/pie">
+  <Pie />
+</Example>
+
+## The small parts as Other
+
+`colors` gives the parts their colours in order; without it they take the palette's slots. `default` is the grey for a part with no colour of its own, such as the rest folded into Other. `valueFormat` writes the amounts in the middle, the legend and the table; the shares stay percentages in the provider's locale.
+
+<Example file="donut-chart/other">
+  <Other />
+</Example>
+
+## Nothing to divide
+
+A part of zero or less is left out of the ring, and the arrow keys skip it, though the legend still lists it. When no part is left, `emptyContent` sits in an empty grey ring, or `labels.empty` ("No data") without it, the legend is gone and nothing takes focus. The table screen readers get still lists every part, at zero.
+
+<Example file="donut-chart/empty">
+  <Empty />
+</Example>
+
+## Accessibility
+
+- The figure and the ring are named by `aria-label`; the ring is a focusable group described by `labels.keyboardHint`.
+- Focus from the keyboard picks the first part at once, and a polite live region reads each part the arrows reach, as "enhancement: 8 (47.1%)".
+- The picked part's legend row lights up; the rows of the others keep their full contrast.
+- Screen readers get a table of every part with its value and share, and a last row with the total.
+
+## Server rendering
+
+Nothing in a DonutChart waits for a measure: the ring, the total, the legend and the table are all rendered on the server. The ring pops in as it appears; with reduced motion it is there at once.
+
+## Props
+
+<Props of="DonutChartProps" />
+
+</Entry>

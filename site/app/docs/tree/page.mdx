@@ -1,0 +1,103 @@
+import { Entry, Example, Plate, Props } from "@/components/docs";
+import TreePlate from "@/examples/tree/plate";
+import Lazy from "@/examples/tree/lazy";
+import Controlled from "@/examples/tree/controlled";
+import CustomLabels from "@/examples/tree/custom-labels";
+
+export const metadata = { title: "Tree" };
+
+<Entry
+  slug="tree"
+  lede="Folders and files, or anything nested: open, close and select with the keys a file tree should answer to."
+  plate={
+    <Plate
+      notes={[
+        "Arrows walk the tree: Right opens a folder or steps in, Left closes it or goes up. Enter opens a file.",
+        "Type a letter to jump to the next name that starts with it; * opens every folder at that level.",
+        "e2e fetches its files on the first open, with a spinner in place of the arrow.",
+      ]}
+    >
+      <TreePlate />
+    </Plate>
+  }
+  marks={{
+    pattern: "WAI-ARIA tree view, single selection",
+    keyboard: [{ keys: "up" }, { keys: "down" }, { keys: "left" }, { keys: "right" }, "Home", "End", { keys: "enter" }, { keys: "space" }, "*"],
+    state: <>Controlled with <code>expandedKeys</code> and <code>selectedKey</code>, or uncontrolled with their <code>default…</code> props</>,
+    extra: [
+      { term: "Type-ahead", detail: "Letters jump to the next item whose name starts with them" },
+      { term: "Lazy children", detail: <><code>loadChildren</code> on the first open; a failed load collapses for a retry</> },
+    ],
+  }}
+>
+
+## When to use
+
+Use a Tree for a hierarchy people move through and pick from: a repository's files, folders of documents, nested categories. It is one Tab stop; from there the arrow keys do the walking, so a long tree costs a keyboard user one key press to pass.
+
+Items are plain objects with an `id`, a `label` and `children`. A folder whose contents are not known yet gets `hasChildren`, and `loadChildren` fetches them the first time it opens.
+
+## Similar
+
+- [Accordion](/docs/accordion/) opens and closes sections of content; a Tree opens folders of items you select.
+- [Sidebar](/docs/sidebar/) holds an app's navigation as links. A Tree's items are not links: `onAction` tells you which file was opened.
+- [Table](/docs/table/) is for flat records with columns.
+
+## Children on demand
+
+`loadChildren` runs the first time an item with `hasChildren` opens, and the item is busy until it resolves. If it rejects, `onLoadError` gets the item and the reason, and the item closes so the next open tries again. Open payload-cache: its first request fails here on purpose.
+
+<Example file="tree/lazy">
+  <Lazy />
+</Example>
+
+## Controlled
+
+`expandedKeys` and `selectedKey`, with their `on…Change` callbacks, put the state in your hands: open every folder from a button, or keep the selection in the URL. A click on a folder selects it and opens or closes it; a click on its arrow only opens or closes.
+
+<Example file="tree/controlled">
+  <Controlled />
+</Example>
+
+## Icons and labels of your own
+
+`icon` replaces the folder and file icons, and `label` takes any node. When it is not a string, give the item a `textValue`, so typing still finds it. Focus the tree and type <kbd>t</kbd>, then <kbd>t</kbd> again after a pause: each goes to the next name that starts with it. Letters typed within half a second of each other search as one word.
+
+<Example file="tree/custom-labels">
+  <CustomLabels />
+</Example>
+
+## Accessibility
+
+- The tree is `role="tree"` and each row a `treeitem` with `aria-level`, `aria-posinset` and `aria-setsize`, so screen readers say where it sits ("level 2, 3 of 4"). Name the tree with `aria-label`.
+- Folders carry `aria-expanded`, the selected item `aria-selected`, and a folder that is loading `aria-busy`. With `selectionMode="none"` no item is selectable and `aria-selected` is left out.
+- Only one item is in the tab order: the one last focused, else the selected one, else the first. Closing a folder that holds the focus moves it to the folder.
+- Disabled items stay in the walk for screen readers, with `aria-disabled`, but do not open, close or select.
+
+## Styling
+
+`classNames` reaches each part: `base` (the tree), `item` (a row), `chevron`, `icon` and `label`. `indent` sets the step per level, `1rem` by default; `size` sets the row height and `color` the selected row's tint, `primary` by default.
+
+## Props
+
+### Tree
+
+<Props of="TreeProps" />
+
+### TreeItem
+
+The shape of each entry in `items`.
+
+```tsx
+interface TreeItem {
+  id: string; // unique within the tree
+  label: React.ReactNode;
+  textValue?: string; // for type-ahead when label is not a string
+  icon?: React.ReactNode; // replaces the folder or file icon
+  children?: TreeItem[];
+  hasChildren?: boolean; // loadChildren fetches them on the first open
+  isDisabled?: boolean;
+}
+```
+
+</Entry>

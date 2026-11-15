@@ -1,0 +1,119 @@
+import { Entry, Example, Plate, Props } from "@/components/docs";
+import ChartsPlate from "@/examples/charts/plate";
+import OneShape from "@/examples/charts/one-shape";
+import Palette from "@/examples/charts/palette";
+import Locale from "@/examples/charts/locale";
+
+export const metadata = { title: "Charts overview" };
+
+<Entry
+  slug="charts"
+  lede="Five charts in the theme's tokens, drawn in SVG by cennge-ui itself: bars, lines, areas, a donut and a sparkline."
+  plate={
+    <Plate
+      notes={[
+        "Hover a month, tap it, or Tab to the chart and use the arrows: the readout lists every series at that place.",
+        "Series take the palette in order and the first slot is the accent: switch it at the top of the page.",
+        "The cennge-ui tile gives its sparkline chart-1, the colour of the cennge-ui bars; the other keeps the default grey with the accent on its last value.",
+      ]}
+      caption="Live: hover it, tap it, use the keys. Sample data."
+    >
+      <ChartsPlate />
+    </Plate>
+  }
+  marks={{
+    pattern: (
+      <>
+        A named <code>&lt;figure&gt;</code> with a hidden <code>&lt;table&gt;</code> of its data; a Sparkline is <code>role="img"</code>
+      </>
+    ),
+    keyboard: [{ keys: "left" }, { keys: "right" }, { keys: "up" }, { keys: "down" }, "Home", "End", { keys: "escape" }],
+    extra: [
+      { term: "Size", detail: "8.4 KB gzip for the whole entry; each chart's page gives its own" },
+      { term: "Underneath", detail: "No chart library: SVG and HTML from cennge-ui, ESM only" },
+    ],
+  }}
+>
+
+## When to use
+
+`cennge-ui/charts` is a second entry of the same package, for the charts a product page or a dashboard needs. Pick the chart by the job the data does:
+
+- Amounts compared across categories: [BarChart](/docs/bar-chart/), side by side, stacked, or from the side for long names.
+- Change over time, a line per series: [LineChart](/docs/line-chart/).
+- One quantity over time, or a whole split into parts over time: [AreaChart](/docs/area-chart/).
+- The parts of one whole, six at most: [DonutChart](/docs/donut-chart/).
+- A trend beside the number it belongs to, without axes: [Sparkline](/docs/sparkline/).
+
+```tsx
+import { BarChart, LineChart, Sparkline } from "cennge-ui/charts";
+```
+
+The entry is ESM only. It needs nothing beyond the setup in [Installation](/docs/installation/): the palette, the animations and the classes the charts use come with the library's stylesheet.
+
+## Similar
+
+- [Table](/docs/table/) is for exact values a reader looks up, sorts or copies.
+- [Progress](/docs/progress/) shows one value against a maximum.
+- [Data layers](/docs/map-data/) put values on a map, by place: choropleths and clusters.
+
+## One data shape
+
+BarChart, LineChart and AreaChart take the same props, `CartesianChartProps`: `data` with one item per category, `index` naming the field that labels it, and `series` listing the fields to draw. Switch the chart and the data stays as it is. The numbers in the examples are sample data.
+
+<Example file="charts/one-shape">
+  <OneShape />
+</Example>
+
+## The palette
+
+Series take eight slots in order, `--cennge-chart-1` to `--cennge-chart-8`, which Tailwind has as `chart-1` to `chart-8` for legends and tiles of your own. A ninth series is grey, `default`, never a new colour. Switch the accent at the top of the page: the first slot follows it, and the order after it changes with the preset.
+
+<Example file="charts/palette">
+  <Palette />
+</Example>
+
+The slots were checked by a script, not picked by eye:
+
+- each sits in the lightness band charts read best in (OKLCH lightness 0.43 to 0.77 in the light theme, 0.48 to 0.67 in the dark), with a chroma of at least 0.1;
+- each keeps a contrast of 3:1 on every surface;
+- slots next to each other stay apart for colour-blind readers: their OKLab distance (×100) is at least 8.5 under simulated protanopia and deuteranopia, and at least 16.7 with full colour vision;
+- after the accent, each preset has the order whose closest neighbours stay furthest apart. With the violet accent, orange comes second and blue fourth, because violet next to blue blurs.
+
+Give a series a theme colour where the colour means something (failures in `danger`), `default` for the grey, or any CSS colour.
+
+## Numbers and words in your language
+
+Values follow the locale of `CenngeProvider`: in full in the readout and the table, short on the axis. `valueFormat` and `axisFormat` replace either, and `labels` replaces the words the charts say themselves: the keyboard hint, the empty state and, on a DonutChart, the total and the share. The provider sets no language on the page, so `lang` on an element around the chart tells screen readers to read it in French.
+
+<Example file="charts/locale">
+  <Locale />
+</Example>
+
+## Accessibility
+
+- BarChart, LineChart, AreaChart and DonutChart are each a `<figure>` named by its `aria-label`. Each holds a focusable group, described by `labels.keyboardHint`, that answers to the arrow keys, Home, End and Escape; a polite live region reads each place the keys reach.
+- The readout is drawn for the eye only. Screen readers get the same data as a table captioned with the chart's name; in BarChart, LineChart and AreaChart a missing value is written as a dash.
+- Colour never names a series alone: the legend puts each name beside a sample of its mark, a box for bars and areas, a stroke for lines.
+- A Sparkline has no readout. It is one picture, `role="img"`, and its `aria-label` is all a screen reader hears.
+- The end-to-end tests run axe over every kind of chart in both themes, and again with a readout open on BarChart, LineChart and DonutChart.
+
+## Server rendering
+
+The axes are HTML and the grid an SVG, both placed in percent, so the server sends them where they will stay, with the legend and the data table. Bars, lines and areas are drawn in pixels once the browser has measured the plot. DonutChart and Sparkline draw in a fixed `viewBox` and are whole on the server.
+
+## Styling
+
+- Size a chart with `className`. The default `h-72` of BarChart, LineChart and AreaChart takes in the axes and the legend; a Sparkline is `h-8 w-24` until you say otherwise.
+- A dot on a line sits in a ring of the colour behind the chart, `--cennge-chart-surface`, which falls back to a Card's surface. Set it when the chart sits on another one.
+- Bars grow, lines and areas draw in and the donut pops in as they appear; with reduced motion nothing moves.
+
+## Props
+
+### Shared by BarChart, LineChart and AreaChart
+
+Each entry of `series` is `{ key, label, color }`: the field that holds its values, its name in the legend, the readout and the table (the key without one), and its colour.
+
+<Props of="CartesianChartProps" title="CartesianChart" />
+
+</Entry>

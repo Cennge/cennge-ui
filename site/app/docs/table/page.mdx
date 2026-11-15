@@ -1,0 +1,122 @@
+import { Entry, Example, Plate, Props } from "@/components/docs";
+import TablePlate from "@/examples/table/plate";
+import Sorting from "@/examples/table/sorting";
+import Selection from "@/examples/table/selection";
+import States from "@/examples/table/states";
+import StickyHeader from "@/examples/table/sticky-header";
+import TanStack from "@/examples/table/tanstack";
+
+export const metadata = { title: "Table" };
+
+<Entry
+  slug="table"
+  lede="Rows and columns in real table markup, with sortable headers, checkbox selection, and TanStack Table when you want it."
+  plate={
+    <Plate
+      notes={[
+        "Click a header, or press Enter on it: ascending, then descending. A run still going has no duration and stays last.",
+        "Tick runs; the header box shows a partial selection. Re-run sends the ticked ones back to running.",
+        "On a narrow screen the table scrolls sideways and takes Tab, so the arrows scroll it.",
+      ]}
+    >
+      <TablePlate />
+    </Plate>
+  }
+  marks={{
+    pattern: <>Native <code>&lt;table&gt;</code>; sortable headers carry <code>aria-sort</code></>,
+    keyboard: [{ keys: "enter" }, { keys: "space" }],
+    state: <>Yours: <code>useTableSort</code> and <code>useTableSelection</code> hold the sort and the selection, or TanStack Table does</>,
+    extra: [
+      { term: "TanStack Table", detail: <>No adapter: <code>TableColumn</code> takes <code>getIsSorted()</code> and <code>getToggleSortingHandler()</code> as they are</> },
+      { term: "Too wide", detail: "Scrolls sideways as a named region that takes Tab" },
+    ],
+  }}
+>
+
+## When to use
+
+Use a Table when people compare records across the same columns: workflow runs, deploys, releases. It is the HTML table with styles and a few states on top, so screen readers move through it by row and by column and hear each cell's header on the way.
+
+The Table renders every row you give it and has no paging of its own. Split long data into pages with [Pagination](/docs/pagination/), as two of the examples below do.
+
+## Similar
+
+- [VirtualList](/docs/virtual-list/) keeps thousands of rows in one scrolling box by rendering only those in view. It is a list: no columns, no headers.
+- [Tree](/docs/tree/) is for rows inside rows, opened and closed with the arrow keys.
+- A table in Markdown or MDX content takes its look from [Prose](/docs/prose/); Table is for data you render yourself.
+
+## Sorting on the client
+
+`useTableSort(rows, { getValue })` returns `sortedRows` and `getSortProps(column)` to spread on a `TableColumn`. `getValue` gives a row's value in a column: numbers and dates compare as such, text by the locale (`locale`, else the provider's) with digits read as numbers, so `v1.10.0` sorts after `v1.9.2`. Empty values go last in both directions. `defaultSort` sets the order before the first click.
+
+<Example file="table/sorting">
+  <Sorting />
+</Example>
+
+## Selection across pages
+
+`useTableSelection(keys)` takes the keys of the rows on screen. The header checkbox reads `allSelected` and `someSelected` for those rows only, while `selected`, a `Set`, keeps rows ticked on other pages. `isSelected` on a `TableRow` only tints it; the checkbox in the row is what screen readers hear.
+
+<Example file="table/selection">
+  <Selection />
+</Example>
+
+## Loading and empty
+
+`isLoading` dims the rows already shown and sets `aria-busy` on the table. With no rows yet, the body shows `loadingContent`, a spinner by default; with no rows and no loading, `emptyContent`. Both span every column. Choose **Failed** to go through both, and **Refresh** to dim the rows in place.
+
+<Example file="table/states">
+  <States />
+</Example>
+
+## A fixed height with the header in view
+
+Give the wrapper a height through `classNames.wrapper` and set `isHeaderSticky`: the rows scroll under the header, and its sort buttons stay in reach. Click **Took** twice to put the slowest job first. `size="sm"` makes the rows compact and `isStriped` tints every other one.
+
+<Example file="table/sticky-header">
+  <StickyHeader />
+</Example>
+
+## With TanStack Table
+
+TanStack Table owns the sorting and the paging; cennge-ui draws the table. `TableColumn` reads `column.getIsSorted()`, which is `"asc"`, `"desc"` or `false`, as it is, and `getToggleSortingHandler()` goes straight to `onSort`, so Shift+click adds a second sort. The order of clicks is TanStack's: text starts ascending, numbers descending, and a third click clears the sort.
+
+<Example file="table/tanstack">
+  <TanStack />
+</Example>
+
+## Accessibility
+
+- Every header cell is a `<th scope="col">`. Name the table with `aria-label` or `aria-labelledby`.
+- A sortable header holds a real `<button>`, and its `<th>` carries `aria-sort`: `ascending`, `descending`, or `none` while it is not the sorted column. The arrow beside the title is hidden from screen readers.
+- A table wider than its box becomes a `region` with `tabIndex={0}`, named by the table's own label, so the keyboard can scroll it. A table that fits stays a plain table, with no extra Tab stop.
+- A table that scrolls only up and down, in a fixed height, does not become a region. Keep something focusable in it, such as sortable headers: from there the arrows scroll it.
+- `isLoading` sets `aria-busy="true"` on the table.
+
+## Styling
+
+`className` and `classNames.wrapper` go to the scrolling box around the table: its border, background, corners and height. `classNames.table` goes to the `<table>` itself. Each part (`TableColumn`, `TableRow`, `TableCell`) takes its own `className`, e.g. `w-10` on the checkbox column or `tabular-nums` on numbers.
+
+## Props
+
+### Table
+
+<Props of="TableProps" />
+
+### TableColumn
+
+<Props of="TableColumnProps" />
+
+### TableBody
+
+<Props of="TableBodyProps" />
+
+### TableRow
+
+<Props of="TableRowProps" />
+
+### TableCell
+
+<Props of="TableCellProps" />
+
+</Entry>

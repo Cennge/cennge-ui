@@ -1,0 +1,73 @@
+import { Entry, Example, Plate, Props } from "@/components/docs";
+import SnippetPlate from "@/examples/snippet/plate";
+import CloneUrl from "@/examples/snippet/clone-url";
+import Variants from "@/examples/snippet/variants";
+
+export const metadata = { title: "Snippet" };
+
+<Entry
+  slug="snippet"
+  lede="A command with a copy button. The $ in front is shown, never copied."
+  plate={
+    <Plate
+      caption="Live: copy a command, or Tab to the long one and scroll it with the arrow keys."
+      notes={[
+        <>Press a copy button: a check mark shows for two seconds and screen readers hear "Copied".</>,
+        "A string with line breaks gets a $ on every line; the button copies all the lines, without the $.",
+        "A command wider than its box scrolls sideways. It then takes focus with Tab, and the arrow keys scroll it.",
+      ]}
+    >
+      <SnippetPlate />
+    </Plate>
+  }
+  marks={{
+    pattern: <>A <code>&lt;pre&gt;</code> and a native <code>&lt;button&gt;</code> that the code describes</>,
+    keyboard: [{ keys: "enter" }, { keys: "space" }, { keys: "left" }, { keys: "right" }],
+    extra: [
+      { term: "Clipboard", detail: "The Clipboard API; a selected textarea where it is missing, as on plain http" },
+    ],
+  }}
+>
+
+## When to use
+
+Use a Snippet for a command or a short line the reader will paste somewhere else: an install command, a clone URL, a few setup steps. For longer code with highlighting, a code block in [Prose](/docs/prose/) or your own highlighter reads better.
+
+## Similar
+
+- [Kbd](/docs/kbd/) shows keys to press, not text to paste.
+- [Button](/docs/button/) runs an action. A Snippet keeps the command as text you can select and puts its own button beside it.
+
+## Copy something other than what is shown
+
+`codeString` is copied instead of the visible text, so the snippet can show a short form and copy the full one. `symbol={false}` drops the `$` for text that is not a shell command. `onCopy` gets the copied text; here it is shown in a [toast](/docs/toast/).
+
+<Example file="snippet/clone-url">
+  <CloneUrl />
+</Example>
+
+## Variants, colours and sizes
+
+Four variants in seven colours; every variant has the same height, so snippets line up in a row. Of the three sizes, `md` is the default, and a one-line snippet at that size is as tall as an [Input](/docs/input/). `symbol` takes any prompt, such as `>` for Windows.
+
+<Example file="snippet/variants">
+  <Variants />
+</Example>
+
+## Copying on plain http
+
+Browsers offer the Clipboard API only on https and localhost. Opened over plain http, for example a dev server on another device, Snippet copies through a hidden textarea instead. It puts the textarea next to the button and returns focus there afterwards, so copying works inside a [Dialog](/docs/dialog/) too. If both ways fail, no check mark appears and `onCopy` is not called.
+
+## Accessibility
+
+The copy button is named "Copy" and described by the code beside it (`aria-describedby`), so a screen reader says what will be copied. The symbol is `aria-hidden`. After copying, "Copied" is announced through a polite live region. `copyLabel` and `copiedLabel` translate both words. Pressing <kbd>Enter</kbd> or <kbd>Space</kbd> on the button copies and leaves focus on it.
+
+## Styling
+
+`classNames` reaches the parts: `base` (the box), `pre` (the scrolling code), `symbol` and `copyButton`. `className` goes on the box, as `base` does.
+
+## Props
+
+<Props of="SnippetProps" />
+
+</Entry>

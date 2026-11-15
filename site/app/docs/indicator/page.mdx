@@ -1,0 +1,72 @@
+import { Entry, Example, Plate, Props } from "@/components/docs";
+import IndicatorPlate from "@/examples/indicator/plate";
+import Counts from "@/examples/indicator/counts";
+import AvatarStatus from "@/examples/indicator/avatar-status";
+
+export const metadata = { title: "Indicator" };
+
+<Entry
+  slug="indicator"
+  lede="A dot or a count pinned to a corner of an icon button, an avatar or anything else."
+  plate={
+    <Plate
+      notes={[
+        "Click the bell: the count drops to zero and the indicator shrinks away. Send a notification brings it back.",
+        <>
+          A count above <code>max</code> shows as <code>max+</code>: with the default of 99, the inbox's 128 reads 99+.
+        </>,
+        <>
+          On the round avatar, <code>shape="circle"</code> moves the dot in from the corner onto the rim; on the square
+          deploy tiles it stays on the corner.
+        </>,
+      ]}
+      caption="Live: click the bell."
+    >
+      <IndicatorPlate />
+    </Plate>
+  }
+  marks={{
+    pattern: <>A <code>&lt;span&gt;</code> around your element; hidden from screen readers unless you pass <code>label</code></>,
+    state: <>None: pass <code>content</code>, and <code>isInvisible</code> to hide it</>,
+    extra: [{ term: "Outline", detail: "A 2 px ring in the page colour parts it from the element under it" }],
+  }}
+>
+
+## When to use
+
+Use an Indicator to flag something about one control: unread notifications on a bell, a person's status on their avatar, a new entry on a tab. It sits on the corner without taking space, so the layout around the control does not change when the count appears or goes.
+
+## Similar
+
+- [Badge](/docs/badge/) is a label in the flow of the text, with room for words; an Indicator is pinned on top of another element.
+- [Avatar](/docs/avatar/) is often what the Indicator sits on; status dots belong on the avatar, not beside it.
+
+## Counts and dots
+
+`content` takes a number or a short word. Numbers above `max` show as `max+`. Without `content` it is a plain dot, sized by `size`. The colour is `danger` unless you choose another.
+
+<Example file="indicator/counts">
+  <Counts />
+</Example>
+
+## Status on an avatar
+
+On a circle the corner of the box is empty space. `shape="circle"` moves the indicator onto the rim; `placement` picks the corner. Write the status beside the avatar as well, as here, so it does not rest on colour alone.
+
+<Example file="indicator/avatar-status">
+  <AvatarStatus />
+</Example>
+
+## Accessibility
+
+An Indicator is decorative until you give it a `label`: then screen readers read the label, "3 unread notifications", instead of a bare "3". While `isInvisible` is on, the label is not read either. Keep the name of the control itself, such as "Notifications", on the control.
+
+## Styling
+
+The ring that parts the indicator from what it sits on is `ring-background`, the page colour. On a panel or a card, pass the panel's colour in `className`, such as `ring-surface-3`, as the bar on the plate does; `showOutline={false}` removes the ring.
+
+## Props
+
+<Props of="IndicatorProps" />
+
+</Entry>

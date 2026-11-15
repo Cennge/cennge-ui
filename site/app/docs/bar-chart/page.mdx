@@ -1,0 +1,115 @@
+import { Entry, Example, Plate, Props } from "@/components/docs";
+import BarChartPlate from "@/examples/bar-chart/plate";
+import Basic from "@/examples/bar-chart/basic";
+import Stacked from "@/examples/bar-chart/stacked";
+import Horizontal from "@/examples/bar-chart/horizontal";
+import Negative from "@/examples/bar-chart/negative";
+import Empty from "@/examples/bar-chart/empty";
+import Goal from "@/examples/bar-chart/goal";
+
+export const metadata = { title: "BarChart" };
+
+<Entry
+  slug="bar-chart"
+  lede="Amounts compared by length: a bar per category and series, side by side or stacked, upright or from the side."
+  plate={
+    <Plate
+      notes={[
+        "Hover a month or tap it: its band lights up and the readout lists every series there.",
+        "Tab to a chart: the arrows move between categories, Home and End jump to the ends, Escape hides the readout.",
+        "Stacked parts follow the order of the series, with 2px of surface between them; only the outermost is rounded.",
+      ]}
+      caption="Live: hover it, tap it, use the keys."
+    >
+      <BarChartPlate />
+    </Plate>
+  }
+  marks={{
+    pattern: (
+      <>
+        A <code>&lt;figure&gt;</code> with a focusable group over the plot and a hidden <code>&lt;table&gt;</code> of the data
+      </>
+    ),
+    keyboard: [{ keys: "left" }, { keys: "right" }, { keys: "up" }, { keys: "down" }, "Home", "End", { keys: "escape" }],
+    extra: [{ term: "Bars", detail: <>24px thick at most (<code>barSize</code>), rounded at the data end, square on the baseline</> }],
+  }}
+>
+
+## When to use
+
+Use a BarChart to compare amounts across categories: runs per day, minutes per repository, issues per month. Several series stand side by side in each category, or pile up in one bar with `isStacked` when their sum matters as well as the parts.
+
+With `layout="horizontal"` the bars grow from the side and the names get a column of their own, up to 40% of the chart's width, which suits repository names that would never fit under a column.
+
+## Similar
+
+- [LineChart](/docs/line-chart/) takes the same `data`, `index` and `series` and draws change over time as a line, with a crosshair on the nearest point.
+- [DonutChart](/docs/donut-chart/) shows the parts of one whole, six of them at most; values that are close to each other read better as bars.
+- [Progress](/docs/progress/) is one value against a maximum, not a comparison.
+
+## One series
+
+A single series has no legend: the `aria-label` names the chart, and names the table screen readers get. The numbers on this page are sample data.
+
+<Example file="bar-chart/basic">
+  <Basic />
+</Example>
+
+## Stacked, in colours that mean something
+
+`isStacked` piles the series into one bar in the order of `series`. A series takes the palette slot of its place unless you give it a `color`: a theme colour where the colour means something, as here with passed runs in `success` and failed ones in `danger`.
+
+<Example file="bar-chart/stacked">
+  <Stacked />
+</Example>
+
+## Long names, from the side
+
+`layout="horizontal"` turns the chart on its side. A name longer than its column is cut short with an ellipsis on the axis and stays whole in the readout and the table. `valueFormat` writes the values in the readout and the table; the axis keeps its short numbers.
+
+<Example file="bar-chart/horizontal">
+  <Horizontal />
+</Example>
+
+## Below zero
+
+A negative value hangs below the zero line, rounded at its lower end, so gains and losses read from one baseline: a week below zero closed more issues than it opened. `domain` sets the ends of the axis, here even on both sides of zero, in place of round ones around the data.
+
+<Example file="bar-chart/negative">
+  <Negative />
+</Example>
+
+## Nothing to show
+
+With an empty `data` the chart keeps its height and shows `emptyContent` where the plot would be, or `labels.empty` ("No data") without it. There is no axis to read and nothing to focus. Switch to last week and the bars grow in.
+
+<Example file="bar-chart/empty">
+  <Empty />
+</Example>
+
+## A goal across the bars
+
+`references` draws a dashed line at a goal, over the bars so it stays in sight where they pass it, and stretches the axis to reach it. Its label sits at the end of the line, under the bars so it never hides one, and screen readers hear it after the table: "Goal 6 a day: 6". With a fixed `domain`, a goal outside it is left out of the drawing but still read.
+
+<Example file="bar-chart/goal">
+  <Goal />
+</Example>
+
+## Accessibility
+
+- The figure and the plot inside it are named by `aria-label`. The plot is a focusable group described by `labels.keyboardHint`, "Arrow keys move between the values."
+- Focus from the keyboard shows the first category at once. Each move is read out by a polite live region, as "Jun: Opened 24, Closed 22".
+- The readout is drawn for the eye only. Screen readers get every value in a table captioned with the chart's name, `indexLabel` heading its first column, a missing value written "–" and never as zero.
+- Colour never names a series alone: the legend puts each name beside a sample of its bar.
+
+## Server rendering
+
+The legend, the axes, the grid and the data table come from the server; the axes and the grid are placed in percent, so they stay where the server put them. The bars wait until the browser has measured the plot, then grow out of the baseline; with reduced motion they appear at once.
+
+## Props
+
+Each entry of `series` is `{ key, label, color }`: `key` is the field that holds its values, `label` its name in the legend, the readout and the table (the key without one), and `color` a palette slot from `chart-1` to `chart-8`, a theme colour or any CSS colour.
+
+<Props of="BarChartProps" />
+
+</Entry>

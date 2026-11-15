@@ -1,0 +1,109 @@
+import { Entry, Example, Plate, Props } from "@/components/docs";
+import CalendarPlate from "@/examples/calendar/plate";
+import Basic from "@/examples/calendar/basic";
+import Range from "@/examples/calendar/range";
+import FromToday from "@/examples/calendar/from-today";
+import Locale from "@/examples/calendar/locale";
+
+export const metadata = { title: "Calendar" };
+
+<Entry
+  slug="calendar"
+  lede="A month grid that stays on the page: pick one date, or a range with RangeCalendar, and jump to any month or year from the header."
+  plate={
+    <Plate
+      caption="Live: click it, use the keys."
+      notes={[
+        "Arrows move by day and week, Page Up and Page Down by month, with Shift by year; Enter picks.",
+        "Click the month or the year to choose from a grid; Escape goes back to the days.",
+        "Weekends are unavailable here: crossed out and still reachable with the keys, but they cannot be picked.",
+      ]}
+    >
+      <CalendarPlate />
+    </Plate>
+  }
+  marks={{
+    pattern: "WAI-ARIA grid, one Tab stop for the days; keys from the APG date picker",
+    keyboard: [
+      { keys: "left" },
+      { keys: "right" },
+      { keys: "up" },
+      { keys: "down" },
+      "Home",
+      "End",
+      "PageUp",
+      "PageDown",
+      { keys: "shift", children: "PageUp" },
+      { keys: "enter" },
+      { keys: "escape" },
+    ],
+    state: <>Controlled with <code>value</code> and <code>onValueChange</code>, or uncontrolled</>,
+    extra: [
+      { term: "Values", detail: <>ISO dates such as <code>"2026-11-19"</code>; a range is <code>{"{ start, end }"}</code></> },
+      { term: "Locale", detail: "Month and weekday names from Intl, the first day of the week by region; no date library" },
+    ],
+  }}
+>
+
+## When to use
+
+Use a Calendar when the month itself is worth seeing: a release planner, a booking page, a filter that sits beside a list. It takes and returns plain ISO strings with no time zone, so a value goes through JSON, FormData and a server action unchanged, and a change to daylight saving time never moves it by a day.
+
+The header's month and year open grids of the same size inside the calendar, so another year is two clicks away. RangeCalendar is the same grid for a start and an end.
+
+## Similar
+
+- [DatePicker](/docs/date-picker/) is a text field that opens this calendar in a popover: use it in forms, where the grid would take too much room.
+- [DateRangePicker](/docs/date-range-picker/) does the same for RangeCalendar, with a field for each end.
+
+## Pick a date
+
+`value` is an ISO date, or `null` before anything is picked. To show it, format it in UTC: `new Date("2026-11-19")` is midnight in UTC, which is still November 18 in New York.
+
+<Example file="calendar/basic">
+  <Basic />
+</Example>
+
+## A range over two months
+
+RangeCalendar takes two clicks: the first sets the start, then the band follows the pointer or the keyboard until the second sets the end, in either order. <kbd>Escape</kbd> in between starts over. `onValueChange` is called once both ends are picked. With `visibleMonths` above 1 the months sit side by side, wrap on narrow screens and leave out the neighbouring months' days.
+
+<Example file="calendar/range">
+  <Range />
+</Example>
+
+## Limits counted from today
+
+Days before `minValue` and after `maxValue` are disabled, and the keyboard stops at them. Days for which `isDateUnavailable` returns true stay focusable but cannot be picked, and a range cannot run across one. Only the browser knows the reader's today, so read it after mount; until then `null` means no limit.
+
+<Example file="calendar/from-today">
+  <FromToday />
+</Example>
+
+## In another language
+
+Month and weekday names, the first day of the week and the digits follow the `locale` of [CenngeProvider](/docs/provider/), or the calendar's own `locale` prop; `firstDayOfWeek` overrides the week. `labels` translates the names of the buttons and the month and year grids.
+
+<Example file="calendar/locale">
+  <Locale />
+</Example>
+
+## Server rendering
+
+A server renders in its own time zone, and a static page on the day it was built, so the calendar marks today only once it runs in the browser. One with a value renders that month on the server. One without a value keeps its size with an invisible month until it hydrates, then shows the reader's month.
+
+## Accessibility
+
+Each month is a grid named after it, and each day a button named with its full date, such as "Thursday, November 19, 2026". Only the focused day is in the tab order. A polite live region reads the month when it changes, and RangeCalendar reads the chosen range.
+
+## Props
+
+### Calendar
+
+<Props of="CalendarProps" />
+
+### RangeCalendar
+
+<Props of="RangeCalendarProps" />
+
+</Entry>

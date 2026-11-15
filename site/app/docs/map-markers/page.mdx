@@ -1,0 +1,100 @@
+import { Entry, Example, Plate, Props } from "@/components/docs";
+import { MapWorker } from "@/examples/map/map-worker";
+import MarkersPlate from "@/examples/map-markers/plate";
+import Basic from "@/examples/map-markers/basic";
+import Pins from "@/examples/map-markers/pins";
+import List from "@/examples/map-markers/list";
+import ClickPopup from "@/examples/map-markers/click-popup";
+
+export const metadata = { title: "Markers and popups" };
+
+<MapWorker />
+
+<Entry
+  slug="map-markers"
+  lede="Places on the map as React elements: a dot or your own marker, a tooltip on hover and focus, a popup with anything in it."
+  plate={
+    <Plate
+      notes={[
+        "Point at a marker or Tab to it: its tooltip names the place.",
+        "Click it, or press Enter or Space: its popup opens with focus in it. Escape closes it and puts focus back on the marker.",
+        "A click on the map closes the popup; one that would be cut off moves the map until it fits.",
+      ]}
+    >
+      <MarkersPlate />
+    </Plate>
+  }
+  marks={{
+    pattern: <>A <code>&lt;button&gt;</code> with a popup or <code>onClick</code>, <code>role="img"</code> without; the popup is a non-modal <code>role="dialog"</code></>,
+    keyboard: [{ keys: "tab" }, { keys: "enter" }, { keys: "space" }, { keys: "escape" }],
+    state: <>Popup controlled with <code>isPopupOpen</code> and <code>onPopupOpenChange</code>, or uncontrolled; <code>MapPopup</code> is always controlled</>,
+    extra: [
+      { term: "Target", detail: "24 px at the least around the dot, 32 px at size lg" },
+      { term: "Moves", detail: "With the map, frame by frame, without a React render" },
+    ],
+  }}
+>
+
+## When to use
+
+Use a MapMarker for a place a reader looks for or picks: an office, a store, a stop. It is an element over the canvas, not a picture in it, so it takes your components and classes, a focus ring and a screen reader's attention. Give it a `popup` for details and actions, a `tooltip` for the name alone.
+
+For a point that is not a marker, say where the reader clicked or a search result, open a MapPopup at it.
+
+## Similar
+
+- [MapClusterLayer](/docs/map-data/) is for hundreds or thousands of points: it groups the ones that crowd and puts in the page only those in view.
+- [MapGeoJSON](/docs/map-data/) draws points into the canvas with a tooltip at the pointer: no tab stops, for data rather than places to pick.
+- [Popover](/docs/popover/) anchors content to an element on the page; a map's popup stays on its point as the map moves.
+
+## A marker with a popup
+
+The marker is named by `label`, which also names its popup. The tooltip shows on hover and on keyboard focus, and hides while the popup is open.
+
+<Example file="map-markers/basic">
+  <Basic />
+</Example>
+
+## Your own marker
+
+Children replace the dot: a label, an avatar, a price. With `anchor="bottom"` the marker stands on its point like a pin, and its popup opens above it. When the marker shows text, start its `label` with that text, so a reader using voice control can say what they see.
+
+<Example file="map-markers/pins">
+  <Pins />
+</Example>
+
+## Opened from a list
+
+With `isPopupOpen` and `onPopupOpenChange` the page decides which popup is open, so a list beside the map can open one. If the popup would be cut off, the map moves until it fits.
+
+<Example file="map-markers/list">
+  <List />
+</Example>
+
+## A popup at any point
+
+`MapPopup` opens at any point, not at a marker: here, where the map was clicked. A click elsewhere on the map is left to `onMapClick`, which moves it there.
+
+<Example file="map-markers/click-popup">
+  <ClickPopup />
+</Example>
+
+## Accessibility
+
+- A marker with a `popup` or an `onClick` is a button in the tab order, named by `label`, with `aria-haspopup="dialog"` and `aria-expanded` when it has a popup. Without either it is an image with that name.
+- The tooltip is the marker's description (`aria-describedby`): read after its name, shown on hover and on keyboard focus.
+- A popup opened by a click or a key takes focus; one opened by the page, with `isPopupOpen` or `defaultPopupOpen`, does not. Escape inside it and its close button close it, and focus goes back to the marker. A click on the map closes it and leaves focus where it went.
+- `MapPopup` takes focus only with `autoFocus`; pass it when the popup opens from the keyboard.
+- The marker in use, with its tooltip and popup, is drawn above its neighbours.
+
+## Props
+
+### MapMarker
+
+<Props of="MapMarkerProps" />
+
+### MapPopup
+
+<Props of="MapPopupProps" />
+
+</Entry>

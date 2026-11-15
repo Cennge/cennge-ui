@@ -1,0 +1,89 @@
+import { Entry, Example, Plate, Props } from "@/components/docs";
+import AvatarPlate from "@/examples/avatar/plate";
+import Fallback from "@/examples/avatar/fallback";
+import Sizes from "@/examples/avatar/sizes";
+import Group from "@/examples/avatar/group";
+import Status from "@/examples/avatar/status";
+
+export const metadata = { title: "Avatar" };
+
+<Entry
+  slug="avatar"
+  lede="A person or a project as a picture, or as initials when there is no picture; overlapping in a group with a counter."
+  plate={
+    <Plate
+      caption="Live: the picture loads after the page; the rest is initials."
+      notes={[
+        "With src, the picture shows once it has loaded. If loading takes over 300 ms, the initials show meanwhile; if it fails, they stay.",
+        <>Initials are the first letters of the first and last word of <code>name</code>; dashes, dots and underscores split words too, so ai-niche-scout is AS.</>,
+        <><code>AvatarGroup</code> shows the first <code>max</code> avatars and a +N counter for the rest.</>,
+      ]}
+    >
+      <AvatarPlate />
+    </Plate>
+  }
+  marks={{
+    pattern: <>Radix Avatar: an <code>&lt;img&gt;</code> once it has loaded, otherwise the fallback</>,
+    extra: [
+      { term: "Alt text", detail: <>From <code>alt</code>, otherwise <code>name</code></> },
+      { term: "Fallback", detail: <>Initials from <code>name</code>, or your own node; after 300 ms when there is a picture</> },
+    ],
+  }}
+>
+
+## When to use
+
+An Avatar shows who or what something belongs to: the account in a header, the author of a comment, the owner of a repository. The `name` does two jobs: it is the picture's alt text, and without a picture it becomes the initials, set on one of seven `color` tints.
+
+## Similar
+
+- [Indicator](/docs/indicator/) puts a status dot or a count on the avatar's corner; the two go together.
+- [Skeleton](/docs/skeleton/) holds the avatar's place while the account itself is still loading. An Avatar waiting for its picture already shows initials.
+
+## Picture, initials or your own
+
+A single word gives its first two letters; several give the first letter of the first and last. `fallback` replaces the initials with anything, such as an icon for a signed-out visitor.
+
+<Example file="avatar/fallback">
+  <Fallback />
+</Example>
+
+## Sizes and shapes
+
+Four sizes, from 32 to 64 pixels. Avatars are round by default; `radius="md"` reads as a project or an organisation rather than a person.
+
+<Example file="avatar/sizes">
+  <Sizes />
+</Example>
+
+## A group with a counter
+
+`AvatarGroup` overlaps its avatars and, past `max`, adds a counter of the rest. `isBordered` draws a ring in the page colour around each avatar so the overlaps stay apart. The group's `size` sets only the counter's size, so give it the same size as the avatars.
+
+<Example file="avatar/group">
+  <Group />
+</Example>
+
+## With a status
+
+Wrap an avatar in an [Indicator](/docs/indicator/) with `shape="circle"`: the dot moves in from the empty corner onto the edge of the circle. Its `label` is what screen readers hear.
+
+<Example file="avatar/status">
+  <Status />
+</Example>
+
+## Server rendering
+
+An avatar without `src` is rendered with its initials on the server. One with `src` is rendered empty: the picture is shown only after the browser has loaded it, and the initials only if it has not loaded within 300 ms, so a cached picture does not flash letters first.
+
+## Props
+
+### Avatar
+
+<Props of="AvatarProps" />
+
+### AvatarGroup
+
+<Props of="AvatarGroupProps" />
+
+</Entry>

@@ -1,0 +1,78 @@
+import { Entry, Example, Plate, Props } from "@/components/docs";
+import TextareaPlate from "@/examples/textarea/plate";
+import Rows from "@/examples/textarea/rows";
+import Counter from "@/examples/textarea/counter";
+import SendShortcut from "@/examples/textarea/send-shortcut";
+
+export const metadata = { title: "Textarea" };
+
+<Entry
+  slug="textarea"
+  lede="A field for several lines of text that grows as you write, between a smallest and a largest height."
+  plate={
+    <Plate
+      notes={[
+        "Add a line to the release notes: the field grows with it, up to 8 rows, then scrolls inside.",
+        "There is no resize handle; the text sets the height.",
+        "Shorten the commit's first line to 72 characters: the error turns back into the hint.",
+      ]}
+    >
+      <TextareaPlate />
+    </Plate>
+  }
+  marks={{
+    pattern: <>Native <code>&lt;textarea&gt;</code> with a <code>&lt;label&gt;</code></>,
+    state: <>Controlled with <code>value</code> and <code>onValueChange</code>, or uncontrolled with <code>defaultValue</code></>,
+    extra: [
+      { term: "Height", detail: <>From <code>minRows</code> (3) to <code>maxRows</code> (8) lines, then it scrolls</> },
+      { term: "Resize handle", detail: "None: the height follows the text" },
+    ],
+  }}
+>
+
+## When to use
+
+Use a Textarea for text that runs to more than a line: release notes, a comment, a description. It starts at `minRows` lines and grows with the text up to `maxRows`, so a short note takes little room and a long one does not push the page down without end.
+
+## Similar
+
+- [Input](/docs/input/) is one line, with a clear button and room for icons; a Textarea has neither.
+- [TagsInput](/docs/tags-input/) turns typed words into separate tags instead of keeping one block of text.
+
+## Rows to grow between
+
+`minRows` sets the height of the empty field and `maxRows` the most it grows; past that the text scrolls inside the field. Both count lines of text.
+
+<Example file="textarea/rows">
+  <Rows />
+</Example>
+
+## Count characters
+
+`description` takes any node, so a live count fits there. While `isInvalid`, `errorMessage` takes its place.
+
+<Example file="textarea/counter">
+  <Counter />
+</Example>
+
+## Send with a shortcut
+
+Every other prop goes to the `<textarea>`, `onKeyDown` included. Here <kbd>Ctrl</kbd>+<kbd>Enter</kbd> or <kbd>⌘</kbd>+<kbd>Enter</kbd> posts the comment, while <kbd>Enter</kbd> alone still starts a new line.
+
+<Example file="textarea/send-shortcut">
+  <SendShortcut />
+</Example>
+
+## Accessibility
+
+The label is a `<label for>` the textarea, and the description or the error is its `aria-describedby`. `isInvalid` sets `aria-invalid` and `isRequired` the native `required` attribute, so inside a [Form](/docs/form/) a named, required field that is empty shows the browser's message under it.
+
+## Styling
+
+It shares the Input's box: the same `variant`, `color`, `size` and `radius`. `className` goes to the outer wrapper; `classNames` reaches `base`, `label`, `inputWrapper`, `input`, `description` and `errorMessage`.
+
+## Props
+
+<Props of="TextareaProps" />
+
+</Entry>

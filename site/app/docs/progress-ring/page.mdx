@@ -1,0 +1,93 @@
+import { Entry, Example, Plate, Props } from "@/components/docs";
+import ProgressRingPlate from "@/examples/progress-ring/plate";
+import Single from "@/examples/progress-ring/single";
+import Over from "@/examples/progress-ring/over";
+import Sizes from "@/examples/progress-ring/sizes";
+import Colors from "@/examples/progress-ring/colors";
+
+export const metadata = { title: "ProgressRing" };
+
+<Entry
+  slug="progress-ring"
+  lede="Progress towards a goal as a ring: one goal, or several nested, each ring going round again once its goal is passed."
+  plate={
+    <Plate
+      notes={[
+        "Reviews passed their goal of 6: the ring goes round again over its own start, a shadow at its end where it overlaps.",
+        "Switch Left and Used: the middle is yours to fill, so it can show what is left as well as what is done.",
+        <>
+          Each ring is a meter for screen readers: "9 of 6, 3 over". <code>formatValue</code> writes your own text.
+        </>,
+      ]}
+      caption="Live: switch what the middle shows. Sample data."
+    >
+      <ProgressRingPlate />
+    </Plate>
+  }
+  marks={{
+    pattern: (
+      <>
+        <code>role="meter"</code> per ring with <code>aria-valuetext</code>; nested rings in a named <code>group</code>
+      </>
+    ),
+    state: <>Pass <code>value</code> and <code>max</code>, or <code>rings</code>; nothing is kept inside</>,
+    extra: [
+      { term: "Past the goal", detail: "The ring laps; the meter stays at its goal and the text says by how much" },
+      { term: "Reduced motion", detail: "The rings are drawn at once instead of filling in" },
+    ],
+  }}
+>
+
+## When to use
+
+Use ProgressRing for a goal someone works towards and may pass: commits this week, calories or protein for the day, steps, glasses of water, minutes of exercise. Nest a ring per goal when a day or a week has several, outermost first. Going past the goal is good news on a ring, so it never stops at full: the ring goes round again, and its text says by how much.
+
+## Similar
+
+- [Progress](/docs/progress/) and its `CircularProgress` show how far a task has got, an upload or a clone, and are read as a progressbar that stops at 100%. Use them for work the app is doing, ProgressRing for a goal the person is working towards.
+- [RangeMeter](/docs/range-meter/) is a bar for an amount with a floor, a ceiling or both, such as sodium to stay under or a calorie range to land in.
+- [DonutChart](/docs/donut-chart/) shows how a whole splits into parts, not how far one value is from a goal.
+
+## One goal
+
+`value` counts towards `max`, and `aria-label` names the ring. The middle shows what you put inside it, for the eye: screen readers hear the ring itself, "12 of 15", so the middle is hidden from them and can say it in its own words.
+
+<Example file="progress-ring/single">
+  <Single />
+</Example>
+
+## Past the goal
+
+At 52 of 40 the ring is full once and 30% round again. The meter stays at its goal, as a meter must, and its text reads "52 of 40, 12 over".
+
+<Example file="progress-ring/over">
+  <Over />
+</Example>
+
+## Down to a list row
+
+`size` is `sm`, `md`, `lg` or `xl` (48, 80, 128 and 176 pixels, larger than CircularProgress's sizes of the same names), or any number of pixels. `strokeWidth` sets the width of the ring; by default it is a tenth of the size, and nested rings narrow to fit. The middle's type steps with the size.
+
+<Example file="progress-ring/sizes">
+  <Sizes />
+</Example>
+
+## Colours
+
+`color` takes a theme colour, a slot of the [chart palette](/docs/charts/), or any CSS colour. By default rings take the palette in order, the first following the accent. The track behind each ring is its colour, dimmed, so an empty ring still says which goal it is. Nested rings are told apart by colour, so show their names beside them, as the legend on the plate does.
+
+<Example file="progress-ring/colors">
+  <Colors />
+</Example>
+
+## Accessibility
+
+Screen readers get one meter per ring, with its value and the goal as text: named by `aria-label`, or with `rings` by each goal's `label`, in a group named by `aria-label`. The drawing and the middle are hidden from them, so keep controls out of the middle. `labels` gives the words of the default text in another language; numbers follow the provider's locale. In forced-colours mode the rings are drawn in the system's text colour over a grey track.
+
+## Props
+
+Each entry of `rings` takes `value`, `max`, `label`, `color` and `formatValue`, as a single ring does.
+
+<Props of="ProgressRingProps" />
+
+</Entry>

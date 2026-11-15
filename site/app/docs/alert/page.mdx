@@ -1,0 +1,72 @@
+import { Entry, Example, Plate, Props } from "@/components/docs";
+import AlertPlate from "@/examples/alert/plate";
+import Variants from "@/examples/alert/variants";
+import Colors from "@/examples/alert/colors";
+import Dismiss from "@/examples/alert/dismiss";
+
+export const metadata = { title: "Alert" };
+
+<Entry
+  slug="alert"
+  lede="A message that sits in the page: an icon in its colour, a title, a line of detail, and room for an action."
+  plate={
+    <Plate
+      notes={[
+        "Close the build alert: the button calls onClose, and the page decides to hide it.",
+        <>
+          Danger and warning are <code>role="alert"</code> and interrupt a screen reader; the other colours are{" "}
+          <code>role="status"</code> and wait.
+        </>,
+        "endContent puts an action at the right, level with the title.",
+      ]}
+      caption="Live: close it, then bring it back."
+    >
+      <AlertPlate />
+    </Plate>
+  }
+  marks={{
+    pattern: <><code>role="alert"</code> for danger and warning, <code>role="status"</code> for the rest</>,
+    state: <>None: you render it or not; <code>onClose</code> only reports the click</>,
+    extra: [{ term: "Icon", detail: <>A check, a warning sign, a cross or an info mark, by colour; swap it with <code>icon</code>, hide it with <code>icon={"{false}"}</code></> }],
+  }}
+>
+
+## When to use
+
+An Alert belongs to a place on the page and says something about it: a failed build above its logs, a key that is about to expire on the settings page. It stays until the page removes it, so it suits a state that lasts, not the result of a click a moment ago.
+
+## Similar
+
+- [Toast](/docs/toast/) reports what happened a moment ago from a corner of the screen, then leaves by itself.
+- [AlertDialog](/docs/alert-dialog/) stops everything until the reader answers; an Alert asks nothing.
+- [EmptyState](/docs/empty-state/) fills a list that has nothing in it; it is not a message about an event.
+
+## Variants
+
+`flat` is a tint of the colour and the default. `bordered` draws only an edge, `faded` sets a neutral panel with an edge, and `solid` fills the box with the colour for the one message that must not be missed.
+
+<Example file="alert/variants">
+  <Variants />
+</Example>
+
+## Colours and what screen readers hear
+
+The colour also sets the role. `danger` and `warning` render `role="alert"`, which interrupts a screen reader; every other colour renders `role="status"`, which waits its turn. Success, warning and danger have icons of their own; the other colours share an info mark.
+
+<Example file="alert/colors">
+  <Colors />
+</Example>
+
+## Closing it, acting on it
+
+`isClosable` adds a close button with the name "Close". The Alert keeps no open state of its own: hide it in `onClose`, as here. `endContent` takes the action that fixes the problem.
+
+<Example file="alert/dismiss">
+  <Dismiss />
+</Example>
+
+## Props
+
+<Props of="AlertProps" />
+
+</Entry>

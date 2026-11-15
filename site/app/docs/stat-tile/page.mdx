@@ -1,0 +1,75 @@
+import { Entry, Example, Plate, Props } from "@/components/docs";
+import StatTilePlate from "@/examples/stat-tile/plate";
+import Basic from "@/examples/stat-tile/basic";
+import Direction from "@/examples/stat-tile/direction";
+import Icon from "@/examples/stat-tile/icon";
+
+export const metadata = { title: "StatTile" };
+
+<Entry
+  slug="stat-tile"
+  lede="One number that matters, with its unit and how it moved since last time, and room for a chart under it."
+  plate={
+    <Plate
+      notes={[
+        <>
+          The bundle shrank by 0.3 KB and that is shown as good news: <code>goodDirection="down"</code>.
+        </>,
+        "Open issues went up by 4, shown as bad news: the colour follows the direction you set, the sign says it in text.",
+        "Under the numbers goes any small chart: a Sparkline, or a RangeMeter against a limit.",
+      ]}
+      caption="Sample data."
+    >
+      <StatTilePlate />
+    </Plate>
+  }
+  marks={{
+    pattern: "Plain text: a label, the value and the change, read in that order",
+    state: <>Pass <code>value</code> and <code>delta</code>; nothing is kept inside</>,
+    extra: [{ term: "Change", detail: "Green the good way, red the other, grey for none or a number that is neither" }],
+  }}
+>
+
+## When to use
+
+Use StatTile for the few numbers a dashboard opens with: steps or calories today, this week's commits, a weight, a latency. Give it the change since the period before, and say which way is good: a step count should go up, a body weight or a resting heart rate often down. A row of tiles reads as a summary; put a chart under a number when its history matters.
+
+## Similar
+
+- [Card](/docs/card/) is the surface StatTile is built like. Compose your own on a Card when a tile needs more than a number, a change and a chart.
+- [Badge](/docs/badge/) is a short status on its own; the change in a StatTile is a badge tinted by whether it is good news.
+- [Sparkline](/docs/sparkline/) is the trend that often goes under the number, in `chart`.
+
+## A number and its change
+
+`value` is written in the provider's locale when it is a number; pass a string to write it your way. `delta` is signed, and written with its sign and the `unit`.
+
+<Example file="stat-tile/basic">
+  <Basic />
+</Example>
+
+## Which way is good
+
+`goodDirection` is `"up"` by default. Set `"down"` where less is better and `"none"` for a number that is neither, such as deploys: its change stays grey.
+
+<Example file="stat-tile/direction">
+  <Direction />
+</Example>
+
+## An icon and your own format
+
+`icon` sits before the label. `formatDelta` writes the change, here as a percentage. `variant` is the [Card](/docs/card/)'s: `flat` by default, `bordered` or `raised`, and `radius` follows the provider's as a Card's does. In a narrow tile, two to a row on a phone, the value steps down a size.
+
+<Example file="stat-tile/icon">
+  <Icon />
+</Example>
+
+## Accessibility
+
+A StatTile is text, read in order: the label, the value with its unit, then the change and what it is measured against. The change is never colour alone: its sign is in the text, and screen readers hear "better" or "worse" after it, words you can change with `labels`. A change too small to show, such as 0.004 kg, is written as 0 and stays grey. A chart in `chart` brings its own name, such as a Sparkline's `aria-label`.
+
+## Props
+
+<Props of="StatTileProps" />
+
+</Entry>

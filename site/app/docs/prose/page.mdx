@@ -1,0 +1,86 @@
+import { Entry, Example, Plate, Props } from "@/components/docs";
+import ProsePlate from "@/examples/prose/plate";
+import CmsHtml from "@/examples/prose/cms-html";
+import Sizes from "@/examples/prose/sizes";
+import NotProse from "@/examples/prose/not-prose";
+
+export const metadata = { title: "Prose" };
+
+<Entry
+  slug="prose"
+  lede="Rendered Markdown, MDX or CMS HTML in the theme's colours, styled by tag, with no classes in the content."
+  plate={
+    <Plate
+      caption="Live: Tab to the long command and scroll it with the arrow keys."
+      notes={[
+        "Headings, links, code, lists, tables, quotes and images are styled by their tags; the HTML needs no classes.",
+        "Links take the accent's text colour: switch the accent at the top of the page.",
+        "A code block wider than the column scrolls sideways and becomes a tab stop, so the keyboard can scroll it too.",
+      ]}
+    >
+      <ProsePlate />
+    </Plate>
+  }
+  marks={{
+    pattern: <>Your HTML in a <code>&lt;div&gt;</code>, or in your own element through <code>asChild</code></>,
+    keyboard: [{ keys: "left" }, { keys: "right" }],
+    extra: [
+      { term: "Styles", detail: <>The <code>cennge-prose</code> class in <code>styles.css</code>, in the components layer</> },
+      { term: "Spacing", detail: <>In <code>em</code>, so <code>size</code> scales the text and its spacing together</> },
+    ],
+  }}
+>
+
+## When to use
+
+Wrap Prose around content you did not write as JSX: Markdown turned into HTML, an MDX page, a post from a CMS, a README. It styles the elements that renderers produce, headings, paragraphs, lists, task lists, code, tables, quotes, details and images, in the theme's colours and with the accent on links.
+
+For text you lay out yourself in JSX, use Tailwind classes directly; Prose adds nothing there.
+
+## Similar
+
+- [Snippet](/docs/snippet/) is a single command with a copy button. Prose styles whole code blocks as part of the text, without a button.
+- [Kbd](/docs/kbd/) draws a key cap with symbols. A bare `<kbd>` inside Prose gets a plain box.
+
+## HTML from a CMS or a renderer
+
+Prose is a `<div>`, so it takes `dangerouslySetInnerHTML` as well as children. A table keeps Markdown's column alignment and wraps long cells instead of pushing the page sideways. Only render HTML you trust or have sanitised.
+
+<Example file="prose/cms-html" isProse>
+  <CmsHtml />
+</Example>
+
+## Sizes and your own element
+
+`size` is `sm`, `md` or `lg`: 14, 16 or 18 pixels. Margins and paddings are in `em`, so the whole block scales with it. With `asChild`, Prose styles your element, here an `<article>` and an `<aside>`, instead of adding a `<div>`.
+
+<Example file="prose/sizes" isProse>
+  <Sizes />
+</Example>
+
+## Components and classes inside
+
+The styles sit in Tailwind's `components` layer, below the utilities, so a utility class on an element inside wins over them, as `text-sm text-muted` does on the last line here. `not-prose` switches them off for a whole subtree, so a component keeps its own look.
+
+<Example file="prose/not-prose" isProse>
+  <NotProse />
+</Example>
+
+## Without React
+
+The styles are a class in `cennge-ui/styles.css`, so server-rendered HTML can use them without the component. Add `cennge-prose-sm` or `cennge-prose-lg` for the other sizes.
+
+```html
+<article class="cennge-prose">
+  <h1>Release notes</h1>
+  <p>…</p>
+</article>
+```
+
+The component adds one thing the class cannot: a code block that scrolls sideways becomes keyboard-focusable, and stops being a tab stop when it fits again.
+
+## Props
+
+<Props of="ProseProps" />
+
+</Entry>

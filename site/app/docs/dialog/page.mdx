@@ -1,0 +1,109 @@
+import { Entry, Example, Plate, Props } from "@/components/docs";
+import DialogPlate from "@/examples/dialog/plate";
+import Rename from "@/examples/dialog/rename";
+import Changelog from "@/examples/dialog/changelog";
+import FromAMenu from "@/examples/dialog/from-a-menu";
+import RunWorkflow from "@/examples/dialog/run-workflow";
+
+export const metadata = { title: "Dialog" };
+
+<Entry
+  slug="dialog"
+  lede="A window over the page that keeps focus until it closes: a header, a body that scrolls, a footer."
+  plate={
+    <Plate
+      notes={[
+        "Tab stays inside. Escape, the cross or a click on the backdrop closes it, and focus goes back to the button.",
+        "Open Target branch and scroll the list: it moves, the page behind does not. Escape closes the list first, then the dialog.",
+        "In the changelog the body scrolls; the header and the footer stay put.",
+      ]}
+    >
+      <DialogPlate />
+    </Plate>
+  }
+  marks={{
+    pattern: <>WAI-ARIA modal dialog: <code>role="dialog"</code>, named by its title</>,
+    keyboard: [{ keys: "tab" }, { keys: ["shift", "tab"] }, { keys: "escape" }],
+    state: <>Controlled with <code>isOpen</code> and <code>onOpenChange</code>, or uncontrolled</>,
+    extra: [
+      { term: "Nesting", detail: "Lists and menus opened inside scroll; Escape closes the topmost first" },
+      { term: "Focus return", detail: "To the trigger, or to what had focus when code opened it" },
+    ],
+  }}
+>
+
+## When to use
+
+Use a Dialog when a task needs the reader's whole attention before the page goes on: a form to fill in, a setting to change, a text to read. While it is open the rest of the page takes no clicks, does not scroll and is out of reach of Tab and of screen readers.
+
+## Similar
+
+- [AlertDialog](/docs/alert-dialog/) asks for an answer: a click outside does not close it, there is no close button, and focus starts on Cancel.
+- [Drawer](/docs/drawer/) is the same dialog anchored to an edge of the screen, with the same focus trap, Escape and scroll lock.
+- [Popover](/docs/popover/) sits next to its button and leaves the page usable.
+- [Command](/docs/command/) is a dialog of its own for searching actions and pages.
+
+## A form in a dialog
+
+Wrap the header, body and footer in a `<form>` and Enter in the field submits it. With `className="contents"` the form draws no box of its own, so the parts keep the dialog's layout. `DialogClose` makes any button close the dialog. The content unmounts when the dialog closes, so a field with `defaultValue` starts again from the saved name, and Cancel throws away what was typed.
+
+<Example file="dialog/rename">
+  <Rename />
+</Example>
+
+## Long content
+
+The dialog is never taller than the screen minus 2rem. Past that, `DialogBody` scrolls and the header and footer stay where they are. When nothing in the body takes focus, give it `tabIndex={0}`, so the arrow keys and Page Down can scroll it too. `size` sets the width: `sm` 24rem, `md` 28rem, `lg` 32rem, `xl` 42rem.
+
+<Example file="dialog/changelog">
+  <Changelog />
+</Example>
+
+## Opened from a menu
+
+A dialog does not need a `DialogTrigger`: control it with `isOpen` and open it from a menu item, a shortcut or anything else. When it closes, focus goes back to the element that had it when the dialog opened, if that element is still on the page; Radix alone returns focus only to a `DialogTrigger`. A menu item is not: it leaves with its menu, so here `onCloseAutoFocus` sends focus to the menu's button.
+
+<Example file="dialog/from-a-menu">
+  <FromAMenu />
+</Example>
+
+## Lists and menus inside
+
+Put a Combobox, a Select, a menu or a Popover in a dialog as you would on the page. Their lists open in portals at the end of `<body>`, outside the dialog's box, and still scroll; Escape closes the list before the dialog.
+
+<Example file="dialog/run-workflow">
+  <RunWorkflow />
+</Example>
+
+Radix keeps the page behind a modal dialog still by cancelling every scroll outside the backdrop's React tree. When the dialog is drawn beside its backdrop, as Radix draws it, the lists it opens fall outside that tree and cannot scroll ([Radix #1159](https://github.com/radix-ui/primitives/issues/1159)); Radix Dialog 1.3 spares only Radix's own layers. cennge-ui puts the dialog inside its backdrop, so anything opened from it is in the tree too, another library's popup included. The end-to-end tests check it in Chromium, Firefox and WebKit, on desktop and on phone profiles:
+
+- A Combobox, a Select, a Popover and another library's popup, each opened from a Dialog, and a Combobox in a Drawer and in an AlertDialog: the list scrolls under the mouse wheel, and three more notches at its end leave the page where it was.
+- On the phone profiles, where Playwright cannot swipe, the test sends the touch events of a swipe over the list (WebKit gets a wheel event): the dialog lets them through while the list can scroll and stops them at its end.
+- A menu in a Dialog: the first Escape closes the menu and puts focus back on its button, the second closes the dialog.
+- Scrolling or swiping over the backdrop does not move the page, and a tap on it closes the dialog.
+- With a Popover's list open in a Dialog, axe finds no WCAG 2.2 AA violations in the dark or the light theme. The tests skip one rule while a modal is open, aria-hidden-focus: the page behind is hidden with `aria-hidden` and out of reach of focus, and axe still counts its buttons.
+
+A popup of another library, in a portal of its own, needs `pointer-events: auto`: a modal dialog turns pointer events off for the rest of the page.
+
+## Accessibility
+
+- The dialog has `role="dialog"`, its name from `DialogTitle` and its description from `DialogDescription`. A design without a visible title still needs one: give it `className="sr-only"`.
+- While it is open, Tab and Shift+Tab cycle inside it, and the page behind is hidden from screen readers, does not scroll and takes no clicks. All of that ends when the dialog closes. With `isModal={false}` on `Dialog` there is no backdrop, and the page behind stays visible to screen readers, scrolls and takes clicks.
+- Focus starts on the first focusable element inside. On close it returns to the trigger, or, for a dialog opened from code, to the element that had it, if that element is still on the page. The end-to-end tests check both, the second with a button that opens the dialog through `isOpen`.
+- The cross in the corner is a button named "Close". Hide it with `hideCloseButton` only when the footer has a way out; Escape and the backdrop still close the dialog unless `isKeyboardDismissDisabled` or `isDismissable={false}` say otherwise.
+
+## Styling
+
+`classNames` reaches three parts: `overlay`, the layer over the whole screen; `content`, the dialog; `closeButton`. The dimmed backdrop is the overlay's `::before`, so a backdrop of your own takes the `before:` variant, as in `classNames={{ overlay: "before:bg-black/70" }}`. `className` goes to the content, and `radius` rounds it.
+
+## Props
+
+### Dialog
+
+<Props of="DialogProps" />
+
+### DialogContent
+
+<Props of="DialogContentProps" />
+
+</Entry>

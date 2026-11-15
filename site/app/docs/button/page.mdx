@@ -1,0 +1,74 @@
+import { Entry, Example, Plate, Props } from "@/components/docs";
+import ButtonPlate from "@/examples/button/plate";
+import Colors from "@/examples/button/colors";
+import Sizes from "@/examples/button/sizes";
+import Loading from "@/examples/button/loading";
+import AsLink from "@/examples/button/as-link";
+
+export const metadata = { title: "Button" };
+
+<Entry
+  slug="button"
+  lede="The tactile button: seven colours, seven variants, a loading state, and links that look like buttons."
+  plate={
+    <Plate
+      notes={[
+        "Press it: every button sinks a little; the shadow variant glows in its colour.",
+        "While isLoading, a spinner replaces the start content, the cursor waits and clicks do nothing.",
+        "Disabled buttons drop out of the tab order; disabled links stay focusable but go nowhere.",
+      ]}
+    >
+      <ButtonPlate />
+    </Plate>
+  }
+  marks={{
+    pattern: <>Native <code>&lt;button type="button"&gt;</code>; your element through <code>asChild</code></>,
+    keyboard: [{ keys: "enter" }, { keys: "space" }],
+    extra: [{ term: "Cursor", detail: "Pointer when enabled, wait while loading" }],
+  }}
+>
+
+## When to use
+
+A Button runs an action: save, publish, open a dialog. When it takes the reader somewhere instead, render a link with `asChild`, so it keeps the button's look but stays a real `<a>` that opens in a new tab and shows its address.
+
+## Similar
+
+- [ToggleGroup](/docs/toggle-group/) holds a state that stays pressed; a Button acts once.
+- [Snippet](/docs/snippet/) is for a command to copy, not a button with code in it.
+
+## Colours
+
+`primary` takes the accent, so it follows `data-accent`; the others are fixed roles. Switch the accent at the top of the page and watch the primary button change.
+
+<Example file="button/colors">
+  <Colors />
+</Example>
+
+## Sizes and radius
+
+<Example file="button/sizes">
+  <Sizes />
+</Example>
+
+## Loading
+
+`isLoading` shows a spinner, sets `aria-busy` and disables the button until the request ends, so a second click cannot send it twice. The pointer stays over it with a waiting cursor.
+
+<Example file="button/loading">
+  <Loading />
+</Example>
+
+## As a link
+
+With `asChild` the child element is rendered with the button's styles and states. A disabled link keeps its focus, so screen readers still find it, but neither a click nor <kbd>Enter</kbd> follows it.
+
+<Example file="button/as-link">
+  <AsLink />
+</Example>
+
+## Props
+
+<Props of="ButtonProps" />
+
+</Entry>

@@ -1,0 +1,140 @@
+import { Example, Guide, Props } from "@/components/docs";
+import Appearance from "@/examples/dark-mode/appearance";
+import ThemeToggle from "@/examples/dark-mode/theme-toggle";
+
+export const metadata = { title: "Dark mode" };
+
+<Guide
+  slug="dark-mode"
+  lede="Light, dark, or as the device is set. The reader's choice is kept in the browser and is on the page before the first paint, with no flash and no hydration warning."
+>
+
+## How the theme is applied
+
+The dark theme is the `dark` class on `<html>`. `cennge-ui/styles.css` declares the dark theme's values under `.dark`, and makes Tailwind's `dark:` variant follow that class instead of the system setting. Each theme also sets `color-scheme`, so native scrollbars and form controls match it.
+
+Three pieces put the class there and keep it right:
+
+- `ThemeScript`, a small script in the `<head>`, reads the stored choice and sets the class before the page paints.
+- `useTheme` gives your components the choice and a way to change it.
+- `ThemeSwitch` is a ready light, dark and system control built on `useTheme`.
+
+## Try it
+
+This switch changes the whole page, and the site's own switch follows; so does any other tab with these docs open. Choose System, then change your device's appearance: the page follows that too.
+
+<Example file="dark-mode/appearance">
+  <Appearance />
+</Example>
+
+`theme` is what was chosen; `resolvedTheme` is what shows, with "system" worked out. Both are `undefined` in the server's HTML and while the page hydrates, and the switch has nothing selected until then. With the keyboard, <kbd>Tab</kbd> reaches the chosen option, the arrow keys move between options, and <kbd>Space</kbd> or <kbd>Enter</kbd> chooses.
+
+## Next.js
+
+Put `ThemeScript` in the `<head>` of the root layout, and give `<html>` `suppressHydrationWarning`:
+
+```tsx
+// app/layout.tsx
+import { ThemeScript } from "cennge-ui";
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <ThemeScript defaultTheme="dark" />
+      </head>
+      <body>{children}</body>
+    </html>
+  );
+}
+```
+
+The server cannot know a choice kept in the browser, so it renders `<html>` without the class. The script adds it before the first paint, which is also before React hydrates, and React would report the extra class as a mismatch. `suppressHydrationWarning` covers that element's own attributes only: a real mismatch anywhere inside the page is still reported.
+
+The script also stays on the page: while the choice is "system" it follows the device as its setting changes, and it applies a choice made in another tab.
+
+## Vite and other apps without a server
+
+With nothing rendered on a server, call `initTheme` once before the first render. It does what ThemeScript does: it sets the stored theme, then follows the device and other tabs.
+
+```tsx
+// src/main.tsx
+import { createRoot } from "react-dom/client";
+import { initTheme } from "cennge-ui";
+import { App } from "./App";
+import "./index.css";
+
+initTheme({ defaultTheme: "dark" });
+
+createRoot(document.getElementById("root")!).render(<App />);
+```
+
+`initTheme` runs when your bundle does. Until then the page shows the class written in `index.html`, so put `class="dark"` on its `<html>` if your default is dark.
+
+For another server, such as one that renders HTML templates, `themeScript(options)` returns the same script as a string to put in a `<script>` in the `<head>`.
+
+## A control of your own
+
+`useTheme` takes the same options and returns three things:
+
+<dl className="not-prose my-6 divide-y divide-border border-y border-border text-[15px] leading-normal">
+  <div className="grid gap-x-6 gap-y-1.5 py-3 sm:grid-cols-[10rem_minmax(0,1fr)]">
+    <dt><code className="rounded-small bg-surface-3 px-1.5 py-0.5 font-code text-[12.5px]">theme</code></dt>
+    <dd className="text-pretty">What was chosen: <code className="font-code text-[13px]">"light"</code>, <code className="font-code text-[13px]">"dark"</code> or <code className="font-code text-[13px]">"system"</code>. <code className="font-code text-[13px]">undefined</code> on the server and while the page hydrates.</dd>
+  </div>
+  <div className="grid gap-x-6 gap-y-1.5 py-3 sm:grid-cols-[10rem_minmax(0,1fr)]">
+    <dt><code className="rounded-small bg-surface-3 px-1.5 py-0.5 font-code text-[12.5px]">resolvedTheme</code></dt>
+    <dd className="text-pretty">What shows: <code className="font-code text-[13px]">"light"</code> or <code className="font-code text-[13px]">"dark"</code>, read from the class on <code className="font-code text-[13px]">&lt;html&gt;</code>. <code className="font-code text-[13px]">undefined</code> until hydrated, too.</dd>
+  </div>
+  <div className="grid gap-x-6 gap-y-1.5 py-3 sm:grid-cols-[10rem_minmax(0,1fr)]">
+    <dt><code className="rounded-small bg-surface-3 px-1.5 py-0.5 font-code text-[12.5px]">setTheme(theme)</code></dt>
+    <dd className="text-pretty">Stores the choice and shows it at once, in every tab, and in every <code className="font-code text-[13px]">useTheme</code> and ThemeSwitch on the page.</dd>
+  </div>
+</dl>
+
+The `undefined` is what keeps hydration clean: the render that hydrates the page matches the server's HTML, then the real values arrive. So draw what depends on the theme with CSS where you can. This toggle picks its icon with `dark:hidden` and `dark:block`, and adds `aria-pressed` only once the theme is known:
+
+<Example file="dark-mode/theme-toggle">
+  <ThemeToggle />
+</Example>
+
+A two-way toggle like this one stores "light" or "dark" and so leaves "system" behind; ThemeSwitch keeps all three.
+
+## Options
+
+ThemeScript, `initTheme`, `useTheme` and ThemeSwitch take the same two options. Pass the same values to all of them: a different `defaultTheme` in one place would make the script and the switch disagree on a first visit.
+
+- `defaultTheme`: what shows before anything is chosen. `"system"` unless you set it; this site uses `"dark"`.
+- `storageKey`: where the choice is kept in `localStorage`. `"cennge-theme"` unless you set it.
+
+Where storage is blocked, in some private windows and sandboxed frames, the switch still works for the life of the page; the choice is not remembered after a reload.
+
+ThemeScript also takes a `nonce`, for a Content-Security-Policy that allows inline scripts by nonce. ThemeSwitch takes `size` and `labels`, the names screen readers hear, for your language:
+
+```tsx
+<ThemeSwitch
+  defaultTheme="dark"
+  labels={{
+    group: "Thème",
+    light: "Clair",
+    dark: "Sombre",
+    system: "Système",
+  }}
+/>
+```
+
+## Without the helpers
+
+The styles only need the `dark` class, so you can also set it yourself, from your own settings or from the server when you know the reader's choice. If your app already uses next-themes, give it `attribute="class"`.
+
+## Props
+
+### ThemeScript
+
+<Props of="ThemeScriptProps" />
+
+### ThemeSwitch
+
+<Props of="ThemeSwitchProps" />
+
+</Guide>

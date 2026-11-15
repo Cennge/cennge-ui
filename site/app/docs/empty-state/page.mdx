@@ -1,0 +1,68 @@
+import { Entry, Example, Plate, Props } from "@/components/docs";
+import EmptyStatePlate from "@/examples/empty-state/plate";
+import FirstRun from "@/examples/empty-state/first-run";
+import NoResults from "@/examples/empty-state/no-results";
+import InTable from "@/examples/empty-state/in-table";
+
+export const metadata = { title: "EmptyState" };
+
+<Entry
+  slug="empty-state"
+  lede="What a list, a search or a page shows when there is nothing in it, and the way out."
+  plate={
+    <Plate
+      notes={[
+        "Press Clear search: the action is an ordinary Button passed in actions, and the list comes back.",
+        "Type a name that matches nothing, and the empty state takes the list's place again.",
+        "The icon is decorative; screen readers get the title, the description and the buttons.",
+      ]}
+      caption="Live: clear the search, type in it."
+    >
+      <EmptyStatePlate />
+    </Plate>
+  }
+  marks={{
+    pattern: <>Two <code>&lt;p&gt;</code> and your buttons, centred; the icon box is <code>aria-hidden</code></>,
+    extra: [{ term: "Sizes", detail: "md for a page or a panel, sm for a table body or a short list; icon box 48 or 40 px" }],
+  }}
+>
+
+## When to use
+
+Show an EmptyState wherever a list can come back with nothing: the first visit before anything exists, a search with no match, a filter that leaves no rows. Say why it is empty and put the way out right under it, as a button: create the first item, clear the search.
+
+## Similar
+
+- [Alert](/docs/alert/) reports something that happened; an empty state describes a place with nothing in it.
+- [Skeleton](/docs/skeleton/) stands in while content loads. Show the empty state only once loading is over.
+- [Table](/docs/table/) takes an empty state as `emptyContent` and shows it in place of the rows.
+
+## First run
+
+The default size, without an edge, for a page or a panel that has never had anything in it. The icon sits in a raised tile; pass any SVG and it is sized for you.
+
+<Example file="empty-state/first-run">
+  <FirstRun />
+</Example>
+
+## No results
+
+`variant="bordered"` draws a dashed edge around it, and `size="sm"` tightens the spacing and the type. Repeat the query or the filters in the description, so the reader sees what to change.
+
+<Example file="empty-state/no-results">
+  <NoResults />
+</Example>
+
+## Inside a table
+
+`TableBody` shows its `emptyContent` across all columns when it has no rows, so the header stays and the table keeps its shape.
+
+<Example file="empty-state/in-table">
+  <InTable />
+</Example>
+
+## Props
+
+<Props of="EmptyStateProps" />
+
+</Entry>

@@ -1,0 +1,108 @@
+import { Example, Guide, Props } from "@/components/docs";
+import Defaults from "@/examples/provider/defaults";
+import Locale from "@/examples/provider/locale";
+
+export const metadata = { title: "Provider" };
+
+<Guide
+  slug="provider"
+  lede="CenngeProvider is optional. Wrap the app in it once to set the default size, radius and colour, the locale for numbers and dates, and how much moves."
+>
+
+## Without a provider
+
+Every component works without one. Each then uses its own defaults, the ones in its props table, and a Tooltip mounts the Radix provider it needs by itself. The theme is not a provider prop: dark mode is the `dark` class and the accent is `data-accent`, both read by CSS, as [Dark mode](/docs/dark-mode/) and [Theming](/docs/theming/) describe.
+
+## Where it goes
+
+Put it in the root layout, around the pages and the Toaster. The layout can stay a Server Component: CenngeProvider is a client component, and its props are plain values.
+
+```tsx
+// app/layout.tsx
+import type { ReactNode } from "react";
+import { CenngeProvider, ThemeScript, Toaster } from "cennge-ui";
+
+export default function RootLayout({ children }: { children: ReactNode }) {
+  return (
+    <html lang="de" suppressHydrationWarning>
+      <head>
+        <ThemeScript defaultTheme="dark" />
+      </head>
+      <body>
+        <CenngeProvider locale="de-DE" radius="lg">
+          {children}
+          <Toaster />
+        </CenngeProvider>
+      </body>
+    </html>
+  );
+}
+```
+
+## Size, radius and colour
+
+A prop on the component always wins; the provider fills in the ones you leave out. Change the defaults and the whole card follows, though none of its components sets a size, a radius or a colour.
+
+<Example file="provider/defaults">
+  <Defaults />
+</Example>
+
+- `size` reaches Button, Badge, ToggleGroup, every field that has a size, Calendar, Table, Tree, Pagination, Snippet and Prose. Tabs, Avatar, Kbd, Spinner, Progress, Stepper, Timeline and the overlays keep their own.
+- `radius` reaches Button, Card, Pagination, Snippet, the text fields, Select, Combobox and the date and time fields.
+- `color` is the colour of Button and Badge. The text fields, Select, Combobox, the date and time fields, Checkbox, Radio, Switch, Slider, Calendar and Tree use it for focus and selection, except `default`: with it they keep `primary`. Rating and the other components keep their own colour.
+
+## Locale
+
+`locale` is a BCP 47 tag, `en-US` unless you set one. It formats and parses NumberInput. It names the months and weekdays and picks the first day of the week in Calendar, DatePicker and DateRangePicker, sets the order of a typed date in the two pickers, and chooses the 12- or 24-hour clock in TimeInput. It also formats file sizes in FileUpload and numbers in charts and on the map, and sets how `useTable` sorts text. Where a component takes a `locale` prop of its own, that wins.
+
+It is fixed, never read from the browser, so the server and the browser render the same text and hydration finds nothing to correct. Only the display changes with it: the values below stay `1500000`, `"2026-11-20"` and `"14:30"` in every locale.
+
+<Example file="provider/locale">
+  <Locale />
+</Example>
+
+## Reduced motion
+
+- `reducedMotion="user"`, the default, adds nothing: the components already follow the system's reduce motion setting.
+- `reducedMotion="always"` turns motion off whatever the system says, for a setting in your app, say. It wraps the children in an element with `display: contents`, and the stylesheet cuts every animation and transition inside it to 0.01 ms. A Carousel in it jumps between slides and does not start autoplay by itself; a Map's controls, clusters and popups move it without animation.
+
+Overlays render in a portal at the end of `<body>`, outside that element, so they keep their motion: dialogs, drawers, popovers, menus, tooltips, the command palette and the popups of Select, Combobox and the date pickers. Switching between the two values mounts the provider's children again, and their state starts over.
+
+## Tooltip delay
+
+The provider mounts one Radix tooltip provider for everything inside it. `tooltipDelay` is how long a tooltip waits before it opens, 300 ms by default; a Tooltip's own `delay` wins. Without a provider, every Tooltip mounts its own, with the same 300 ms.
+
+## Nested providers
+
+An inner provider replaces the outer one for its part of the page; it does not merge with it. What it leaves out falls back to each component's own default, not to the outer provider, so repeat what you want to keep.
+
+```tsx
+<CenngeProvider locale="de-DE" radius="lg">
+  <App />
+  {/* A dense toolbar: small, and still German with large corners. */}
+  <CenngeProvider locale="de-DE" radius="lg" size="sm">
+    <Toolbar />
+  </CenngeProvider>
+</CenngeProvider>
+```
+
+## In your own components
+
+`useCenngeDefaults()` returns the nearest provider's `color`, `size`, `radius` and `locale`, or an empty object without a provider, so your components can follow the same defaults.
+
+```tsx
+"use client";
+
+import { useCenngeDefaults } from "cennge-ui";
+
+export function Downloads({ count }: { count: number }) {
+  const { locale = "en-US" } = useCenngeDefaults();
+  return <span>{new Intl.NumberFormat(locale).format(count)} downloads</span>;
+}
+```
+
+## Props
+
+<Props of="CenngeProviderProps" />
+
+</Guide>

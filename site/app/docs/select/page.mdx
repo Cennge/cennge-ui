@@ -1,0 +1,99 @@
+import { Entry, Example, Plate, Props } from "@/components/docs";
+import SelectPlate from "@/examples/select/plate";
+import Basic from "@/examples/select/basic";
+import Groups from "@/examples/select/groups";
+import InAForm from "@/examples/select/in-a-form";
+import Variants from "@/examples/select/variants";
+
+export const metadata = { title: "Select" };
+
+<Entry
+  slug="select"
+  lede="A field that opens a short, fixed list: pick one value, or clear it back to the placeholder."
+  plate={
+    <Plate
+      notes={[
+        "Open it with a click, Enter, Space or an arrow key; the chosen option carries the check.",
+        "On the closed field, type a letter: the value jumps to the next option that starts with it.",
+        "The × sets Language to null: the placeholder returns and the list shows every repository.",
+      ]}
+    >
+      <SelectPlate />
+    </Plate>
+  }
+  marks={{
+    pattern: "WAI-ARIA select-only combobox (Radix Select)",
+    keyboard: [{ keys: "enter" }, { keys: "space" }, { keys: "up" }, { keys: "down" }, "Home", "End", { keys: "escape" }],
+    state: <>Controlled with <code>value</code> and <code>onValueChange</code>, <code>null</code> for none; or uncontrolled with <code>defaultValue</code></>,
+    extra: [
+      { term: "Typeahead", detail: "Letters jump to a matching option, open or closed" },
+      { term: "Touch", detail: "A tap on an option never presses what lies under the list" },
+    ],
+  }}
+>
+
+## When to use
+
+A Select holds one value from a list you know in advance and that fits on a screen: a region, a license, a sort order. Nothing is typed, so a phone opens the list without covering it with a keyboard, and `isClearable` gives people a way back to "nothing chosen".
+
+## Similar
+
+- [Combobox](/docs/combobox/) filters as you type and can hold several values; use it when the list is long enough to search.
+- [Radio](/docs/radio/) shows every choice at once. For a few options that people should compare, it saves a click.
+- [Dropdown](/docs/dropdown/) runs actions from a menu; a Select keeps a value.
+
+## Pick one, or none
+
+The value is the chosen item's `value`, or `null` when nothing is chosen: never an empty string. `isClearable` adds a button that sets it back to `null`.
+
+<Example file="select/basic">
+  <Basic />
+</Example>
+
+## Groups and descriptions
+
+`SelectGroup` gives a run of options a heading, `SelectSeparator` draws a line between groups, and an item's `description` sits under its name. Disabled options stay in the list but cannot be chosen, and the arrow keys pass over them.
+
+<Example file="select/groups">
+  <Groups />
+</Example>
+
+## In a form
+
+With a `name`, the value goes into the form's data. Inside a [Form](/docs/form/), `isRequired` stops an empty submit: the browser's message shows under the field and the field gets focus.
+
+<Example file="select/in-a-form">
+  <InAForm />
+</Example>
+
+## Variants and sizes
+
+The same four variants and three sizes as [Input](/docs/input/), so a Select sits in a row of text fields without standing out.
+
+<Example file="select/variants">
+  <Variants />
+</Example>
+
+## Accessibility
+
+The field is a `combobox` named by its label; the description, or the error in its place, is linked with `aria-describedby`. While the list is open, focus stays in it: <kbd>Tab</kbd> does nothing, and <kbd>Escape</kbd> closes the list and puts focus back on the field. The clear button is a separate button named "Clear", next in the tab order after the field.
+
+## Styling
+
+`classNames` reaches the inner parts: `base`, `label`, `trigger`, `value`, `popover`, `clearButton`, `description` and `errorMessage`. Options take `className` on each `SelectItem`.
+
+## Props
+
+### Select
+
+<Props of="SelectProps" />
+
+### SelectItem
+
+<Props of="SelectItemProps" />
+
+### SelectGroup
+
+<Props of="SelectGroupProps" />
+
+</Entry>

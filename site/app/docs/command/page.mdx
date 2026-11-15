@@ -1,0 +1,96 @@
+import { Entry, Example, Plate, Props } from "@/components/docs";
+import CommandPlate from "@/examples/command/plate";
+import Dialog from "@/examples/command/dialog";
+import Keywords from "@/examples/command/keywords";
+import Empty from "@/examples/command/empty";
+
+export const metadata = { title: "Command" };
+
+<Entry
+  slug="command"
+  lede="A search field over a list of actions and places: type a few letters, press Enter, and the matching command runs."
+  plate={
+    <Plate
+      caption="Live: click the field and type."
+      notes={[
+        "Type to filter: each word you type must appear in an item's name or its keywords. Try “python” or “publish”.",
+        "↑ and ↓ move the active item, wrap at the ends and pass over the disabled one; Enter runs it.",
+        "Escape clears what you typed. In a CommandDialog, a second Escape closes the palette.",
+      ]}
+    >
+      <CommandPlate />
+    </Plate>
+  }
+  marks={{
+    pattern: "WAI-ARIA combobox with a listbox; focus stays in the search field",
+    keyboard: [{ keys: "up" }, { keys: "down" }, { keys: "enter" }, { keys: "escape" }, { keys: "command", children: "K" }, { keys: "ctrl", children: "K" }],
+    state: <>Query with <code>query</code> and <code>onQueryChange</code>, the dialog with <code>isOpen</code> and <code>onOpenChange</code>, or both uncontrolled</>,
+    extra: [
+      { term: "Matching", detail: "Every typed word, in the text or the keywords; case and accents ignored" },
+      { term: "Shortcut", detail: <>⌘K or Ctrl+K opens and closes the dialog; <code>shortcut</code> sets another key, or none with <code>false</code></> },
+    ],
+  }}
+>
+
+## When to use
+
+A Command palette is the fast way around an app for people who know what they want: open a repository, start a release, jump to settings, without a mouse. Put it in a `CommandDialog` that opens from anywhere with a shortcut, or place a `Command` in the page where a searchable list of actions belongs, like the plate above.
+
+Keep everything in it reachable another way as well. A palette is quick for people who remember the words; menus and buttons show the rest what there is.
+
+## Similar
+
+- [Combobox](/docs/combobox/) picks a value for a form field and keeps it; a Command runs the item and forgets it.
+- [Dropdown](/docs/dropdown/) lists a few actions behind a button with nothing to type; a Command searches many of them.
+
+## A ⌘K palette
+
+`CommandDialog` puts the Command in a dialog that opens and closes with ⌘K on a Mac and Ctrl+K elsewhere, and closes after an item runs. On this site ⌘K already opens the search, which is a CommandDialog as well, so this palette listens for ⌘J with `shortcut="mod+j"`; `shortcut={false}` turns the shortcut off. When the palette closes, focus goes back to where it was before it opened, whether a button or the shortcut opened it.
+
+<Example file="command/dialog">
+  <Dialog />
+</Example>
+
+## Keywords and second lines
+
+An item is found by its text and by its `keywords`: words people might type that are not in the name. When its children are not a plain string, give the text to search as `value`. Here “ssh” finds Deploy keys and “invite” finds Collaborators. `description` adds a second line, which is shown but not searched.
+
+<Example file="command/keywords">
+  <Keywords />
+</Example>
+
+## When nothing matches
+
+`emptyContent` replaces “No results”, and with the query controlled it can repeat what was typed. Screen readers hear how many items match after each change, as “2 results”; `labels.results` words that announcement, here in releases.
+
+<Example file="command/empty">
+  <Empty />
+</Example>
+
+## Accessibility
+
+The search field is a `combobox` that controls a `listbox`, and the active item is marked with `aria-activedescendant`, so focus never leaves the field while the arrows move. A group is named by its heading and hides itself while none of its items match. After each change to the query, a polite live region says how many items are left.
+
+## Styling
+
+`classNames` reaches the parts: `base`, `inputWrapper`, `input`, `list` and `empty`. The plate gives the list a `max-h-80`, so it scrolls past a few items; `className` styles the outer element, here with a border and `surface-3`.
+
+## Props
+
+### CommandDialog
+
+<Props of="CommandDialogProps" />
+
+### Command
+
+<Props of="CommandProps" />
+
+### CommandItem
+
+<Props of="CommandItemProps" />
+
+### CommandGroup
+
+<Props of="CommandGroupProps" />
+
+</Entry>

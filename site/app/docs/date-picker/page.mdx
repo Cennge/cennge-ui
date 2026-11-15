@@ -1,0 +1,96 @@
+import { Entry, Example, Plate, Props } from "@/components/docs";
+import DatePickerPlate from "@/examples/date-picker/plate";
+import Basic from "@/examples/date-picker/basic";
+import Locales from "@/examples/date-picker/locales";
+import FromToday from "@/examples/date-picker/from-today";
+import InAForm from "@/examples/date-picker/in-a-form";
+import Translated from "@/examples/date-picker/translated";
+
+export const metadata = { title: "DatePicker" };
+
+<Entry
+  slug="date-picker"
+  lede="A date field: type the date in your locale's order, or pick it from a calendar that opens under the field."
+  plate={
+    <Plate
+      notes={[
+        <>Type 11192026, 11/19/26 or <span className="whitespace-nowrap">2026-11-19</span>, then Tab or Enter: the field writes it out in the locale's format.</>,
+        "In Release, type a date before the freeze, or 02/30/2026: the text stays, with the reason under it; Escape puts the saved date back.",
+        "Alt + Down or the calendar button opens the calendar on the chosen day; arrow to another day, and Enter picks it and closes the calendar.",
+      ]}
+    >
+      <DatePickerPlate />
+    </Plate>
+  }
+  marks={{
+    pattern: "Text field, and a calendar in a popover dialog",
+    keyboard: [{ keys: ["alt", "down"] }, { keys: "enter" }, { keys: "escape" }],
+    state: <>Controlled with <code>value</code> and <code>onValueChange</code> (an ISO date or <code>null</code>), or uncontrolled</>,
+    extra: [
+      { term: "Typing", detail: <>The locale's order, any separators or none: <code>11/19/2026</code>, <code>11.19.26</code>, <code>111926</code> in en-US; ISO in any locale</> },
+      { term: "Form value", detail: <>The ISO date, in a hidden input under <code>name</code></> },
+    ],
+  }}
+>
+
+## When to use
+
+Use a DatePicker for a date in a form: a release, a due date, a birthday. Some people type dates and others click them, and it takes both. The value is an ISO string with no time zone, `"2026-11-19"`, the same as `<input type="date">` gives, so it goes to a server unchanged.
+
+Typed text is read when the field loses focus or on <kbd>Enter</kbd>, in the order the locale writes dates and with any separators. Text that is not a date, or a date it cannot take, stays in the field with the reason under it.
+
+## Similar
+
+- [Calendar](/docs/calendar/) is the same month grid, always open on the page.
+- [DateRangePicker](/docs/date-range-picker/) takes a start and an end in one calendar.
+- [TimeInput](/docs/time-input/) takes the time of day; put the two side by side for a date and a time.
+
+## Type it or pick it
+
+The calendar button opens the calendar on the chosen day, or on today. Picking a day closes it and returns focus to the button. An emptied field sets the value to `null`.
+
+<Example file="date-picker/basic">
+  <Basic />
+</Example>
+
+## Order and separators from the locale
+
+The placeholder, the way the field writes the date and the order in which it reads typed numbers come from `Intl` for the `locale`: month first in the United States, day first in Britain, year first in Japan. Set it once on [CenngeProvider](/docs/provider/), or per field. These three share one value: type in any of them.
+
+<Example file="date-picker/locales">
+  <Locales />
+</Example>
+
+## Limits counted from today
+
+`minValue` and `maxValue` disable the days outside them in the calendar and turn a typed date outside them down with the reason. `isDateUnavailable` crosses single days out of the calendar and turns them down when typed. Only the browser knows the reader's today, so read it after mount; until then `null` means no limit.
+
+<Example file="date-picker/from-today">
+  <FromToday />
+</Example>
+
+## In a form
+
+With a `name`, a hidden input carries the ISO date. <kbd>Enter</kbd> in the field reads the typed date before the form is submitted, so typing and pressing <kbd>Enter</kbd> sends it. Inside a [Form](/docs/form/), `isRequired` and errors from your server show under the field.
+
+<Example file="date-picker/in-a-form">
+  <InAForm />
+</Example>
+
+## In another language
+
+`formatError` turns each refusal into your text: it receives `invalid` with the locale's pattern, `outOfRange` with the limits, or `unavailable` with the date. `labels` names the calendar button and the calendar's controls, and `placeholder` replaces the pattern shown in the empty field.
+
+<Example file="date-picker/translated">
+  <Translated />
+</Example>
+
+## Accessibility
+
+The field is a text input with its label, so screen readers announce it as one, and a refusal sets `aria-invalid` with the reason as its description. The calendar button is named "Choose date", and so is the dialog it opens. The calendar moves focus to the chosen day when it opens. The first <kbd>Escape</kbd> closes an open month or year grid, the next one the calendar.
+
+## Props
+
+<Props of="DatePickerProps" />
+
+</Entry>

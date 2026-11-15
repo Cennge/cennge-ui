@@ -1,0 +1,125 @@
+import { Example, Guide } from "@/components/docs";
+import Today from "@/examples/server-rendering/today";
+
+export const metadata = { title: "Next.js and SSR" };
+
+<Guide
+  slug="server-rendering"
+  lede="The components render on the server, straight from Server Components, and hydrate without a warning. What only the browser knows waits for hydration."
+>
+
+## From a Server Component
+
+The package's main entry starts with `"use client"`, so every component is a client component. Import them in a Server Component and give them plain props: the page, its data fetching and the layout stay on the server.
+
+```tsx
+// app/page.tsx: a Server Component
+import { Badge, Button, Card, CardBody, CardHeader } from "cennge-ui";
+import { cn } from "cennge-ui/utils";
+
+export default async function Page() {
+  const build = await latestBuild("payload-cache"); // your data, fetched on the server
+  const failed = build.status === "failed";
+
+  return (
+    <Card>
+      <CardHeader className="font-semibold">payload-cache</CardHeader>
+      <CardBody className={cn("flex items-center gap-2", failed && "bg-danger-bg")}>
+        <Badge color={failed ? "danger" : "success"}>{build.status}</Badge>
+        <Button color="primary" variant="shadow">
+          Download
+        </Button>
+      </CardBody>
+    </Card>
+  );
+}
+```
+
+- A Server Component cannot hand a function to a client component, a server action aside, so props such as `onClick`, `onValueChange` or `getValueLabel` belong in a file of yours that starts with `"use client"`. `toast()` is called from there too.
+- `cn` and `tv` come from `cennge-ui/utils`, an entry without `"use client"`, so they run in Server Components as well.
+
+## The root layout
+
+```tsx
+// app/layout.tsx
+import type { ReactNode } from "react";
+import { CenngeProvider, ThemeScript, Toaster } from "cennge-ui";
+import "./globals.css";
+
+export default function RootLayout({ children }: { children: ReactNode }) {
+  return (
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <ThemeScript defaultTheme="dark" />
+      </head>
+      <body>
+        <CenngeProvider locale="en-US">
+          {children}
+          <Toaster />
+        </CenngeProvider>
+      </body>
+    </html>
+  );
+}
+```
+
+- `ThemeScript` puts the stored theme on `<html>` before the first paint. It changes that element's class before React hydrates, which is what `suppressHydrationWarning` allows, for `<html>` alone. See [Dark mode](/docs/dark-mode/).
+- `CenngeProvider` fixes the locale, so the server and the browser format numbers and dates alike. See [Provider](/docs/provider/).
+- One `Toaster` in the layout shows every `toast()` called in a client component.
+
+## What the server sends
+
+- Fields, buttons, tables, tabs and calendars arrive as complete HTML and start working once the page hydrates.
+- Calendars do not mark today on the server. One without a value keeps its size with an invisible month, then shows the reader's month and today once hydrated.
+- `ThemeSwitch` arrives with nothing chosen, and `useTheme()` gives `undefined` on the server and during hydration, so the first render in the browser matches the HTML.
+- Charts arrive with their legend, axes, grid and data table; bars and lines are drawn once the plot is measured. DonutChart and Sparkline arrive whole.
+- A map holds its place (`data-state="loading"`), and maplibre-gl is fetched in the browser when the map mounts.
+
+MapLibre draws in a worker that bundlers do not find by themselves. In Next.js, copy `maplibre-gl-worker.mjs` and `maplibre-gl-shared.mjs` from `node_modules/maplibre-gl/dist` to `public/maplibre/`, and set the address once in a client component:
+
+```tsx
+// app/map-worker.tsx
+"use client";
+
+import { setMapWorkerUrl } from "cennge-ui/map";
+
+setMapWorkerUrl("/maplibre/maplibre-gl-worker.mjs");
+
+export function MapWorker() {
+  return null;
+}
+```
+
+Render `<MapWorker />` in the layout. `setMapWorkerUrl` does not import maplibre-gl, so the library still loads only with a map.
+
+## What only the browser knows
+
+Hydration complains when the browser renders something other than what the server sent. So nothing the components render on the server or during hydration depends on the clock, the time zone or the browser's language:
+
+- The locale is the provider's, `en-US` unless you set one, never the browser's.
+- Dates and times are ISO strings without a time zone, `"2026-11-20"` and `"14:30"`. Date arithmetic runs in UTC, so neither the server's time zone nor a change to daylight saving time moves a day.
+- Today is known only in the browser: a server renders in its own time zone, a static page on the day it was built.
+
+Your own code needs the same care. Work out a limit that counts from today, such as `minValue`, after mount; until then `null` means no limit. Here the days before today turn grey once the page has hydrated.
+
+<Example file="server-rendering/today">
+  <Today />
+</Example>
+
+## How it is checked
+
+`pnpm check:next` runs in CI. It packs the built package with `pnpm pack`, installs it in a Next.js 16 App Router app copied out of the repository, so the app sees only the dependencies the package declares, and runs `next build`. The app's page is a Server Component that renders a card, a form on a server action and the whole playground, with nearly every component in it.
+
+Playwright then opens the app from `next start` and from `next dev`, in Chromium, Firefox and WebKit on the desktop and in Pixel 7 and iPhone 17 profiles. The browsers that open the production server run 14 hours ahead of UTC, those that open the development server 11 hours behind it, and all of them ask for `de-DE` on a `ru-RU` page, so anything that read the clock, the time zone or the default locale while rendering would differ between server and browser. Any error or warning in the console fails the test, hydration mismatches included; the development server adds React's report of mismatched attributes. The tests check that:
+
+- the server's HTML holds the Server Component's text, the client components' markup and the map's placeholder;
+- the page hydrates without a single error or warning;
+- the package's classes and tokens reach the page;
+- a chart's caption and legend come in the HTML, and its bars appear once the plot is measured;
+- the map draws, with MapLibre's worker served from `public/`;
+- the stored theme is on `<html>` before the body exists, the switch arrives with nothing chosen, a choice survives a reload, and "system" follows the device as it changes;
+- a server action's error shows under its field, with the focus on it and the typed value kept, and a success shows a toast from the layout's `Toaster`.
+
+A component's field marks carry an SSR line when this check renders that component.
+
+</Guide>

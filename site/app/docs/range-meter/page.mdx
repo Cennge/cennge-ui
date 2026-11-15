@@ -1,0 +1,95 @@
+import { Entry, Example, Plate, Props } from "@/components/docs";
+import RangeMeterPlate from "@/examples/range-meter/plate";
+import Floor from "@/examples/range-meter/floor";
+import Ceiling from "@/examples/range-meter/ceiling";
+import Range from "@/examples/range-meter/range";
+import Compact from "@/examples/range-meter/compact";
+import Labels from "@/examples/range-meter/labels";
+
+export const metadata = { title: "RangeMeter" };
+
+<Entry
+  slug="range-meter"
+  lede="An amount against a goal with a floor, a ceiling or both, its status written out: how much to go, in range, or how far over."
+  plate={
+    <Plate
+      notes={[
+        "Run the e2e suite until the minutes pass 2,000: the part past the ceiling is striped and the status says by how much.",
+        "Build time has a floor and a ceiling: the range between them is shaded on the bar and both ends are marked.",
+        "The colour follows the status, but never alone: the words and the stripes say it too.",
+      ]}
+      caption="Live: spend CI minutes. Sample data."
+    >
+      <RangeMeterPlate />
+    </Plate>
+  }
+  marks={{
+    pattern: (
+      <>
+        <code>role="meter"</code> named by its label, the status in <code>aria-valuetext</code>
+      </>
+    ),
+    state: <>Pass <code>value</code>, with <code>low</code>, <code>high</code> or both</>,
+    extra: [{ term: "Status colours", detail: <>Short of the floor grey, in range <code>success</code>, over <code>warning</code>; or one <code>color</code> of yours, a chart slot included</> }],
+  }}
+>
+
+## When to use
+
+Use RangeMeter where an amount is judged against a goal: a floor to reach (protein, test coverage), a ceiling to stay under (sodium, a bundle-size budget, API calls), or a range to land in (calories for the day, build time). It names the status in words, so a list of them reads at a glance, and the bar shows how close the amount is to the goal.
+
+## Similar
+
+- [Progress](/docs/progress/) shows how far a task has got and stops at the end. RangeMeter keeps going past a ceiling and says so.
+- [ProgressRing](/docs/progress-ring/) is a goal to reach as a ring, the shape for a day's headline goals. RangeMeter takes the same `color` values, so a bar can match the ring it explains.
+- [Slider](/docs/slider/) looks alike but is an input: use it to set a value, RangeMeter to show one.
+
+## A floor to reach
+
+`low` is the least that meets the goal. Under it, the status says how much is left; at it or above, the goal is reached.
+
+<Example file="range-meter/floor">
+  <Floor />
+</Example>
+
+## A ceiling to stay under
+
+`high` is the most that is still fine. Under it, the status says how much room is left, "0.9 KB left", the number a calorie budget leads with. Past it, the part over the ceiling is striped and the status says by how much, in `warning` rather than an alarm.
+
+<Example file="range-meter/ceiling">
+  <Ceiling />
+</Example>
+
+## A range to land in
+
+With both, the range is shaded on the bar between two marks. The bar ends a quarter past the goal unless you set `max`, or at the value when it is further.
+
+<Example file="range-meter/range">
+  <Range />
+</Example>
+
+## In a dense list
+
+`size="sm"` thins the bar and `showStatus={false}` drops the line under it; the numbers above and the meter's text still give the status.
+
+<Example file="range-meter/compact">
+  <Compact />
+</Example>
+
+## Your own words
+
+`labels` replaces the status phrases, for another language or a voice of your own. `toGo`, `over` and `underLimit` receive the amount with its unit; `goal` writes the goal in the text screen readers hear.
+
+<Example file="range-meter/labels">
+  <Labels />
+</Example>
+
+## Accessibility
+
+The bar is a meter named by the visible label, or by `aria-label`. Its text gives the value, the goal and the status, "2,136 min, goal 2,000 min, 136 min over", so the numbers and the status line beside it are hidden from screen readers rather than read twice. In forced-colours mode the track is outlined, the fill takes the system's highlight colour and the part over the ceiling is outlined with a dashed edge. With no goal and no `max` there is nothing to measure against: the amount shows as text, with no bar.
+
+## Props
+
+<Props of="RangeMeterProps" />
+
+</Entry>

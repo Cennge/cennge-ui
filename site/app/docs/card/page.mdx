@@ -1,0 +1,76 @@
+import { Entry, Example, Plate, Props } from "@/components/docs";
+import CardPlate from "@/examples/card/plate";
+import Release from "@/examples/card/release";
+import Variants from "@/examples/card/variants";
+import LinkCards from "@/examples/card/link-cards";
+
+export const metadata = { title: "Card" };
+
+<Entry
+  slug="card"
+  lede="A raised surface that holds one thing together: a header, a body and a footer, or a whole link."
+  plate={
+    <Plate
+      notes={[
+        "Hover the two cards at the bottom: each is a link, lifts onto a lighter surface and sinks a little while pressed.",
+        <>
+          Tab to them: with <code>asChild</code> the card is the <code>&lt;a&gt;</code> itself, so it has a focus ring and
+          can be opened in a new tab like any link.
+        </>,
+        "The parts are padded blocks: CardHeader and CardFooter are rows, CardBody a column that takes the free height.",
+      ]}
+      caption="Live: hover, press, tab."
+    >
+      <CardPlate />
+    </Plate>
+  }
+  marks={{
+    pattern: <>A <code>&lt;div&gt;</code>; your <code>&lt;a&gt;</code> or <code>&lt;button&gt;</code> through <code>asChild</code></>,
+    extra: [
+      { term: "Depth", detail: "surface-3 with a soft shadow: raised on the page and inside a panel alike" },
+      { term: "Radius", detail: <><code>lg</code>, or the radius set on <code>CenngeProvider</code></> },
+    ],
+  }}
+>
+
+## When to use
+
+A Card groups what belongs to one thing, a repository, a release, a plan, and sets it apart from what is around it. When the whole card leads somewhere, make the card the link instead of putting a small link inside it.
+
+## Similar
+
+- [HoverCard](/docs/hover-card/) floats over a link while the pointer rests on it; a Card stays in the page.
+- [Alert](/docs/alert/) is a message about the page, tinted by its colour; a Card holds content.
+- [Accordion](/docs/accordion/) stacks sections that open and close; cards are always open.
+
+## Header, body and footer
+
+`CardHeader` lines up its children in a row, `CardBody` stacks them and grows to fill the card, `CardFooter` is a row of actions. All three are padded `div`s that take any class.
+
+<Example file="card/release">
+  <Release />
+</Example>
+
+## Variants
+
+`raised` lifts the card with a shadow. `bordered` swaps the shadow for an edge, for dense grids and lists. `flat` has neither and relies on the surface alone.
+
+<Example file="card/variants">
+  <Variants />
+</Example>
+
+## A whole card as a link
+
+`asChild` renders the card as its child element, here a Next.js `Link`, and `isPressable` adds the hover, press and focus styles. It stays a real `<a>`: the browser shows its address, and it can be opened in a new tab.
+
+<Example file="card/link-cards">
+  <LinkCards />
+</Example>
+
+## Props
+
+<Props of="CardProps" />
+
+`CardHeader`, `CardBody` and `CardFooter` take the attributes of a `<div>`.
+
+</Entry>

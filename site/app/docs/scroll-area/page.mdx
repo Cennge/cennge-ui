@@ -1,0 +1,76 @@
+import { Entry, Example, Plate, Props } from "@/components/docs";
+import ScrollAreaPlate from "@/examples/scroll-area/plate";
+import Commits from "@/examples/scroll-area/commits";
+import Both from "@/examples/scroll-area/both";
+import FromCode from "@/examples/scroll-area/from-code";
+
+export const metadata = { title: "ScrollArea" };
+
+<Entry
+  slug="scroll-area"
+  lede="A box that scrolls on its own, with thin scrollbars in the theme's colours, optional fades at the edges that hide more, and a tab stop once it overflows."
+  plate={
+    <Plate
+      notes={[
+        "Hover the commits: a thin bar in the theme's colours fades in, and its thumb drags.",
+        "Tab reaches each box because it scrolls; the arrow keys, Page Up, Page Down, Home and End scroll it.",
+        "Long messages end in an ellipsis instead of widening the box; the fades show which edges hide more.",
+      ]}
+      caption="Live: hover, drag, tab in and use the keys."
+    >
+      <ScrollAreaPlate />
+    </Plate>
+  }
+  marks={{
+    pattern: <>Native scrolling under drawn scrollbars; a named <code>region</code> once it overflows</>,
+    keyboard: [{ keys: "up" }, { keys: "down" }, { keys: "left" }, { keys: "right" }, "PageUp", "PageDown", "Home", "End"],
+    extra: [{ term: "Touch", detail: "No hover on touch screens, so the bars show while the finger scrolls" }],
+  }}
+>
+
+## When to use
+
+Use a ScrollArea for a part of the page that scrolls on its own: a commit list in a panel, a log, a row of filters. It keeps the browser's own scrolling, with its momentum, wheel and touch, and draws the scrollbars in the theme's colours on every system.
+
+## Similar
+
+- [VirtualList](/docs/virtual-list/) renders only the rows in view; use it for thousands of rows. A ScrollArea renders all of its content.
+- [Carousel](/docs/carousel/) snaps slides into place as they scroll sideways, with controls to step through them.
+
+## A list with long lines
+
+Vertical content keeps the width of the box, so `truncate` ends a long line with an ellipsis instead of making the box scroll sideways. `fadeEdges` fades the content out at each edge that still hides some of it; `fadeSize` sets how far the fade reaches.
+
+<Example file="scroll-area/commits">
+  <Commits />
+</Example>
+
+## Both ways
+
+`orientation="horizontal"` scrolls a row sideways, as the repositories on the plate do; `"both"` lets wide and tall content scroll either way, and a corner joins the two bars. `type` says when the bars show: on `hover` (the default), while scrolling, whenever the content overflows (`auto`), or `always`.
+
+<Example file="scroll-area/both">
+  <Both />
+</Example>
+
+## Scroll from code
+
+`viewportRef` hands you the element that scrolls, for `scrollTo`, for measuring, or for a virtual list of your own.
+
+<Example file="scroll-area/from-code">
+  <FromCode />
+</Example>
+
+## Accessibility
+
+A box whose content fits is not a tab stop and has no role. Once the content overflows it takes focus from <kbd>Tab</kbd>, so keyboard users can scroll it, and with an `aria-label` it becomes a `region` that screen readers list. Name every ScrollArea that may overflow.
+
+## Styling
+
+`classNames` reaches the parts: `base` (the box), `viewport` (the element that scrolls), `scrollbar` and `thumb`. Give the box its height, border and background with `className`.
+
+## Props
+
+<Props of="ScrollAreaProps" />
+
+</Entry>

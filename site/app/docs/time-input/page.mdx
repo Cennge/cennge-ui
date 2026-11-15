@@ -1,0 +1,86 @@
+import { Entry, Example, Plate, Props } from "@/components/docs";
+import TimeInputPlate from "@/examples/time-input/plate";
+import Basic from "@/examples/time-input/basic";
+import Clocks from "@/examples/time-input/clocks";
+import DateAndTime from "@/examples/time-input/date-and-time";
+import Translated from "@/examples/time-input/translated";
+
+export const metadata = { title: "TimeInput" };
+
+<Entry
+  slug="time-input"
+  lede="A time of day on the locale's clock: type it the short way, or move the hours and minutes with the arrow keys."
+  plate={
+    <Plate
+      notes={[
+        "Up and Down change the part under the caret: the hour, the minutes by the step (15 in the release call), or AM and PM. The part stays selected.",
+        "Type 3p, 14.30 or 1145 and press Tab: the field shows it on its clock, and the value stays HH:mm.",
+        "Type 7 pm in the release call: it is after 6 PM, so the text stays with the reason; Escape puts the time back.",
+      ]}
+    >
+      <TimeInputPlate />
+    </Plate>
+  }
+  marks={{
+    pattern: "Text input; on a 24-hour clock phones show the number pad",
+    keyboard: [{ keys: "up" }, { keys: "down" }, { keys: "enter" }, { keys: "escape" }],
+    state: <>Controlled with <code>value</code> and <code>onValueChange</code> (<code>"HH:mm"</code> or <code>null</code>), or uncontrolled</>,
+    extra: [
+      { term: "Clock", detail: <>12 or 24 hours from the locale, or from <code>hourCycle</code></> },
+      { term: "Form value", detail: <><code>"HH:mm"</code> in a hidden input under <code>name</code></> },
+    ],
+  }}
+>
+
+## When to use
+
+Use a TimeInput for a time of day: when a call starts, when a nightly job runs, when a release goes out. The field shows the time the way the locale writes it, with AM and PM or without, and the value is always `"HH:mm"` on a 24-hour clock, like `<input type="time">`.
+
+Typing is forgiving: `14:30`, `14.30`, `1430`, `930`, `9`, `2:30 pm`, `2p`. The text is read when the field loses focus or on <kbd>Enter</kbd>; without AM or PM the hour counts on a 24-hour clock.
+
+## Similar
+
+- [DatePicker](/docs/date-picker/) takes the date; with a TimeInput next to it you have a date and a time, as in the example below.
+- [NumberInput](/docs/number-input/) is for an amount of time, such as a timeout in minutes, rather than a time of day.
+
+## Type it or step it
+
+Arrow keys work on the part under the caret: the hours move by one, the minutes by `step`, and on a 12-hour clock the AM or PM switches the half of the day. They stop at `minValue` and `maxValue`. A typed time is kept to the minute, not rounded to the step. In an empty field they count from `minValue`, or from the current time. Emptying the field sets the value to `null`.
+
+<Example file="time-input/basic">
+  <Basic />
+</Example>
+
+## 12 or 24 hours
+
+The clock comes from `Intl` for the `locale`: 12 hours in the United States, 24 in Britain. `hourCycle` overrides it. These three share one value: change it in any of them.
+
+<Example file="time-input/clocks">
+  <Clocks />
+</Example>
+
+## A date and a time
+
+Name both fields and the form sends `"2026-11-19"` and `"10:00"`; join them as `` `${date}T${time}` ``. The result is a local date and time with no time zone, which is what a person picks; turn it into an instant where you know whose time zone it is.
+
+<Example file="time-input/date-and-time">
+  <DateAndTime />
+</Example>
+
+## In another language
+
+`formatError` receives `invalid` with the pattern, or `outOfRange` with the limits as `"HH:mm"`. The clock, the AM and PM words it reads and shows, and the format follow the `locale` of [CenngeProvider](/docs/provider/) or of the field.
+
+<Example file="time-input/translated">
+  <Translated />
+</Example>
+
+## Accessibility
+
+The field is a text input with its label. The arrow keys change its text without typing, so a polite live region reads the new time after each step. A refusal sets `aria-invalid` and describes the field with the reason. On a 24-hour clock the field asks phones for the number pad; with AM and PM it keeps the letters.
+
+## Props
+
+<Props of="TimeInputProps" />
+
+</Entry>

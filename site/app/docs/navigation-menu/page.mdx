@@ -1,0 +1,93 @@
+import { Entry, Example, Plate, Props } from "@/components/docs";
+import NavigationMenuPlate from "@/examples/navigation-menu/plate";
+import SiteHeader from "@/examples/navigation-menu/site-header";
+import ClickMenu from "@/examples/navigation-menu/open-on-click";
+import DocsMenu from "@/examples/navigation-menu/vertical";
+import CrawlableMenu from "@/examples/navigation-menu/keep-mounted";
+
+export const metadata = { title: "NavigationMenu" };
+
+<Entry
+  slug="navigation-menu"
+  lede="The links bar at the top of a site, with panels of links that open under their own trigger and stay on screen."
+  plate={
+    <Plate
+      caption="Live: hover it, click it, use the keys."
+      notes={[
+        "Rest the pointer on Repositories: its panel opens under it. Move to Components and the same panel moves along and changes its content.",
+        "With a mouse, a click on the open trigger keeps the panel open; Escape or a click elsewhere closes it.",
+        "Tab to Repositories, press Enter, then Down to go into the panel; Escape brings you back to the trigger.",
+      ]}
+    >
+      <NavigationMenuPlate />
+    </Plate>
+  }
+  marks={{
+    pattern: <>Disclosure navigation: a named <code>&lt;nav&gt;</code>, triggers that are buttons with <code>aria-expanded</code></>,
+    keyboard: [{ keys: "enter" }, { keys: "space" }, { keys: "up" }, { keys: "down" }, { keys: "left" }, { keys: "right" }, "Home", "End", { keys: "escape" }],
+    state: <>The open panel: uncontrolled, or <code>value</code> and <code>onValueChange</code></>,
+    extra: [
+      { term: "Opens on", detail: <>Hover, or with <code>openOn="click"</code> only a click; Enter and Space either way</> },
+      { term: "Panel", detail: "One for the whole bar, placed under the open trigger and kept inside the window" },
+    ],
+  }}
+>
+
+## When to use
+
+A NavigationMenu is the top bar of a site or of its documentation: a few triggers whose panels hold links, and plain links beside them. Everything in it takes the reader to another page, and it fits dozens of links into one row by keeping them in panels until someone asks.
+
+The panel is one element shared by the whole bar, as in Radix, so moving from trigger to trigger swaps its content without closing and reopening. Unlike Radix, it opens under the trigger you are on rather than at the start of the bar, and it moves back inside the window when the trigger sits near an edge.
+
+## Similar
+
+- [Dropdown](/docs/dropdown/) runs actions from a button and is read as a menu of commands; a NavigationMenu holds links and is read as navigation.
+- [Sidebar](/docs/sidebar/) keeps an app's links on screen in a column, and in a drawer on phones; a NavigationMenu hides them in panels to save the room.
+
+## Links and the current page
+
+`NavigationMenuLink` with a `title` and a `description` is a two-line link in a panel; alone in a `NavigationMenuItem` it is a link in the bar. With `asChild` it styles your router's link, here Next.js `Link`, and `isActive` highlights the current page and marks it with `aria-current="page"`.
+
+<Example file="navigation-menu/site-header" className="min-h-76 content-start justify-center">
+  <SiteHeader />
+</Example>
+
+## Open on click
+
+`openOn="click"` stops the resting pointer from opening panels. A click, Enter or Space opens one; the pointer can leave it and it stays open until Escape, a click elsewhere or another click on its trigger.
+
+<Example file="navigation-menu/open-on-click" className="min-h-76 content-start justify-center">
+  <ClickMenu />
+</Example>
+
+## Vertical
+
+With `orientation="vertical"` the triggers stack, the panel opens beside the trigger, level with it, and the right arrow goes into it. On a screen too narrow for both, the panel moves left over the list instead of off the edge.
+
+<Example file="navigation-menu/vertical" className="min-h-80 content-start">
+  <DocsMenu />
+</Example>
+
+## Links in the HTML for search engines
+
+A panel is rendered only while it is open, so a crawler reading the page finds no links in it. `keepMounted` keeps every panel in the page, hidden while closed, so their links are in the HTML from the start.
+
+<Example file="navigation-menu/keep-mounted" className="min-h-84 content-start justify-center">
+  <CrawlableMenu />
+</Example>
+
+## Accessibility
+
+Give each NavigationMenu an `aria-label`, so screen readers can tell it from the other navigation on the page. Triggers are buttons that say whether their panel is open; the arrow keys, Home and End move between the triggers and links of the bar, and Tab goes on into an open panel.
+
+## Props
+
+### NavigationMenu
+
+<Props of="NavigationMenuProps" />
+
+### NavigationMenuLink
+
+<Props of="NavigationMenuLinkProps" />
+
+</Entry>

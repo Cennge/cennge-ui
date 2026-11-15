@@ -1,0 +1,94 @@
+import { Entry, Example, Plate, Props } from "@/components/docs";
+import SliderPlate from "@/examples/slider/plate";
+import Single from "@/examples/slider/single";
+import Range from "@/examples/slider/range";
+import Marks from "@/examples/slider/marks";
+import Restrict from "@/examples/slider/restrict";
+import Named from "@/examples/slider/named";
+
+export const metadata = { title: "Slider" };
+
+<Entry
+  slug="slider"
+  lede="A thumb on a track for one number, or two thumbs for a range."
+  plate={
+    <Plate
+      notes={[
+        "Drag a thumb, or click a label under a track: the nearest thumb moves there.",
+        "Arrows step by one; Page Up, Page Down or Shift with an arrow step by ten; Home and End go to the ends.",
+        "Parallel jobs stops only on its marks: the arrows go 1, 2, 4, 8, 16.",
+      ]}
+    >
+      <SliderPlate />
+    </Plate>
+  }
+  marks={{
+    pattern: "WAI-ARIA slider, one per thumb (Radix Slider)",
+    keyboard: [{ keys: "left" }, { keys: "right" }, { keys: "up" }, { keys: "down" }, "PageUp", "PageDown", "Home", "End"],
+    state: <>Controlled with <code>value</code> and <code>onValueChange</code>, a number or an array for a range; or uncontrolled with <code>defaultValue</code></>,
+    extra: [
+      { term: "Range", detail: <>Each thumb is named after the label plus “Minimum” or “Maximum”; <code>thumbLabels</code> changes those words</> },
+      { term: "Commit", detail: <><code>onValueCommit</code> fires when a drag ends, and on each key press or label click</> },
+    ],
+  }}
+>
+
+## When to use
+
+A Slider suits a value where the position matters more than the exact digits: a threshold, a time window, a level. People can drag it, tap a mark, or step it from the keyboard, and the current value shows next to the label. When people know the exact number they want, a [NumberInput](/docs/number-input/) is quicker.
+
+## Similar
+
+- [NumberInput](/docs/number-input/) is for exact numbers that are typed.
+- [Radio](/docs/radio/) shows a handful of named options as a list; a Slider with named marks keeps them on one scale.
+- [Progress](/docs/progress/) shows a value but takes no input.
+
+## One value
+
+A number in `value` gives one thumb. `formatValue` sets how the value reads next to the label and to screen readers. `onValueChange` fires on every step of a drag; `onValueCommit` fires once when the drag ends, and on each key press, which suits saving.
+
+<Example file="slider/single">
+  <Single />
+</Example>
+
+## A range
+
+An array gives a thumb per item. The thumbs are named after the label, "Changed lines Minimum" and "Changed lines Maximum"; `thumbLabels` renames or translates the part after the label.
+
+<Example file="slider/range">
+  <Range />
+</Example>
+
+## Marks
+
+Each mark puts a dot on the track; a mark with a `label` also writes it under the track, and a click on that label moves the thumb there. A plain number, like 90 here, is a dot without a label. Dots on the filled part of the track change colour.
+
+<Example file="slider/marks">
+  <Marks />
+</Example>
+
+## Only on the marks
+
+`restrictToMarks` makes the marks the only values: a drag snaps to the nearest one and the arrow keys go from mark to mark, so steps need not be even.
+
+<Example file="slider/restrict">
+  <Restrict />
+</Example>
+
+## Named steps
+
+When every value the slider can take has a text label, the label becomes the value's name: the readout and screen readers say "Warning", not "1".
+
+<Example file="slider/named">
+  <Named />
+</Example>
+
+## Accessibility
+
+Each thumb is a `slider` with its value, minimum and maximum, and a text value from `formatValue` or a mark's label. A single thumb takes its name from `label`, or from `aria-label` when there is no visible label. The labels under the track are hidden from screen readers: they repeat what the thumbs already say, and the keyboard reaches every value without them. A disabled slider ignores clicks on its labels.
+
+## Props
+
+<Props of="SliderProps" />
+
+</Entry>

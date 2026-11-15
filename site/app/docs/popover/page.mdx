@@ -1,0 +1,88 @@
+import { Entry, Example, Plate, Props } from "@/components/docs";
+import PopoverPlate from "@/examples/popover/plate";
+import Share from "@/examples/popover/share";
+import Labels from "@/examples/popover/labels";
+import Placement from "@/examples/popover/placement";
+
+export const metadata = { title: "Popover" };
+
+<Entry
+  slug="popover"
+  lede="A small panel anchored to its button, for controls and content that do not need the whole screen."
+  plate={
+    <Plate
+      notes={[
+        "Focus moves into the popover and Tab cycles through it. Escape closes it and puts focus back on its button.",
+        "A click anywhere else closes it and leaves focus where you clicked; the page stays usable while it is open.",
+        "In Notifications the arrow keys change the level and the panel stays open; in Share, Copy link closes it.",
+      ]}
+    >
+      <PopoverPlate />
+    </Plate>
+  }
+  marks={{
+    pattern: <>Non-modal dialog: <code>role="dialog"</code> on the panel, <code>aria-expanded</code> on the button</>,
+    keyboard: [{ keys: "tab" }, { keys: ["shift", "tab"] }, { keys: "escape" }],
+    state: <>Controlled with <code>isOpen</code> and <code>onOpenChange</code>, or uncontrolled</>,
+    extra: [{ term: "Position", detail: "Four sides, three alignments; flips and slides to keep 8px from the screen's edge" }],
+  }}
+>
+
+## When to use
+
+Use a Popover for a few controls or a bit of content tied to one button: a share link, a notification setting, labels for an issue. It opens beside the button, leaves the rest of the page usable, and closes as soon as the reader clicks elsewhere.
+
+## Similar
+
+- [Tooltip](/docs/tooltip/) shows a short text on hover and focus, with nothing inside to click.
+- [HoverCard](/docs/hover-card/) previews what a link points to when the pointer rests on it.
+- [Dropdown](/docs/dropdown/) is a menu of actions, with the arrow keys and typeahead of a menu.
+- [Dialog](/docs/dialog/) is for a task that needs the whole screen and blocks the page until it is done.
+- [DatePicker](/docs/date-picker/) is a date field with its calendar in a popover.
+
+## Share a link
+
+`PopoverClose` makes any button inside close the popover. `showArrow` draws an arrow toward the button.
+
+<Example file="popover/share">
+  <Share />
+</Example>
+
+## A small form
+
+Control `isOpen` to close the popover when the form is applied. The labels are copied into a draft each time it opens, so closing it with Escape or a click outside discards the changes.
+
+<Example file="popover/labels">
+  <Labels />
+</Example>
+
+## Placement
+
+`placement` picks the side, `align` the edge it lines up with, and `offset` the gap to the button, 8px by default. With no room on its side the popover flips to the opposite one, and it slides along its side to stay 8px inside the screen. With no room on either side it runs past the edge, so keep left and right popovers narrow: these are `w-48`, and on a phone Left and Right flip.
+
+<Example file="popover/placement">
+  <Placement />
+</Example>
+
+## Accessibility
+
+- The button gets `aria-haspopup="dialog"`, `aria-expanded` and, while open, `aria-controls`. The panel has `role="dialog"`: name it with `aria-label`, or with `aria-labelledby` pointing at its title inside.
+- When it opens, focus moves to the first focusable element inside, and Tab and Shift+Tab cycle through what is inside. Escape returns focus to the button; a click outside closes the popover and leaves focus where the click put it.
+- The page around it is not blocked: it scrolls, and a click outside reaches what it was aimed at. With `isModal` the page takes no clicks and does not scroll until the popover closes, and screen readers see only the popover.
+- The end-to-end tests open a popover in Chromium, Firefox and WebKit, on desktop and phone profiles, close it with Escape and check focus on its button, then close it with a click outside. A popover opened inside a [Dialog](/docs/dialog/#lists-and-menus-inside) keeps its own list scrollable while the page behind stays put.
+
+## Styling
+
+`className` goes to the panel, which has `p-4`, `rounded-large`, a border and `bg-surface-3`; give it a width such as `w-80`, since it is only as wide as its content.
+
+## Props
+
+### Popover
+
+<Props of="PopoverProps" />
+
+### PopoverContent
+
+<Props of="PopoverContentProps" />
+
+</Entry>

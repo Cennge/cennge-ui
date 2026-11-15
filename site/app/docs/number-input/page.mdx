@@ -1,0 +1,93 @@
+import { Entry, Example, Plate, Props } from "@/components/docs";
+import NumberInputPlate from "@/examples/number-input/plate";
+import Formats from "@/examples/number-input/formats";
+import Locale from "@/examples/number-input/locale";
+import Empty from "@/examples/number-input/empty";
+import InAForm from "@/examples/number-input/in-a-form";
+
+export const metadata = { title: "NumberInput" };
+
+<Entry
+  slug="number-input"
+  lede="A field for numbers: it refuses letters, steps with buttons and keys, keeps to its bounds and formats by locale."
+  plate={
+    <Plate
+      notes={[
+        "Type a letter: it is refused. Type 50 into Parallel jobs and leave: it becomes 16.",
+        "Arrows step once, PageUp and PageDown ten steps, Home and End jump to the bounds.",
+        "Hold − or + to keep stepping; at a bound it stops and that button greys out.",
+      ]}
+    >
+      <NumberInputPlate />
+    </Plate>
+  }
+  marks={{
+    pattern: <>WAI-ARIA spinbutton on a text <code>&lt;input&gt;</code></>,
+    keyboard: [{ keys: "up" }, { keys: "down" }, "PageUp", "PageDown", "Home", "End", { keys: "enter" }],
+    state: <>Controlled with <code>value</code> and <code>onValueChange</code>, or uncontrolled; <code>null</code> is empty</>,
+    extra: [
+      { term: "Form value", detail: <>The raw number, in a hidden input named <code>name</code></> },
+      { term: "Locale", detail: <><code>en-US</code> unless <code>locale</code> or CenngeProvider says otherwise</> },
+    ],
+  }}
+>
+
+## When to use
+
+Use a NumberInput when the value is a number someone may want to type exactly: a count, a price, a limit. The value you get is a `number` (or `null` when the field is empty), never the formatted text, and the text on screen follows the locale: `$1,200`, `1.234,50 €`, `80%`.
+
+While the field has focus, what is typed stays as typed; when focus leaves, the number is clamped to `min` and `max`, rounded and formatted. `onValueChange` already fires during typing, for every text that reads as a number.
+
+## Similar
+
+- [Slider](/docs/slider/) picks a value inside a range by dragging, when the exact number matters less than where it sits.
+- [Input](/docs/input/) is for text that only looks like a number and is never counted: a postcode, a code, an id.
+- [OtpInput](/docs/otp-input/) is for one-time codes, a box per digit.
+
+## Currency, percent and units
+
+`formatOptions` are `Intl.NumberFormat` options. The sign, the unit and the grouping are added when focus leaves, and typing them back in is fine: `$1,500` and `1500` read the same. Percent values are fractions, so `0.25` shows as `25%` and steps by `0.01` unless you set `step`.
+
+<Example file="number-input/formats">
+  <Formats />
+</Example>
+
+## Another locale
+
+`locale` changes what is typed as well as what is shown: in `de-DE` the comma is the decimal separator and the dot groups thousands. Set `locale` on [CenngeProvider](/docs/provider/) once to change it for every field.
+
+<Example file="number-input/locale">
+  <Locale />
+</Example>
+
+## Empty means null
+
+Clearing the field reports `null`, and a `null` value shows the placeholder. From empty, the first step up lands on `min` (or 0 without one).
+
+<Example file="number-input/empty">
+  <Empty />
+</Example>
+
+## In a form
+
+With a `name`, a hidden input carries the raw number, so the form gets `20000`, not `$20,000`. <kbd>Enter</kbd> clamps the typed value before the form submits: type 50000 here and press it.
+
+<Example file="number-input/in-a-form">
+  <InAForm />
+</Example>
+
+## Accessibility
+
+The input has the `spinbutton` role with `aria-valuenow`, `aria-valuemin`, `aria-valuemax` and the formatted value as `aria-valuetext`. The − and + buttons are left out of the Tab order, since the arrow keys do the same; a pointer press on them keeps focus in the field. They are named "Decrease" and "Increase"; translate them with `decrementLabel` and `incrementLabel`.
+
+On phones the keyboard is a decimal or numeric keypad. When negative numbers are allowed (no `min`, or a negative one), it falls back to the text keyboard, because iOS keypads have no minus key.
+
+## Styling
+
+It shares the Input's box: `variant`, `color`, `size` and `radius`, plus `startContent` and `endContent`. `hideStepper` removes the buttons and keeps the keys. `classNames` reaches `base`, `label`, `inputWrapper`, `input`, `stepper`, `stepperButton`, `description` and `errorMessage`.
+
+## Props
+
+<Props of="NumberInputProps" />
+
+</Entry>

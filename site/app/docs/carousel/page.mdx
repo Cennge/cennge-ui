@@ -1,0 +1,92 @@
+import { Entry, Example, Plate, Props } from "@/components/docs";
+import CarouselPlate from "@/examples/carousel/plate";
+import PerView from "@/examples/carousel/per-view";
+import Autoplay from "@/examples/carousel/autoplay";
+import CustomControls from "@/examples/carousel/custom-controls";
+
+export const metadata = { title: "Carousel" };
+
+<Entry
+  slug="carousel"
+  lede="A row of slides on the browser's own scroll snapping: swipe it, scroll it, drag it, or use the arrows and dots."
+  plate={
+    <Plate
+      caption="Live: drag it, scroll it sideways, use the keys."
+      notes={[
+        "Drag the slides with the mouse, or scroll sideways: they settle on a slide. A drag that ends on a link does not open it.",
+        "Tab to the slides, then use the arrow keys, Home and End. The dots are one tab stop, moved with the arrow keys.",
+        "On the last slide Next is dimmed but keeps focus. Each move is announced: \"3 of 5\".",
+      ]}
+    >
+      <CarouselPlate />
+    </Plate>
+  }
+  marks={{
+    pattern: "WAI-ARIA carousel: a named region of slides, each named \"N of M\"",
+    keyboard: [{ keys: "left" }, { keys: "right" }, "Home", "End"],
+    state: <>Controlled with <code>index</code> and <code>onIndexChange</code>, or uncontrolled from <code>defaultIndex</code></>,
+    extra: [
+      { term: "Scrolling", detail: "Native CSS scroll snapping, no carousel library; the mouse drags it" },
+      { term: "Autoplay", detail: "Pauses under the mouse, stops when focus comes in, always has a pause button" },
+    ],
+  }}
+>
+
+## When to use
+
+A Carousel fits a set of similar items that would not all fit side by side and that people look at one or a few at a time: releases, featured repositories, screenshots. Fingers, trackpads and the keyboard scroll it the way they scroll anything else, because underneath it is a scrolling row with CSS scroll snapping.
+
+Do not hide something everyone must read in slide four. If the items matter equally, a list or a grid shows them all.
+
+## Similar
+
+- [Tabs](/docs/tabs/) switch between panels by name; a Carousel moves along a row in order.
+- [ScrollArea](/docs/scroll-area/) scrolls any content with themed scrollbars, without slides, stops or controls.
+
+## Several slides at a time
+
+`slidesPerView` sets the CSS variable `--carousel-per-view` inline. To change it at a breakpoint, leave the prop out and set the variable with classes, as here. A fraction shows the edge of the next slide. The dots then count pages, the positions where the row can stop, while Previous and Next move one slide.
+
+<Example file="carousel/per-view">
+  <PerView />
+</Example>
+
+## Autoplay
+
+`autoplay` moves on every five seconds, or every given number of milliseconds, and goes back to the first slide after the last; `loop` lets Next and Previous wrap around too. It pauses while the mouse is over the carousel or the tab is hidden, and stops when focus comes into it or the mouse drags it, until the play button starts it again. With reduced motion it never starts on its own. While it plays, moves are not announced.
+
+<Example file="carousel/autoplay">
+  <Autoplay />
+</Example>
+
+## Your own controls
+
+`useCarousel()` inside the carousel gives the position, the count and the moves; `CarouselPrevious` and `CarouselNext` can go anywhere inside it. Here they sit in a header, and the carousel takes its name from the visible title through `aria-labelledby`. For a gallery of pictures, `<CarouselContent arrows>` puts Previous and Next over the slides instead.
+
+<Example file="carousel/custom-controls">
+  <CustomControls />
+</Example>
+
+## Accessibility
+
+The carousel is a `<section>` with the role description "carousel" once it has a name, from `aria-label` or `aria-labelledby`; without one it stays a plain section. Each slide is a group named "3 of 5" unless you give it a name. The row of slides is one tab stop; links and buttons inside the slides keep their own. Previous and Next use `aria-disabled` rather than `disabled` at either end, so focus stays on them. A polite live region announces each move, and is silent while autoplay runs. Every name, from "carousel" to "Pause slide show", can be translated through `labels`.
+
+## Server rendering
+
+Slide names and the controls are in the server's HTML. Before the browser has measured anything, the carousel counts the slides inside a `CarouselContent` placed directly in it: every slide is already named "N of M", and the controls show a dot per slide. With several slides in view, the dots change to pages after the first measurement.
+
+## Props
+
+### Carousel
+
+<Props of="CarouselProps" />
+
+### CarouselContent
+
+<Props of="CarouselContentProps" />
+
+### CarouselControls
+
+<Props of="CarouselControlsProps" />
+
+</Entry>

@@ -1,0 +1,89 @@
+import { Entry, Example, Plate, Props } from "@/components/docs";
+import SparklinePlate from "@/examples/sparkline/plate";
+import StatCard from "@/examples/sparkline/stat-card";
+import Inline from "@/examples/sparkline/inline";
+import Colors from "@/examples/sparkline/colors";
+import Gaps from "@/examples/sparkline/gaps";
+
+export const metadata = { title: "Sparkline" };
+
+<Entry
+  slug="sparkline"
+  lede="A trend at a glance, beside the number it belongs to: in a stat card, a table row or a line of text."
+  plate={
+    <Plate
+      notes={[
+        "The trend is drawn in grey and the latest value is a dot in the accent: switch the accent at the top of the page.",
+        "Given a color, the line and the dot both take it, as in the open issues card.",
+        "No axes, no readout: each is one picture for a screen reader, named by its aria-label.",
+      ]}
+      caption="Nothing to click: it is drawn whole on the server. Sample data."
+    >
+      <SparklinePlate />
+    </Plate>
+  }
+  marks={{
+    pattern: (
+      <>
+        <code>role="img"</code> on an inline <code>&lt;span&gt;</code>, named by <code>aria-label</code>
+      </>
+    ),
+    extra: [{ term: "Default box", detail: <><code>h-8 w-24</code>, inline with text; size it with <code>className</code></> }],
+  }}
+>
+
+## When to use
+
+Use a Sparkline where a number needs its history beside it and there is no room for a chart: a stat card, a row per repository, a sentence. It draws the shape of the values from the lowest to the highest across its box, without axes, so it says which way something went, not by how much. When the reader needs the values, use a [LineChart](/docs/line-chart/) or put the number next to it.
+
+## Similar
+
+- [LineChart](/docs/line-chart/) has axes, a readout and keyboard access to every value.
+- [AreaChart](/docs/area-chart/) with its axes and grid turned off fits in a card too, and keeps the readout.
+- [Progress](/docs/progress/) is one value against a maximum, not a trend.
+
+## In a stat card
+
+`variant="area"` washes the area under the line in its colour. Give the box its size with `className`; here it takes the card's width. The numbers on this page are sample data.
+
+<Example file="sparkline/stat-card">
+  <StatCard />
+</Example>
+
+## In a line of text
+
+The Sparkline is an inline `<span>`, set on the middle of the line, so it sits in running text. Keep it about as tall as the text.
+
+<Example file="sparkline/inline">
+  <Inline />
+</Example>
+
+## Colours that mean something
+
+By default the trend is grey and the latest value takes the accent. With `color` both take it: a theme colour that says whether the change is good or bad. The words beside it say the same, so colour is never the only sign.
+
+<Example file="sparkline/colors">
+  <Colors />
+</Example>
+
+## Gaps
+
+`null` where a value is missing breaks the line; a value alone between two gaps shows as a small dot. `showLast={false}` drops the dot on the latest value.
+
+<Example file="sparkline/gaps">
+  <Gaps />
+</Example>
+
+## Accessibility
+
+A Sparkline is `role="img"` and its SVG is hidden, so a screen reader hears the `aria-label` and nothing else. Write the label as the reader should hear the trend: what it shows, over how long, and which way it went, as "CI runs per week over 12 weeks, up from 212 to 348". When the values themselves matter, give them in text or a table beside it.
+
+## Server rendering
+
+The whole Sparkline is rendered on the server: the line is drawn in a box of its own that stretches to the element, so nothing waits for a measure. The dots are placed in percent, so they stay round however the box is stretched.
+
+## Props
+
+<Props of="SparklineProps" />
+
+</Entry>

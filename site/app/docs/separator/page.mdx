@@ -1,0 +1,65 @@
+import { Entry, Example, Plate, Props } from "@/components/docs";
+import SeparatorPlate from "@/examples/separator/plate";
+import WithLabel from "@/examples/separator/with-label";
+import Vertical from "@/examples/separator/vertical";
+
+export const metadata = { title: "Separator" };
+
+<Entry
+  slug="separator"
+  lede="A hairline between groups: across, upright, or with a word in the middle."
+  plate={
+    <Plate
+      notes={[
+        "A separator with children is two lines with your text between them: \"or\" between two ways to sign in.",
+        "An upright separator stretches to the height of the row it stands in.",
+        <>
+          Decorative by default, so screen readers skip it; <code>isDecorative={"{false}"}</code> makes it a separator they
+          announce.
+        </>,
+      ]}
+      caption="Switch the theme: the lines take its border colour."
+    >
+      <SeparatorPlate />
+    </Plate>
+  }
+  marks={{
+    pattern: <><code>role="none"</code>; <code>role="separator"</code> when not decorative</>,
+    extra: [{ term: "Colour", detail: <>The <code>border</code> token, 1 px</> }],
+  }}
+>
+
+## When to use
+
+A Separator draws a line where spacing alone does not part two groups: sign-in options from a form, one day's commits from the next, two sets of buttons in a toolbar. Where a gap already does the job, leave the line out.
+
+## Similar
+
+- [Dropdown](/docs/dropdown/) and [Command](/docs/command/) have separators of their own for their menus; use those inside them.
+- [Accordion](/docs/accordion/) draws lines between its items by itself in its `light` and `bordered` variants.
+
+## A word in the middle
+
+Children turn a horizontal separator into two lines with the text between them, in small muted type. The text stays readable by screen readers even while the lines are hidden from them.
+
+<Example file="separator/with-label">
+  <WithLabel />
+</Example>
+
+## Upright
+
+`orientation="vertical"` stretches to the height of the row. For a shorter line, give it a height and centre it, as between the two groups of buttons here.
+
+<Example file="separator/vertical">
+  <Vertical />
+</Example>
+
+## Accessibility
+
+By default the line is decoration: it renders `role="none"` and screen readers pass over it. When it parts groups whose split matters, such as two sets of commands, pass `isDecorative={false}`: it becomes `role="separator"`, and a vertical one also says `aria-orientation="vertical"`.
+
+## Props
+
+<Props of="SeparatorProps" />
+
+</Entry>

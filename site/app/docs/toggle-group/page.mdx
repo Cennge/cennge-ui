@@ -1,0 +1,109 @@
+import { Entry, Example, Plate, Props } from "@/components/docs";
+import ToggleGroupPlate from "@/examples/toggle-group/plate";
+import ReadmeView from "@/examples/toggle-group/readme-view";
+import Notifications from "@/examples/toggle-group/notifications";
+import Deselectable from "@/examples/toggle-group/deselectable";
+import Icons from "@/examples/toggle-group/icons";
+import FullWidth from "@/examples/toggle-group/full-width";
+
+export const metadata = { title: "ToggleGroup" };
+
+<Entry
+  slug="toggle-group"
+  lede="A row of buttons that stay pressed: one at a time, like a segmented control, or several at once."
+  plate={
+    <Plate
+      notes={[
+        "Open, Closed, All: one at a time. A click on the chosen one keeps it, so the filter is never empty.",
+        "Labels switch on and off independently; any number can be on, or none.",
+        "Tab lands on the chosen item; arrows move focus without choosing, Space or Enter chooses.",
+      ]}
+    >
+      <ToggleGroupPlate />
+    </Plate>
+  }
+  marks={{
+    pattern: <>WAI-ARIA radio group in single mode, a toolbar of toggle buttons in multiple mode</>,
+    keyboard: [{ keys: "left" }, { keys: "right" }, "Home", "End", { keys: "space" }, { keys: "enter" }],
+    state: <>Controlled with <code>value</code> and <code>onValueChange</code>, or uncontrolled with <code>defaultValue</code></>,
+    extra: [
+      { term: "Empty value", detail: <>Refused in single mode, unless <code>isDeselectable</code></> },
+      { term: "Forms", detail: <>No <code>name</code>: nothing is submitted</> },
+    ],
+  }}
+>
+
+## When to use
+
+Use a ToggleGroup for a few options that change what is on screen at once: a filter, a view, a layout. Every option stays in sight and the chosen one looks pressed. In single mode a click on the chosen item keeps it, so a segmented control always has a value.
+
+It holds state for the page, not for a form: it takes no `name` and sends nothing on submit. For a choice that is submitted, use RadioGroup or Checkbox.
+
+## Similar
+
+- [Tabs](/docs/tabs/) switch between panels, each tab tied to its own content; a ToggleGroup only holds a value, and you decide what it changes.
+- [Radio](/docs/radio/) is a form field with a label and a description per option, and arrows move the selection; here arrows only move focus.
+- [Checkbox](/docs/checkbox/) is the form field for several independent options.
+- [Button](/docs/button/) runs an action once and does not stay pressed.
+
+## One value
+
+In single mode `value` is the chosen item's string. Without `isDeselectable`, `onValueChange` is never called with `null`: a click on the chosen item does nothing.
+
+<Example file="toggle-group/readme-view">
+  <ReadmeView />
+</Example>
+
+## Several values
+
+`selectionMode="multiple"` makes `value` an array of strings. Each item toggles on its own, and an empty array is a valid value.
+
+<Example file="toggle-group/notifications">
+  <Notifications />
+</Example>
+
+## Allow an empty choice
+
+With `isDeselectable`, a click on the chosen item clears it and `onValueChange` gets `null`. Here no status means every run.
+
+<Example file="toggle-group/deselectable">
+  <Deselectable />
+</Example>
+
+## Icons only
+
+`isIconOnly` drops an item's side padding and gives it a fixed width for one icon. With no text inside, each item needs an `aria-label`.
+
+<Example file="toggle-group/icons">
+  <Icons />
+</Example>
+
+## Full width
+
+`fullWidth` stretches the group to its container and gives every item an equal share. `size` sets the height and the text size.
+
+<Example file="toggle-group/full-width">
+  <FullWidth />
+</Example>
+
+## Accessibility
+
+In single mode the group is a `radiogroup` and each item a `radio` with `aria-checked`. In multiple mode it is a `toolbar` and each item a button with `aria-pressed`. The group has no visible label of its own, so name it with `aria-label`.
+
+The whole group is one Tab stop. Arrows move between items and wrap around at the ends, <kbd>Home</kbd> and <kbd>End</kbd> jump to the first and last; disabled items are skipped.
+
+## Styling
+
+`segmented` sits in a sunken track and fills the chosen item with `color`; `bordered` draws a border with dividers and tints the chosen item. `className` goes to the group and each item takes its own.
+
+## Props
+
+### ToggleGroup
+
+<Props of="ToggleGroupProps" />
+
+### ToggleGroupItem
+
+<Props of="ToggleGroupItemProps" />
+
+</Entry>

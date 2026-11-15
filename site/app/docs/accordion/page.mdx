@@ -1,0 +1,66 @@
+import { Entry, Example, Plate, Props } from "@/components/docs";
+import AccordionPlate from "@/examples/accordion/plate";
+import Multiple from "@/examples/accordion/multiple";
+import Controlled from "@/examples/accordion/controlled";
+
+export const metadata = { title: "Accordion" };
+
+<Entry
+  slug="accordion"
+  lede="Sections under headings that open and close: one at a time, or as many as the reader wants."
+  plate={
+    <Plate
+      notes={[
+        "Click a question, or press Enter or Space on it: its answer opens and the open one closes.",
+        "The arrow keys move between the questions; Home and End jump to the first and the last.",
+        "Click the open question again to close it. With isCollapsible={false} one always stays open.",
+      ]}
+      caption="Live: click it, use the keys."
+    >
+      <AccordionPlate />
+    </Plate>
+  }
+  marks={{
+    pattern: <>WAI-ARIA accordion: each title is a <code>&lt;button&gt;</code> in an <code>&lt;h3&gt;</code></>,
+    keyboard: [{ keys: "enter" }, { keys: "space" }, { keys: "up" }, { keys: "down" }, "Home", "End"],
+    state: <>Controlled with <code>value</code> and <code>onValueChange</code>, or uncontrolled with <code>defaultValue</code></>,
+    extra: [{ term: "Motion", detail: "The panel slides open and closed; with reduced motion it appears at once" }],
+  }}
+>
+
+## When to use
+
+An Accordion shortens a long page of sections that are read one at a time: questions and answers, groups of settings, details under a summary. Each heading stays in view, so the reader sees what is there before opening it. When every section matters to everyone, leave them open as plain headings and text.
+
+## Similar
+
+- [Tabs](/docs/tabs/) show one panel in place of another, from a row of names; accordion sections open in the flow of the page and can be open together.
+- [Card](/docs/card/) sets content apart but never hides it.
+
+## Several open at once
+
+With `selectionMode="multiple"` opening one section leaves the others as they are, and `value` is an array. `variant="splitted"` turns each item into a card of its own; `startContent` puts an icon before the title.
+
+<Example file="accordion/multiple">
+  <Multiple />
+</Example>
+
+## Controlled, always one open
+
+In single mode `value` is a string. `isCollapsible={false}` stops the open section from closing, so there is always one; its button then carries `aria-disabled`, so screen readers know it will not close. A disabled item keeps its place and title, but neither a click nor the keyboard opens it.
+
+<Example file="accordion/controlled">
+  <Controlled />
+</Example>
+
+## Props
+
+### Accordion
+
+<Props of="AccordionProps" />
+
+### AccordionItem
+
+<Props of="AccordionItemProps" />
+
+</Entry>

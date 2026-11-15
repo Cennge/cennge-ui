@@ -1,0 +1,68 @@
+import { Entry, Example, Plate, Props } from "@/components/docs";
+import SkeletonPlate from "@/examples/skeleton/plate";
+import Shapes from "@/examples/skeleton/shapes";
+import Reload from "@/examples/skeleton/reload";
+
+export const metadata = { title: "Skeleton" };
+
+<Entry
+  slug="skeleton"
+  lede="Grey shapes where content is about to be, so the page keeps its layout while it loads."
+  plate={
+    <Plate
+      notes={[
+        "Switch Loaded on: each placeholder had the size of the content inside it, so nothing moves.",
+        <>
+          While loading, the placeholders are hidden from screen readers; the card says <code>aria-busy</code> instead.
+        </>,
+        "A soft shimmer crosses each shape. With reduced motion it stops and the grey stays.",
+      ]}
+      caption="Live: switch it."
+    >
+      <SkeletonPlate />
+    </Plate>
+  }
+  marks={{
+    pattern: <>A <code>&lt;div aria-hidden&gt;</code>; once loaded, only its children</>,
+    state: <><code>isLoaded</code>: off shows the placeholder, on shows the children</>,
+    extra: [{ term: "Sizing", detail: <>From your classes (<code>h-4 w-32</code>), or from the children it wraps</> }],
+  }}
+>
+
+## When to use
+
+Use a Skeleton when you know the shape of what is loading: a repository card, a list of releases, a profile. The reader sees where things will be, and nothing jumps when the data arrives. When the shape is unknown, or the wait is for an action rather than content, a spinner is more honest.
+
+## Similar
+
+- [Spinner](/docs/spinner/) says that something is at work, without promising a shape.
+- [Progress](/docs/progress/) shows how much of a task is done.
+- [EmptyState](/docs/empty-state/) is what to show once loading is over and there is nothing.
+
+## Shapes made with classes
+
+With no content to wrap yet, size each placeholder with classes: `h-4 w-2/5` for a line, `size-10 rounded-full` for an avatar. Mark the list `aria-busy` while it loads.
+
+<Example file="skeleton/shapes">
+  <Shapes />
+</Example>
+
+## Wrapping the real content
+
+Put the content inside and flip `isLoaded`. While loading, the children are rendered but invisible, so the placeholder takes their exact size; once loaded, the Skeleton renders the children alone. `w-fit` keeps a line's placeholder as wide as its text.
+
+<Example file="skeleton/reload">
+  <Reload />
+</Example>
+
+Wrap block elements, as here. Around an inline element, such as a Badge on its own, the placeholder takes the height of a line of text and can be a few pixels taller than the element.
+
+## Styling
+
+The placeholder is filled with `surface-3`, the same surface as a [Card](/docs/card/), and in the light theme that is lighter than the panels around it. Inside a card, or on a light panel, give it a tint that shows on any surface: the examples on this page pass `bg-default-bg`.
+
+## Props
+
+<Props of="SkeletonProps" />
+
+</Entry>

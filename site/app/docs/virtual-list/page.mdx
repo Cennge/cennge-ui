@@ -1,0 +1,81 @@
+import { Entry, Example, Plate, Props } from "@/components/docs";
+import VirtualListPlate from "@/examples/virtual-list/plate";
+import NextFailure from "@/examples/virtual-list/next-failure";
+import Grouped from "@/examples/virtual-list/grouped";
+import RequestLog from "@/examples/virtual-list/request-log";
+
+export const metadata = { title: "VirtualList" };
+
+<Entry
+  slug="virtual-list"
+  lede="A list of thousands of rows that scrolls like any other, with only the rows in view in the page."
+  plate={
+    <Plate
+      notes={[
+        "Scroll through 10,000 runs: only the rows in view, and six beyond each edge, are rendered.",
+        "Failed runs take a second line. Each row is measured as it appears, and the rows in view hold still.",
+        "Tab to the list: End and Home go to the last and first run. Or type a run number and go to it.",
+      ]}
+    >
+      <VirtualListPlate />
+    </Plate>
+  }
+  marks={{
+    pattern: <>A list (<code>role="list"</code>) whose rows carry <code>aria-setsize</code> and <code>aria-posinset</code>, in a ScrollArea</>,
+    keyboard: ["Home", "End"],
+    state: <>None to hold: <code>items</code> in, rows out; <code>scrollToIndex</code> through <code>listRef</code></>,
+    extra: [
+      { term: "Virtualizer", detail: <>Its own, with no virtualization library; exported as <code>useVirtualizer</code></> },
+      { term: "Row height", detail: "Any, and different per row; each is measured once shown" },
+    ],
+  }}
+>
+
+## When to use
+
+Use a VirtualList when a list runs to thousands of rows and should still scroll as one: a log, a feed of runs or deploys, the results of a long search. Rendering every row would put tens of thousands of elements in the page; a VirtualList renders the rows in view and six beyond each edge, about twenty in the list above, and swaps them as you scroll.
+
+It renders `children(item, index)` for each row, so a row can be anything, and rows need not share a height. Give the list a height with `className`; it fills it and scrolls inside, with the themed scrollbars of [ScrollArea](/docs/scroll-area/).
+
+## Similar
+
+- [Table](/docs/table/) is for records with columns and headers. It renders every row, so it suits a page of data rather than ten thousand rows.
+- [Combobox](/docs/combobox/) uses the same virtualizer by itself past 100 options; you do not need a VirtualList inside it.
+- [ScrollArea](/docs/scroll-area/) scrolls content that is fine to render whole. Reach for a VirtualList when there is too much of it.
+
+## Scroll to a row from code
+
+`listRef` receives `scrollToIndex(index, { align })`. `"auto"`, the default, scrolls only as far as it takes to bring the row into view; `"start"`, `"center"` and `"end"` put it there. The row stays in place while the rows around it are measured, for a second or until the reader turns the wheel, touches the list or clicks in it.
+
+<Example file="virtual-list/next-failure">
+  <NextFailure />
+</Example>
+
+## Rows of different kinds
+
+`estimateSize` is the height a row is given before it has been measured, in pixels. With rows of several kinds, such as day headings among deploys, pass a function of the index: the better the guess, the less the scrollbar shifts as rows are measured.
+
+<Example file="virtual-list/grouped">
+  <Grouped />
+</Example>
+
+## Your own markup
+
+`useVirtualizer` is the engine under VirtualList and Combobox. Give it the item count and the scrolling element, render its `items` inside an element of `totalSize`, and pass `measureElement` as the ref of each row, with `data-index`. Roles, keys and focus are then yours: this log is a focusable region.
+
+<Example file="virtual-list/request-log">
+  <RequestLog />
+</Example>
+
+## Accessibility
+
+- The rows sit in a `role="list"`, each a `listitem` with `aria-setsize` and `aria-posinset`, so screen readers can tell a row's place in the whole list, "4,812 of 10,000", though most rows are not in the page.
+- When the content overflows, the scrolling area takes Tab and the arrow keys scroll it. Name it with `aria-label` and it is a region screen readers can jump to.
+- Home and End on the list go to the exact first and last row. They are left alone when the focus is on a control inside a row.
+- Text search in the browser (Ctrl+F) finds only the rendered rows. Give long lists their own search, and jump to the result with `scrollToIndex`.
+
+## Props
+
+<Props of="VirtualListProps" />
+
+</Entry>

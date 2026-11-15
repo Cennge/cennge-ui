@@ -1,0 +1,81 @@
+import { Entry, Example, Plate, Props } from "@/components/docs";
+import TagsInputPlate from "@/examples/tags-input/plate";
+import Rules from "@/examples/tags-input/rules";
+import Separators from "@/examples/tags-input/separators";
+import InAForm from "@/examples/tags-input/in-a-form";
+
+export const metadata = { title: "TagsInput" };
+
+<Entry
+  slug="tags-input"
+  lede="A text field that turns what you type into tags: Enter or a comma adds one, Backspace takes the last one away."
+  plate={
+    <Plate
+      notes={[
+        "Type a topic and press Enter or a comma. Paste “nextjs, radix-ui” and both arrive at once.",
+        "Type “React” and press Enter: it is refused as a copy of react, which flashes. The text stays to be fixed, with the reason under the field.",
+        "In the empty field, Backspace removes the last tag; ← walks the tags and Delete removes the one in focus.",
+      ]}
+    >
+      <TagsInputPlate />
+    </Plate>
+  }
+  marks={{
+    pattern: <>Native text <code>&lt;input&gt;</code>; the tags' remove buttons stay out of the tab order</>,
+    keyboard: [{ keys: "enter" }, ",", { keys: "backspace" }, { keys: "left" }, { keys: "right" }, { keys: "delete" }, { keys: "escape" }],
+    state: <>Controlled with <code>value</code> and <code>onValueChange</code> (a <code>string[]</code>), or uncontrolled with <code>defaultValue</code></>,
+    extra: [
+      { term: "Refusals", detail: <>Duplicates in any letter case, <code>validate</code> and <code>maxTags</code>; the reason shows under the field</> },
+      { term: "Forms", detail: <>One hidden input per tag under <code>name</code></> },
+    ],
+  }}
+>
+
+## When to use
+
+Use a TagsInput when the values are open-ended and short: topics, labels, reviewers, file patterns. People type them, paste a list, or let a phone keyboard insert them, and each one becomes a tag they can see and remove. Leftover text becomes a tag when the field loses focus, unless `addOnBlur` is `false`.
+
+## Similar
+
+- [Combobox](/docs/combobox/) with `selectionMode="multiple"` also shows its values as tags, but only takes them from its list. Use it when the choices are known.
+- [Input](/docs/input/) holds one free value as a string.
+
+## Rules and limits
+
+`validate` refuses a tag by returning `false`, `maxTags` stops new ones once the field is full, and a tag that is already there in any letter case is refused unless `allowDuplicates` is set. A refused tag keeps its text in the field and shows the reason in place of the description until the text changes. `formatAnnouncement` words each reason. Try “Bug”, then “help wanted”, then add labels until a fourth is refused.
+
+<Example file="tags-input/rules">
+  <Rules />
+</Example>
+
+## Your own separators
+
+`separators` lists the keys that add a tag; single characters also split text that is pasted or inserted without key events, as Android keyboards and autofill do. Line breaks in pasted text always split. Here a space adds a path too, so `site/** package.json` pasted at once becomes two tags.
+
+<Example file="tags-input/separators">
+  <Separators />
+</Example>
+
+## In a form
+
+With a `name`, every tag is submitted as its own value, so `FormData.getAll()` returns the list. <kbd>Enter</kbd> with text in the field adds a tag; <kbd>Enter</kbd> in an empty field submits the form. `isRequired` counts the tags, not the text: with one tag in place the field is filled.
+
+<Example file="tags-input/in-a-form">
+  <InAForm />
+</Example>
+
+## Accessibility
+
+The tags add no tab stops: <kbd>Tab</kbd> leaves the field rather than stepping through the remove buttons. With `isClearable`, the clear button is the next stop. From the empty field, <kbd>←</kbd> moves onto the last tag's remove button, the arrow keys walk the tags, <kbd>Backspace</kbd> or <kbd>Delete</kbd> removes the one in focus and focus moves to a neighbour, and <kbd>→</kbd> past the last tag or <kbd>Escape</kbd> returns to the field. A mouse click on a remove button puts focus back in the field.
+
+Screen readers hear each change through a polite live region: "Added react", "Removed react", and every refusal, which is also linked to the field with `aria-describedby`. Remove buttons are named "Remove react"; translate them with `removeLabel` and the messages with `formatAnnouncement`.
+
+## Styling
+
+`classNames` reaches the inner parts: `base`, `label`, `inputWrapper`, `input`, `tag`, `clearButton`, `description` and `errorMessage`.
+
+## Props
+
+<Props of="TagsInputProps" />
+
+</Entry>

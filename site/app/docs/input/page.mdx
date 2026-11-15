@@ -1,0 +1,89 @@
+import { Entry, Example, Plate, Props } from "@/components/docs";
+import InputPlate from "@/examples/input/plate";
+import ValidateOnBlur from "@/examples/input/validate-on-blur";
+import Adornments from "@/examples/input/adornments";
+import Variants from "@/examples/input/variants";
+import InAForm from "@/examples/input/in-a-form";
+
+export const metadata = { title: "Input" };
+
+<Entry
+  slug="input"
+  lede="A one-line text field with its label, a hint or an error under it, an optional clear button and room for icons."
+  plate={
+    <Plate
+      notes={[
+        "The × shows while there is text; it empties the field and puts the caret back in it.",
+        "Click anywhere in the box, on the icon too: the field takes focus.",
+        "Fix the package name: the error under it turns back into the description.",
+      ]}
+    >
+      <InputPlate />
+    </Plate>
+  }
+  marks={{
+    pattern: <>Native <code>&lt;input&gt;</code> with a <code>&lt;label&gt;</code></>,
+    state: <>Controlled with <code>value</code> and <code>onValueChange</code>, or uncontrolled with <code>defaultValue</code></>,
+    extra: [
+      { term: "Hint and error", detail: <>Linked with <code>aria-describedby</code>; the error replaces the hint</> },
+      { term: "Forms", detail: <>Errors from <code>&lt;Form&gt;</code> show under the field by <code>name</code></> },
+    ],
+  }}
+>
+
+## When to use
+
+Use an Input for one line of free text: a name, an email, a search. It renders a real `<input>`, so `type`, `name`, `autoComplete`, `pattern` and every other attribute reach it as they are, and `onValueChange` hands you the string without reading the event.
+
+## Similar
+
+- [Textarea](/docs/textarea/) takes several lines and grows with them.
+- [NumberInput](/docs/number-input/) is for numbers: it refuses letters, steps with the arrows and formats by locale.
+- [PasswordInput](/docs/password-input/) adds a show/hide button and a Caps Lock hint.
+- [Combobox](/docs/combobox/) is a text field whose value must come from a list.
+
+## Validate when the field is left
+
+`isInvalid` and `errorMessage` are yours to set, so you choose when to check. Here the address is checked once focus has left the field, not while it is being typed.
+
+<Example file="input/validate-on-blur">
+  <ValidateOnBlur />
+</Example>
+
+## Prefix and suffix
+
+`startContent` and `endContent` sit inside the box, before and after the text. A click on them still focuses the field.
+
+<Example file="input/adornments">
+  <Adornments />
+</Example>
+
+## Variants
+
+`variant` sets the box and `color` the focus colour, `primary` by default. `size` and `radius` take the same values as on Button.
+
+<Example file="input/variants">
+  <Variants />
+</Example>
+
+## Checked by the browser
+
+Inside a [Form](/docs/form/), the browser's own checks (`isRequired`, `type="email"`, `pattern`) show their message under the field instead of in a tooltip, and a blocked submit focuses the first field to fix. Press Invite with the email empty.
+
+<Example file="input/in-a-form">
+  <InAForm />
+</Example>
+
+## Accessibility
+
+The label is a `<label for>` the input, and the description or the error is its `aria-describedby`, so a screen reader reads it with the field. `isInvalid` sets `aria-invalid`. `isRequired` sets the native `required` attribute; the asterisk after the label is drawn in CSS. The clear button is a real button named "Clear", reachable with <kbd>Tab</kbd>, and it hands focus back to the field.
+
+## Styling
+
+`className` goes to the outer wrapper, which holds the label, the box and the text under it. `classNames` reaches the parts inside: `base`, `label`, `inputWrapper` (the box), `input`, `clearButton`, `description` and `errorMessage`.
+
+## Props
+
+<Props of="InputProps" />
+
+</Entry>

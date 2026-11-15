@@ -1,0 +1,59 @@
+import { Entry, Example, Plate, Props } from "@/components/docs";
+import SpinnerPlate from "@/examples/spinner/plate";
+import Sizes from "@/examples/spinner/sizes";
+import Label from "@/examples/spinner/label";
+
+export const metadata = { title: "Spinner" };
+
+<Entry
+  slug="spinner"
+  lede="A small turning ring that says something is at work, in the colour of the text around it."
+  plate={
+    <Plate
+      notes={[
+        "The spinner takes the colour of its text: the deploy line is in the accent's text colour, and so is its ring.",
+        "Beside words that say what is happening it is hidden from screen readers; alone, with a label, it is a status.",
+        "With reduced motion it keeps turning, at 1.5 seconds a turn instead of one.",
+      ]}
+      caption="Live: try it with reduced motion on."
+    >
+      <SpinnerPlate />
+    </Plate>
+  }
+  marks={{
+    pattern: <>An <code>&lt;svg aria-hidden&gt;</code>; <code>role="status"</code> with an <code>aria-label</code> when you pass <code>label</code></>,
+    extra: [{ term: "Sizes", detail: "14, 16 and 20 px: sm, md and lg" }],
+  }}
+>
+
+## When to use
+
+A Spinner marks something that is at work right now and has no amount to show: a job running, a panel fetching, a deploy on its way. It is sized to sit in a line of text or a list row. When you can say how much is done, a progress bar says more.
+
+## Similar
+
+- [Progress](/docs/progress/) shows how far a task has got; without a value its ring spins too, but it is a progressbar and comes in larger sizes.
+- [Skeleton](/docs/skeleton/) holds the shape of content that is loading, so the page does not move when it arrives.
+- [Button](/docs/button/) has its own spinner: pass `isLoading` instead of putting a Spinner inside.
+
+## Sizes and colours
+
+By default the ring is `currentColor`, so it matches the text it sits in. `color` picks a role colour instead; `default` is the muted grey.
+
+<Example file="spinner/sizes">
+  <Sizes />
+</Example>
+
+## With a label, or without
+
+Without `label` the spinner is hidden from screen readers, which suits a spinner next to words that already say what is going on. When it stands alone, `label` makes it a `role="status"` element named by that text.
+
+<Example file="spinner/label">
+  <Label />
+</Example>
+
+## Props
+
+<Props of="SpinnerProps" />
+
+</Entry>

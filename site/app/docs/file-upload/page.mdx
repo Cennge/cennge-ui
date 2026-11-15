@@ -1,0 +1,88 @@
+import { Entry, Example, Plate, Props } from "@/components/docs";
+import FileUploadPlate from "@/examples/file-upload/plate";
+import Limits from "@/examples/file-upload/limits";
+import OneFile from "@/examples/file-upload/one-file";
+import InAForm from "@/examples/file-upload/in-a-form";
+import Translated from "@/examples/file-upload/translated";
+
+export const metadata = { title: "FileUpload" };
+
+<Entry
+  slug="file-upload"
+  lede="A drop zone that takes files by drag and drop or the file picker, turns away the wrong ones with a reason, and lists the rest."
+  plate={
+    <Plate
+      caption="Live: click it, drop files on it, use the keys."
+      notes={[
+        "Click the zone or drop files on it; a file already in the list is not added twice.",
+        "Drop a PDF, or a file over 10 MB: it stays out, and the reason shows under the zone.",
+        "Remove a file and focus moves to the next one, or the one above when it was last, or back to the zone when none are left.",
+      ]}
+    >
+      <FileUploadPlate />
+    </Plate>
+  }
+  marks={{
+    pattern: <>Native <code>&lt;button&gt;</code> that opens a hidden <code>&lt;input type="file"&gt;</code></>,
+    keyboard: [{ keys: "enter" }, { keys: "space" }],
+    state: <>Controlled with <code>value</code> and <code>onValueChange</code> (an array of <code>File</code>), or uncontrolled</>,
+    extra: [
+      { term: "Checks", detail: "Type, size and count, each refused file with its reason" },
+      { term: "Forms", detail: <>With <code>name</code>, a plain submit sends the listed files</> },
+    ],
+  }}
+>
+
+## When to use
+
+Use a FileUpload where people attach files to something: screenshots to an issue, a log from a failed run, an image for a repository. It checks each file against `accept`, `maxSize`, `minSize` and `maxFiles` as it arrives, keeps the ones that pass and says why the others did not.
+
+It uploads nothing by itself. You get the `File` objects from `onValueChange` and send them where they go, or give the field a `name` and let the form send them.
+
+## Similar
+
+- A plain `<input type="file">` opens the same picker, but shows no list of what was picked and gives no reasons. With a `name`, FileUpload keeps one inside that holds exactly the files in its list, so FormData reads what the reader sees.
+
+## Type, size and count
+
+`accept` takes MIME types, wildcards and extensions, like the native attribute, as a string or an array. A refused file stays out of the list with its reason under the zone. `onReject` receives each one with its codes: `file-invalid-type`, `file-too-large`, `file-too-small` or `too-many-files`.
+
+<Example file="file-upload/limits">
+  <Limits />
+</Example>
+
+Images get a preview. Its object URL is released when the file leaves the list.
+
+## One file, compact
+
+`variant="button"` is the small form for tight places; it still takes drops. With `multiple={false}` a new file replaces the one in the list.
+
+<Example file="file-upload/one-file">
+  <OneFile />
+</Example>
+
+## Sent with the form
+
+With a `name`, the files are set on a real file input inside the field, so `new FormData(form)` and a plain form submit carry them. Remove one from the list and it is gone from the form too. Inside a [Form](/docs/form/), an error your server returns for `logs` shows under the field.
+
+<Example file="file-upload/in-a-form">
+  <InAForm />
+</Example>
+
+## In another language
+
+`messages` replaces the field's own words: the prompt, the button, the names of the list and of the remove buttons, and the reasons. File sizes are formatted for the `locale` of [CenngeProvider](/docs/provider/).
+
+<Example file="file-upload/translated">
+  <Translated />
+</Example>
+
+## Accessibility
+
+The zone is a `<button>`, so <kbd>Enter</kbd> and <kbd>Space</kbd> open the picker; the label names it, and the prompt and the hint describe it. Reasons for refused files appear in a `role="alert"` region that is always in the page, so screen readers announce each new one. Every file has a remove button named after it ("Remove trace-webkit.zip"). After a removal, focus moves to the remove button of the file now in that place, or of the one above when the last file went, and to the zone when the list is empty.
+
+## Props
+
+<Props of="FileUploadProps" />
+
+</Entry>

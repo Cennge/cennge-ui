@@ -1,0 +1,90 @@
+import { Entry, Example, Plate, Props } from "@/components/docs";
+import RatingPlate from "@/examples/rating/plate";
+import Basic from "@/examples/rating/basic";
+import Half from "@/examples/rating/half";
+import ReadOnly from "@/examples/rating/read-only";
+import Icon from "@/examples/rating/icon";
+import InAForm from "@/examples/rating/in-a-form";
+
+export const metadata = { title: "Rating" };
+
+<Entry
+  slug="rating"
+  lede="Stars to give a score and to show one: whole or half, by pointer or keyboard."
+  plate={
+    <Plate
+      notes={[
+        "Hover to preview, click to rate; a second click on the same star clears it. The average below follows.",
+        "Tab lands on the chosen star, or the first before a rating; the arrows move and choose without wrapping round; Backspace clears.",
+        "Docs quality takes half stars: the left half of a star picks .5, and the arrows step by half a star.",
+      ]}
+    >
+      <RatingPlate />
+    </Plate>
+  }
+  marks={{
+    pattern: "WAI-ARIA radio group of stars; a slider with half stars or more than seven; an image when read-only",
+    keyboard: [{ keys: "left" }, { keys: "right" }, "Home", "End", { keys: "space" }, { keys: "backspace" }, { keys: "delete" }, "PageUp", "PageDown"],
+    state: <>Controlled with <code>value</code> and <code>onValueChange</code>, <code>0</code> for no rating; or uncontrolled with <code>defaultValue</code></>,
+    extra: [{ term: "Tap size", detail: "Every star is at least 24 × 24 px, read-only ones aside" }],
+  }}
+>
+
+## When to use
+
+Use a Rating to ask for a score on a short scale, five stars by default, and to show a score next to something: a release, a repository, a review. The same component reads both ways: interactive while people rate, `isReadOnly` when it shows an average such as 4.3.
+
+## Similar
+
+- [Slider](/docs/slider/) picks a number on a longer or finer scale.
+- [Radio](/docs/radio/) names each choice in words; a Rating's choices are a count of stars.
+
+## Rate something
+
+The value is the number of stars, and `0` means no rating yet. A click on the chosen star, <kbd>Backspace</kbd> or <kbd>Delete</kbd> sets it back to `0`; pass `isClearable={false}` to keep a rating once given.
+
+<Example file="rating/basic">
+  <Basic />
+</Example>
+
+## Half stars
+
+With `allowHalf`, the left half of a star picks 3.5 and the right half 4. The control becomes a single slider: the arrows step by half a star, <kbd>Page Up</kbd> and <kbd>Page Down</kbd> by a whole one. A `count` above seven makes a slider too: past seven choices, a slider reads better than a row of radios.
+
+<Example file="rating/half">
+  <Half />
+</Example>
+
+## Showing an average
+
+`isReadOnly` shows any value, fractions included, as one picture: the last star fills to the fraction. It takes no focus and no clicks, and screen readers read its name with the value, "Average rating: 4.3 stars".
+
+<Example file="rating/read-only">
+  <ReadOnly />
+</Example>
+
+## Your own icon
+
+`icon` replaces the star and is drawn twice with `currentColor`: in `color` when filled, muted when empty. Pass `emptyIcon` for a different empty shape, and `getValueLabel` so the spoken names match the picture.
+
+<Example file="rating/icon">
+  <Icon />
+</Example>
+
+## In a form
+
+With a `name`, the rating is submitted as a number, or as an empty string without one. `isRequired` adds the asterisk, and `aria-required` on a row of star radios, but the browser does not check it, so check the value yourself. Here the error goes back through the [Form](/docs/form/), which shows it under the stars and moves focus to them; the next rating clears it.
+
+<Example file="rating/in-a-form">
+  <InAForm />
+</Example>
+
+## Accessibility
+
+Up to seven stars form a `radiogroup`, one radio per star named "1 star", "2 stars" and so on, with the chosen star, or the first before a rating, as the only tab stop. The arrows stop at the first and last star rather than wrapping round; clearing has keys of its own. Translate the names with `getValueLabel`. The empty stars keep a 3:1 contrast with the page in both themes, and hover previews never change the value.
+
+## Props
+
+<Props of="RatingProps" />
+
+</Entry>

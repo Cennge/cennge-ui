@@ -1,0 +1,91 @@
+import { Entry, Example, Plate, Props } from "@/components/docs";
+import StepperPlate from "@/examples/stepper/plate";
+import ReleaseWizard from "@/examples/stepper/wizard";
+import SetupSteps from "@/examples/stepper/jump-ahead";
+import CheckRun from "@/examples/stepper/vertical";
+import NarrowStepper from "@/examples/stepper/narrow";
+
+export const metadata = { title: "Stepper" };
+
+<Entry
+  slug="stepper"
+  lede="Numbered steps of one task: what is done, where you are, what is left, and the current step's content under them."
+  plate={
+    <Plate
+      notes={[
+        "Press Next with the name empty: the step turns red until you type one.",
+        "Finished steps become buttons: click one to go back to it.",
+        "The vertical stepper shows the current step's content under its title, with a spinner while it is loading.",
+      ]}
+    >
+      <StepperPlate />
+    </Plate>
+  }
+  marks={{
+    pattern: <>An ordered list, <code>aria-current="step"</code> on the current step; with <code>onStepClick</code>, finished steps are buttons</>,
+    keyboard: [{ keys: "tab" }, { keys: "enter" }, { keys: "space" }],
+    state: <>Controlled: <code>activeStep</code>, and <code>onStepClick</code> for clicks on the steps</>,
+    extra: [
+      { term: "Layout", detail: "Labels go under the numbers when a horizontal Stepper is narrower than 28rem (a container query)" },
+      { term: "Content", detail: <>Only the current step's children render, then <code>completedContent</code></> },
+    ],
+  }}
+>
+
+## When to use
+
+A Stepper splits one task into steps that come in order, creating a repository or publishing a release, and shows how far along it is. Each `Step` can hold the form for that step: only the current one renders, and once `activeStep` is past the last step, `completedContent` takes its place.
+
+## Similar
+
+- [Pagination](/docs/pagination/) moves through pages of the same content in any order; a Stepper leads through different steps of one task.
+- [Timeline](/docs/timeline/) lists events in order, each with its time; a Stepper leads through a task and holds each step's content.
+- [Tabs](/docs/tabs/) show panels in any order, with none of them done or not done.
+
+## A wizard
+
+The Stepper holds no state: keep `activeStep` yourself and move it with your own Back and Next buttons. With `onStepClick`, finished steps become buttons that take the reader back; steps ahead stay out of reach. Keep the fields' values in state above the Stepper too, as the notes here: only the current step is rendered, so a field in a step you leave would start empty when you come back.
+
+<Example file="stepper/wizard">
+  <ReleaseWizard />
+</Example>
+
+## Steps in any order
+
+`allowNextStepsSelect` makes the steps ahead clickable too, for steps that do not depend on each other. Every step before the current one shows as completed, skipped ones included, so keep it for steps that are fine with their defaults. The current step is never a button, and a step with `isDisabled` never is.
+
+<Example file="stepper/jump-ahead">
+  <SetupSteps />
+</Example>
+
+## Vertical, with errors and loading
+
+With `orientation="vertical"` the current step's content sits under its title, beside the line that joins the steps. `isError` turns a step red with an exclamation mark, and stays until you take it off; `isLoading` puts a spinner in the current step's circle. Press Run again.
+
+<Example file="stepper/vertical">
+  <CheckRun />
+</Example>
+
+## In a narrow column
+
+A horizontal Stepper looks at its own width, not the window's: narrower than 28rem, its labels move under the numbers and the lines between steps go. In a sidebar or a card it changes on a desktop screen too.
+
+<Example file="stepper/narrow">
+  <NarrowStepper />
+</Example>
+
+## Accessibility
+
+The steps are an ordered list named by `aria-label`, "Progress" unless you name it. After each title, screen readers hear its state: "completed", "current step", "not started" or "has an error"; translate them with `stateLabels`. The numbers, check marks and lines are hidden from them.
+
+## Props
+
+### Stepper
+
+<Props of="StepperProps" />
+
+### Step
+
+<Props of="StepProps" />
+
+</Entry>
