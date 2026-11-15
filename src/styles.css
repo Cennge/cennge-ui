@@ -448,6 +448,7 @@
 [data-cennge-motion="reduce"] *::before,
 [data-cennge-motion="reduce"] *::after {
   animation-duration: 0.01ms !important;
+  animation-delay: 0s !important;
   animation-iteration-count: 1 !important;
   transition-duration: 0.01ms !important;
 }
@@ -478,6 +479,8 @@
   --animate-cennge-grow-x: cennge-grow-x 520ms cubic-bezier(0.23, 1, 0.32, 1);
   --animate-cennge-grow-y: cennge-grow-y 520ms cubic-bezier(0.23, 1, 0.32, 1);
   --animate-cennge-reveal: cennge-reveal 640ms cubic-bezier(0.23, 1, 0.32, 1);
+  /* A goal ring fills from its start; a lap past the goal follows the first (delayed by the component). */
+  --animate-cennge-ring: cennge-ring 900ms cubic-bezier(0.23, 1, 0.32, 1) backwards;
 
   /* Height is the one layout animation here: Radix measures it for us. */
   @keyframes cennge-accordion-down {
@@ -500,6 +503,9 @@
   }
   @keyframes cennge-grow-y {
     from { transform: scaleY(0); }
+  }
+  @keyframes cennge-ring {
+    from { stroke-dashoffset: var(--cennge-ring-length); }
   }
   @keyframes cennge-reveal {
     from { clip-path: inset(0 100% 0 0); }
