@@ -24,9 +24,9 @@ const RADIUS = 4;
  */
 export function BarChart<T>(props: BarChartProps<T>) {
   const { "aria-label": label, layout = "vertical", isStacked = false, barSize = 24, domain } = props;
-  const { categories, columns, colors, formats, labels, legend, table, tooltip } = useCartesianData(props, "box");
+  const { categories, columns, colors, formats, labels, legend, table, tooltip, references, referenceValues } = useCartesianData(props, "box");
   const stacks = isStacked ? stack(columns) : null;
-  const values = stacks ? stacks.flat(2) : columns.flat().filter((value): value is number => value !== null);
+  const values = [...(stacks ? stacks.flat(2) : columns.flat().filter((value): value is number => value !== null)), ...referenceValues];
   const scale = valueScale(values, { domain });
   const isVertical = layout === "vertical";
 
@@ -109,6 +109,8 @@ export function BarChart<T>(props: BarChartProps<T>) {
       placement="band"
       scale={scale}
       axisFormat={formats.axis}
+      valueFormat={formats.value}
+      references={references}
       showGrid={props.showGrid ?? true}
       showCategoryAxis={(isVertical ? props.showXAxis : props.showYAxis) ?? true}
       showValueAxis={(isVertical ? props.showYAxis : props.showXAxis) ?? true}

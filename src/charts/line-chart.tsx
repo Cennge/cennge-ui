@@ -2,10 +2,12 @@ import { useId } from "../utils/use-id";
 import { CartesianFrame } from "./frame";
 import { areaPath, linePath, runs, type Point } from "./path";
 import { stack, valueScale } from "./scale";
-import { useCartesianData, type CartesianChartProps } from "./series";
+import { useCartesianData, type CartesianChartProps, type LineChartSeries } from "./series";
 import type { Size } from "./use-size";
 
-export interface LineChartProps<T> extends CartesianChartProps<T> {
+export interface LineChartProps<T> extends Omit<CartesianChartProps<T>, "series"> {
+  /** One line per series, in palette order; `display: "dots"` draws one as dots instead. */
+  series: readonly LineChartSeries<T>[];
   /** "smooth" bends through the points without overshooting them: a count never dips below zero. @default "linear" */
   curve?: "linear" | "smooth";
   /** A dot on every value, not only where the readout is. @default false */
@@ -14,7 +16,8 @@ export interface LineChartProps<T> extends CartesianChartProps<T> {
   startAtZero?: boolean;
 }
 
-export interface AreaChartProps<T> extends Omit<LineChartProps<T>, "startAtZero"> {
+export interface AreaChartProps<T> extends Omit<LineChartProps<T>, "startAtZero" | "series"> {
+  series: CartesianChartProps<T>["series"];
   /** The series piled up, each filling down to the one below: a whole made of parts. */
   isStacked?: boolean;
 }
@@ -33,12 +36,16 @@ function LinearChart<T>({
   startAtZero = true,
   isStacked = false,
   ...props
-}: AreaChartProps<T> & { kind: "line" | "area"; startAtZero?: boolean }) {
+}: Omit<AreaChartProps<T>, "series"> & { series: readonly LineChartSeries<T>[]; kind: "line" | "area"; startAtZero?: boolean }) {
   const { "aria-label": label, domain } = props;
-  const { categories, columns, colors, formats, labels, legend, table, tooltip } = useCartesianData(props, kind === "line" ? "line" : "box");
+  const { categories, columns, colors, formats, labels, legend, table, tooltip, references, referenceValues } = useCartesianData(
+    props,
+    kind === "line" ? "line" : "box",
+  );
+  const isDots = (s: number) => kind === "line" && props.series[s]?.display === "dots";
   const id = useId();
   const stacks = kind === "area" && isStacked ? stack(columns) : null;
-  const values = stacks ? stacks.flat(2) : columns.flat().filter((value): value is number => value !== null);
+  const values = [...(stacks ? stacks.flat(2) : columns.flat().filter((value): value is number => value !== null)), ...referenceValues];
   // Areas fill down to zero, so zero is on their axis.
   const scale = valueScale(values, { domain, includeZero: kind === "area" || startAtZero });
 
@@ -58,6 +65,15 @@ function LinearChart<T>({
         <g className="motion-safe:animate-cennge-reveal">
           {columns.map((_column, s) => {
             const points = tops[s]!;
+            if (isDots(s)) {
+              // Raw readings: small dots, so the trend drawn over them leads.
+              return (
+                <g key={s} style={{ color: colors[s] }} data-slot="chart-dots">
+                  {/* Small rather than faint: each reading keeps the palette's contrast. */}
+                  {points.map((point, i) => (point ? <circle key={i} cx={point[0]} cy={point[1]} r={2.25} fill="currentColor" /> : null))}
+                </g>
+              );
+            }
             const lines = runs(points.map((point) => point !== null)).map((run) => ({ run, top: run.map((i) => points[i]!) }));
             return (
               <g key={s} style={{ color: colors[s] }}>
@@ -122,6 +138,8 @@ function LinearChart<T>({
       placement="point"
       scale={scale}
       axisFormat={formats.axis}
+      valueFormat={formats.value}
+      references={references}
       showGrid={props.showGrid ?? true}
       showCategoryAxis={props.showXAxis ?? true}
       showValueAxis={props.showYAxis ?? true}

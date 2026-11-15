@@ -3,6 +3,7 @@ import { useCenngeDefaults } from "../provider";
 import { cn } from "../utils/cn";
 import { useId } from "../utils/use-id";
 import type { ValueScale } from "./scale";
+import type { ResolvedReference } from "./series";
 import { useSize, type Size } from "./use-size";
 
 export interface ChartLabels {
@@ -10,11 +11,23 @@ export interface ChartLabels {
   keyboardHint: string;
   /** Shown in place of a chart with nothing to draw. */
   empty: string;
+  /** Names the list of goals and ranges read after the data. */
+  references: string;
+  /** A goal line with no label of its own. */
+  reference: string;
+  /** A band with no label of its own. */
+  range: string;
+  /** A band's span, its ends already formatted. */
+  rangeValue: (from: string, to: string) => string;
 }
 
 export const defaultChartLabels: ChartLabels = {
   keyboardHint: "Arrow keys move between the values.",
   empty: "No data",
+  references: "Goals and ranges",
+  reference: "Goal",
+  range: "Range",
+  rangeValue: (from, to) => `${from} to ${to}`,
 };
 
 /** Numbers as the provider's locale writes them: values in full, the axis short (1.2K). */
@@ -40,8 +53,8 @@ export interface LegendItem {
   key: string;
   label: string;
   color: string;
-  /** The mark it stands for: a box for bars and areas, a stroke for lines. */
-  shape: "box" | "line";
+  /** The mark it stands for: a box for bars and areas, a stroke for lines, a dot for readings. */
+  shape: "box" | "line" | "dot";
   value?: string;
 }
 
@@ -53,7 +66,10 @@ export function ChartLegend({ items, className }: { items: LegendItem[]; classNa
         <li key={item.key} className="flex min-w-0 items-center gap-1.5">
           <span
             aria-hidden="true"
-            className={cn("shrink-0", item.shape === "line" ? "h-0.5 w-3 rounded-full" : "size-2.5 rounded-[3px]")}
+            className={cn(
+              "shrink-0",
+              item.shape === "line" ? "h-0.5 w-3 rounded-full" : item.shape === "dot" ? "size-1.5 rounded-full" : "size-2.5 rounded-[3px]",
+            )}
             style={{ background: item.color }}
           />
           <span className="truncate text-foreground">{item.label}</span>
@@ -71,6 +87,8 @@ export interface TooltipRow {
   label: string;
   value: string;
   color: string;
+  /** The mark the row is keyed by, as in the legend. @default "line" */
+  shape?: LegendItem["shape"];
 }
 
 export interface TooltipContent {
@@ -92,7 +110,10 @@ export function ChartTooltip({ content, style }: { content: TooltipContent; styl
       <ul className="flex flex-col gap-1">
         {content.rows.map((row) => (
           <li key={row.key} className="flex items-center gap-2">
-            <span className="h-0.5 w-3 shrink-0 rounded-full" style={{ background: row.color }} />
+            <span
+              className={cn("shrink-0", row.shape === "dot" ? "mx-[3px] size-1.5 rounded-full" : row.shape === "box" ? "size-2.5 rounded-[3px]" : "h-0.5 w-3 rounded-full")}
+              style={{ background: row.color }}
+            />
             <span className="truncate text-muted">{row.label}</span>
             <span className="ml-auto pl-3 font-semibold text-foreground tabular-nums">{row.value}</span>
           </li>
@@ -228,6 +249,9 @@ export interface CartesianFrameProps {
   placement: "band" | "point";
   scale: ValueScale;
   axisFormat: (value: number) => string;
+  /** Values in full, for the references read to screen readers. */
+  valueFormat?: (value: number) => string;
+  references?: ResolvedReference[];
   showGrid: boolean;
   showCategoryAxis: boolean;
   showValueAxis: boolean;
@@ -257,6 +281,8 @@ export function CartesianFrame({
   placement,
   scale,
   axisFormat,
+  valueFormat = String,
+  references = [],
   showGrid,
   showCategoryAxis,
   showValueAxis,
@@ -360,6 +386,22 @@ export function CartesianFrame({
   };
 
   const zero = scale.min <= 0 && scale.max >= 0 ? scale.ratio(0) : null;
+  // Where a value sits along the value axis, in percent from the top (vertical) or the left (horizontal).
+  const along = (value: number) => {
+    const ratio = Math.min(1, Math.max(0, scale.ratio(value)));
+    // Rounded: 19.999999999999996% helps no one reading the markup.
+    return Math.round((isVertical ? 1 - ratio : ratio) * 100_000) / 1000;
+  };
+  // A fixed domain may leave a reference out: a line outside it is not drawn, a band is cut at its edge.
+  const isInside = (value: number) => value >= scale.min && value <= scale.max;
+  const bands = references.filter(
+    (reference): reference is Extract<ResolvedReference, { kind: "band" }> =>
+      reference.kind === "band" && reference.to >= scale.min && reference.from <= scale.max,
+  );
+  const lines = references.filter(
+    (reference): reference is Extract<ResolvedReference, { kind: "line" }> => reference.kind === "line" && isInside(reference.value),
+  );
+  const drawn = [...bands, ...lines];
 
   return (
     <figure aria-label={label} data-slot={slot} className={cn("flex h-72 w-full min-w-0 flex-col gap-3", className)}>
@@ -376,6 +418,30 @@ export function CartesianFrame({
             <div className="absolute inset-0 flex items-center justify-center text-sm text-muted">{emptyContent ?? labels.empty}</div>
           ) : null}
           <svg aria-hidden="true" className="absolute inset-0 size-full overflow-visible" shapeRendering="crispEdges">
+            {isEmpty
+              ? null
+              : bands.map((band, i) => {
+                  const [start, end] = isVertical ? [along(band.to), along(band.from)] : [along(band.from), along(band.to)];
+                  // Plain percentages: SVG attributes take no calc().
+                  const [offset, size] = [`${start}%`, `${end - start}%`];
+                  // Thin edges in the band's colour, so its bounds show where its tint is faint.
+                  const edges = [start, end].map((at) => `${at}%`);
+                  return (
+                    <g key={i} data-slot="chart-reference-band">
+                      <rect
+                        {...(isVertical ? { x: 0, width: "100%", y: offset, height: size } : { y: 0, height: "100%", x: offset, width: size })}
+                        style={{ fill: `color-mix(in oklab, ${band.color} 14%, transparent)` }}
+                      />
+                      {edges.map((edge, e) => (
+                        <line
+                          key={e}
+                          {...(isVertical ? { x1: 0, x2: "100%", y1: edge, y2: edge } : { y1: 0, y2: "100%", x1: edge, x2: edge })}
+                          style={{ stroke: `color-mix(in oklab, ${band.color} 70%, transparent)` }}
+                        />
+                      ))}
+                    </g>
+                  );
+                })}
             {showGrid && !isEmpty
               ? ticks.map((tick) => {
                   const ratio = scale.ratio(tick);
@@ -395,6 +461,30 @@ export function CartesianFrame({
               )
             ) : null}
           </svg>
+          {isEmpty
+            ? null
+            : drawn.map((reference, i) => {
+                if (!reference.label) return null;
+                const at = along(reference.kind === "line" ? reference.value : Math.min(reference.to, scale.max));
+                // Under the marks: data is never hidden behind a label.
+                const isNearStart = at < 10;
+                return (
+                  <span
+                    key={i}
+                    aria-hidden="true"
+                    data-slot="chart-reference-label"
+                    className="pointer-events-none absolute rounded-[3px] px-1 text-[11px] leading-4 font-medium whitespace-nowrap text-muted"
+                    style={{
+                      background: "var(--cennge-chart-surface, var(--cennge-surface-3))",
+                      ...(isVertical
+                        ? { right: 0, top: `${at}%`, transform: isNearStart ? "translateY(2px)" : "translateY(calc(-100% - 2px))" }
+                        : { top: 0, left: `${at}%`, transform: isNearStart ? "translateX(4px)" : "translateX(calc(-100% - 4px))" }),
+                    }}
+                  >
+                    {reference.label}
+                  </span>
+                );
+              })}
           {size && size.width > 0 && size.height > 0 && !isEmpty ? (
             <svg
               aria-hidden="true"
@@ -406,6 +496,24 @@ export function CartesianFrame({
               data-slot="chart-marks"
             >
               {renderMarks(size, active?.index ?? null)}
+            </svg>
+          ) : null}
+          {lines.length && !isEmpty ? (
+            // Over the marks: a goal stays visible across the bars that pass it.
+            <svg aria-hidden="true" className="pointer-events-none absolute inset-0 size-full overflow-visible" shapeRendering="crispEdges">
+              {lines.map((line, i) => {
+                const offset = `${along(line.value)}%`;
+                return (
+                  <line
+                    key={i}
+                    data-slot="chart-reference-line"
+                    {...(isVertical ? { x1: 0, x2: "100%", y1: offset, y2: offset } : { y1: 0, y2: "100%", x1: offset, x2: offset })}
+                    stroke={line.color}
+                    strokeWidth={1.5}
+                    strokeDasharray="5 4"
+                  />
+                );
+              })}
             </svg>
           ) : null}
           {isEmpty ? null : (
@@ -438,6 +546,17 @@ export function CartesianFrame({
         {active?.source === "keyboard" && content ? describe(content) : ""}
       </p>
       <ChartTable caption={label} columns={table.columns} rows={table.rows} />
+      {references.length ? (
+        <ul aria-label={labels.references} className="sr-only">
+          {references.map((reference, i) => (
+            <li key={i}>
+              {`${reference.label ?? (reference.kind === "line" ? labels.reference : labels.range)}: ${
+                reference.kind === "line" ? valueFormat(reference.value) : labels.rangeValue(valueFormat(reference.from), valueFormat(reference.to))
+              }`}
+            </li>
+          ))}
+        </ul>
+      ) : null}
     </figure>
   );
 }

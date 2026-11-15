@@ -4,7 +4,9 @@ import { CenngeProvider } from "../provider";
 import { BarChart } from "./bar-chart";
 import { chartColor } from "./colors";
 import { DonutChart } from "./donut-chart";
+import { LineChart } from "./line-chart";
 import { Sparkline } from "./sparkline";
+import { movingAverage } from "./trend";
 
 const data = [
   { month: "Jan", stars: 120, forks: 14 },
@@ -115,5 +117,81 @@ describe("Sparkline", () => {
     const { container } = render(<Sparkline aria-label="Area" data={[1, 2, 3]} variant="area" />);
     expect(container.querySelectorAll("path")).toHaveLength(2);
     expect(container.querySelector("linearGradient")).not.toBeNull();
+  });
+});
+
+describe("references", () => {
+  const week = [
+    { day: "Mon", commits: 3 },
+    { day: "Tue", commits: 4 },
+  ];
+
+  it("the value axis reaches a goal above the data; the goal and a band are drawn and read out", () => {
+    const html = renderToString(
+      <BarChart
+        aria-label="Commits"
+        data={week}
+        index="day"
+        series={[{ key: "commits" }]}
+        references={[{ value: 10, label: "Goal" }, { from: 2, to: 5, label: "Usual", color: "success" }]}
+      />,
+    );
+    // Without the goal the axis would end at 4.
+    expect(html).toContain(">10<");
+    expect(html).toContain('data-slot="chart-reference-line"');
+    expect(html).toContain('data-slot="chart-reference-band"');
+    expect(html).toContain("<li>Goal: 10</li>");
+    expect(html).toContain("<li>Usual: 2 to 5</li>");
+  });
+
+  it("a label is optional: the screen reader text names it generically", () => {
+    render(<BarChart aria-label="Commits" data={week} index="day" series={[{ key: "commits" }]} references={[{ value: 5 }]} />);
+    expect(screen.getByText("Goal: 5")).toBeInTheDocument();
+    expect(screen.getByRole("list", { name: "Goals and ranges" })).toBeInTheDocument();
+    expect(document.querySelector('[data-slot="chart-reference-label"]')).toBeNull();
+  });
+});
+
+describe("references against a fixed domain", () => {
+  it("a line outside the domain is not drawn but still read; a band is cut at its edge; a label flips inside near the top", () => {
+    const html = renderToString(
+      <BarChart
+        aria-label="Steps"
+        data={[{ day: "Mon", steps: 9000 }]}
+        index="day"
+        series={[{ key: "steps" }]}
+        domain={[0, 10000]}
+        references={[{ value: 12000, label: "Stretch" }, { value: 10000, label: "Goal" }, { from: 8000, to: 15000, label: "Active" }]}
+      />,
+    );
+    expect(html.match(/data-slot="chart-reference-line"/g)).toHaveLength(1);
+    expect(html).toContain("<li>Stretch: 12,000</li>");
+    expect(html).toContain('height="20%"');
+    // The goal is the top of the axis: its label sits under the line, inside the plot.
+    expect(html).toMatch(/top:0%;transform:translateY\(2px\)">Goal</);
+  });
+
+  it("a series drawn as dots is keyed by a dot in the legend", () => {
+    const { container } = render(
+      <LineChart
+        aria-label="Weight"
+        data={[
+          { d: "1", kg: 80, avg: 80 },
+          { d: "2", kg: 81, avg: 80.5 },
+        ]}
+        index="d"
+        series={[{ key: "kg", display: "dots" }, { key: "avg" }]}
+      />,
+    );
+    expect(container.querySelector('[data-slot="chart-legend"] li span')).toHaveClass("rounded-full", "size-1.5");
+  });
+});
+
+describe("movingAverage", () => {
+  it("averages each value with the ones before it in the window, skipping missing ones", () => {
+    expect(movingAverage([2, 4, 6, 8], 2)).toEqual([2, 3, 5, 7]);
+    expect(movingAverage([2, null, 6, null, null], 2)).toEqual([2, 2, 6, 6, null]);
+    expect(movingAverage([1, 2, 3], 0)).toEqual([1, 2, 3]);
+    expect(movingAverage([1, 2, 3], Number.NaN)).toEqual([1, 2, 3]);
   });
 });

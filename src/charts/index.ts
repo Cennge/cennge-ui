@@ -3,6 +3,7 @@ export { BarChart, type BarChartProps } from "./bar-chart";
 export { AreaChart, LineChart, type AreaChartProps, type LineChartProps } from "./line-chart";
 export { defaultChartLabels, type ChartLabels } from "./frame";
 export type { ChartColor } from "./colors";
-export type { CartesianChartProps, ChartSeries } from "./series";
+export type { CartesianChartProps, ChartReference, ChartSeries, LineChartSeries } from "./series";
+export { movingAverage } from "./trend";
 export { DonutChart, defaultDonutChartLabels, type DonutChartLabels, type DonutChartProps } from "./donut-chart";
 export { Sparkline, type SparklineProps } from "./sparkline";
