@@ -24,6 +24,8 @@ jobs:
       - run: pnpm typecheck
       - run: pnpm test
       - run: pnpm build
+      # The docs site's examples against the built package, and its props tables from the sources.
+      - run: pnpm --filter cennge-ui-site typecheck
       - run: pnpm check:package
       # Each typical import stays within its size: catches tree shaking breaking.
       - run: pnpm size
@@ -51,8 +53,9 @@ jobs:
       - run: pnpm install --frozen-lockfile
       # Built as published, with the lockfile's React 19 types.
       - run: pnpm build
+      # -w: into the repository root, the library (the docs site is a workspace package beside it).
       - run: >-
-          pnpm add -D react@${{ matrix.react }} react-dom@${{ matrix.react }}
+          pnpm add -w -D react@${{ matrix.react }} react-dom@${{ matrix.react }}
           @types/react@${{ matrix.react }} @types/react-dom@${{ matrix.react }}
           @testing-library/react@${{ matrix.testing-library }}
       - run: pnpm test
@@ -123,4 +126,46 @@ jobs:
           path: |
             playwright-report
             test-results
+          retention-days: 7
+
+  # The documentation site (site/): built as a static export on the library's dist/, then every page checked
+  # in the same five browser profiles: renders, no console error, axe in both themes, links, search, theme.
+  site:
+    name: Docs site · ${{ matrix.engine }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - engine: chromium
+            projects: --project=chromium --project=chromium-mobile
+          - engine: firefox
+            projects: --project=firefox
+            display: sh ../scripts/with-display.sh
+          - engine: webkit
+            projects: --project=webkit --project=webkit-mobile
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - run: pnpm --filter cennge-ui-site build
+      - run: pnpm exec playwright install --with-deps ${{ matrix.engine }}
+      - if: matrix.engine == 'firefox'
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends xvfb xdotool libgl1-mesa-dri
+      - run: ${{ matrix.display }} pnpm exec playwright test ${{ matrix.projects }}
+        working-directory: site
+        env:
+          CENNGE_FIREFOX_HEADED: ${{ matrix.engine == 'firefox' && '1' || '' }}
+      - uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: playwright-report-site-${{ matrix.engine }}
+          path: |
+            site/playwright-report
+            site/test-results
           retention-days: 7
