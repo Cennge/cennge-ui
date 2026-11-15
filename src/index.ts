@@ -35,6 +35,7 @@ export * from "./components/progress";
 export * from "./components/progress-ring";
 export * from "./components/prose";
 export * from "./components/radio";
+export * from "./components/range-meter";
 export * from "./components/rating";
 export * from "./components/scroll-area";
 export * from "./components/select";
