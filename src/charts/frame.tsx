@@ -136,7 +136,9 @@ export interface ChartTableData {
 /** The same data for screen readers, as a table they can walk by row and column. */
 export function ChartTable({ caption, columns, rows }: ChartTableData & { caption: string }) {
   return (
-    <table className="sr-only">
+    // Hidden by a wrapper: a table clips its own box, not its caption, which would show over the chart.
+    <div className="sr-only">
+    <table>
       <caption>{caption}</caption>
       <thead>
         <tr>
@@ -163,6 +165,7 @@ export function ChartTable({ caption, columns, rows }: ChartTableData & { captio
         ))}
       </tbody>
     </table>
+    </div>
   );
 }
 
