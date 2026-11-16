@@ -22,7 +22,9 @@ const accordion = tv({
       "group-data-[state=open]:rotate-180 motion-reduce:transition-none",
     ],
     content: [
-      "overflow-hidden text-sm text-muted",
+      // Clipped for the open and close animation, 4px wider than the item on each side: a focus ring
+      // (2px off, 2px wide) on a field inside it shows whole.
+      "-mx-1 overflow-hidden px-1 text-sm text-muted",
       "data-[state=open]:animate-cennge-accordion-down data-[state=closed]:animate-cennge-accordion-up motion-reduce:animate-none",
     ],
   },
