@@ -2,14 +2,19 @@
 
 import { useState } from "react";
 import { Alert, Snippet, Step, Stepper, Timeline, TimelineItem } from "cennge-ui";
+import changelog from "@/generated/releases.json";
 
-const releases = [
-  { version: "0.3.1", title: "README maps set in New York", date: "2026-11-01", time: "Nov 1" },
-  { version: "0.3.0", title: "Charts, ThemeScript and five fixes", date: "2026-10-31", time: "Oct 31" },
-  { version: "0.2.0", title: "The map entry, cennge-ui/map", date: "2026-10-21", time: "Oct 21" },
-  { version: "0.1.1", title: "Date limits accept null", date: "2026-10-20", time: "Oct 20" },
-  { version: "0.1.0", title: "First release", date: "2026-10-19", time: "Oct 19" },
-];
+// The same text on the server and in every time zone.
+const day = new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", timeZone: "UTC" });
+
+// The five latest releases, from the library's CHANGELOG.md at build time.
+const releases = changelog.slice(0, 5).map((release) => ({
+  version: release.version,
+  title: release.title,
+  date: release.date ?? undefined,
+  time: release.date ? day.format(new Date(release.date)) : undefined,
+}));
+const latest = changelog[0]!;
 
 export default function UpdateSteps({ step, onStepChange }: { step?: number; onStepChange?: (step: number) => void }) {
   const [ownStep, setOwnStep] = useState(0);
@@ -43,11 +48,7 @@ export default function UpdateSteps({ step, onStepChange }: { step?: number; onS
       <Step title="Update" description="Every app">
         <div className="flex flex-col gap-3">
           <Snippet>npm update cennge-ui</Snippet>
-          <Alert
-            color="success"
-            title="cennge-ui 0.3.1"
-            description="With the Kbd, Button and Select fixes from 0.3.0."
-          />
+          <Alert color="success" title={`cennge-ui ${latest.version}`} description={`${latest.title}, in every app at once.`} />
         </div>
       </Step>
     </Stepper>

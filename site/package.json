@@ -9,7 +9,7 @@
     "serve": "node scripts/serve.mjs",
     "typecheck": "pnpm generate && tsc --noEmit",
     "test:e2e": "playwright test",
-    "generate": "node scripts/props.mjs && node scripts/facts.mjs && node scripts/maplibre-worker.mjs"
+    "generate": "node scripts/props.mjs && node scripts/facts.mjs && node scripts/releases.mjs && node scripts/maplibre-worker.mjs"
   },
   "dependencies": {
     "@fontsource/inter": "^5.3.0",
