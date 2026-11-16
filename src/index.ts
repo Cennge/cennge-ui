@@ -21,6 +21,7 @@ export * from "./components/dialog";
 export * from "./components/drawer";
 export * from "./components/dropdown";
 export * from "./components/empty-state";
+export * from "./components/fab";
 export * from "./components/file-upload";
 export * from "./components/form";
 export * from "./components/hover-card";
