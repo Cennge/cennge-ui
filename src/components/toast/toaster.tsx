@@ -28,9 +28,10 @@ const viewport = tv({
       "top-left": "top-0 left-0 flex-col-reverse [--cennge-toast-from:-16px]",
       "top-center": "top-0 left-1/2 -translate-x-1/2 flex-col-reverse [--cennge-toast-from:-16px]",
       "top-right": "top-0 right-0 flex-col-reverse [--cennge-toast-from:-16px]",
-      "bottom-left": "bottom-0 left-0 flex-col",
-      "bottom-center": "bottom-0 left-1/2 -translate-x-1/2 flex-col",
-      "bottom-right": "right-0 bottom-0 flex-col",
+      // Above a fixed BottomNavigation and BottomBar (see utils/use-bottom-stack), at the very bottom without them.
+      "bottom-left": "bottom-[calc(var(--cennge-bottom-nav,0px)+var(--cennge-bottom-bar,0px))] left-0 flex-col",
+      "bottom-center": "bottom-[calc(var(--cennge-bottom-nav,0px)+var(--cennge-bottom-bar,0px))] left-1/2 -translate-x-1/2 flex-col",
+      "bottom-right": "right-0 bottom-[calc(var(--cennge-bottom-nav,0px)+var(--cennge-bottom-bar,0px))] flex-col",
     },
   },
 });
