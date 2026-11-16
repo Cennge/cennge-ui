@@ -42,6 +42,7 @@ const testedByRole = {
   "area-chart": ["line-chart.spec.ts"],
   "bar-chart": ["chart-references.spec.ts"],
   "line-chart": ["chart-references.spec.ts"],
+  drawer: ["mobile-shell.spec.ts"],
   "map-routes": ["map.spec.ts", "map-data.spec.ts"],
 };
 

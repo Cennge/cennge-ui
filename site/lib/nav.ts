@@ -99,6 +99,16 @@ export const nav: NavFamily[] = [
     ],
   },
   {
+    title: "Mobile",
+    summary: "The shell of an app on a phone: bars at the bottom, a floating action, rows that swipe.",
+    pages: [
+      { slug: "bottom-navigation", title: "BottomNavigation", summary: "Three to five places of an app, in a bar at the bottom.", keywords: ["tab bar", "bottom tabs", "mobile"], imports: ["BottomNavigation","BottomNavigationItem"] },
+      { slug: "bottom-bar", title: "BottomBar", summary: "The action a screen is for, pinned in reach of a thumb.", keywords: ["action bar", "sticky footer", "mobile"] },
+      { slug: "floating-action-button", title: "FloatingActionButton", summary: "The one action a screen is about, floating at the bottom right.", keywords: ["FAB", "mobile"], imports: ["FloatingActionButton"] },
+      { slug: "swipe-actions", title: "SwipeActions", summary: "A list row with actions behind it: swipe, or use its menu.", keywords: ["swipe to delete", "row actions", "mobile"] },
+    ],
+  },
+  {
     title: "Data display",
     summary: "Tables, trees, long lists and the small pieces inside them.",
     pages: [

@@ -1,0 +1,56 @@
+import { Entry, Example, Plate, Props } from "@/components/docs";
+import BottomBarPlate from "@/examples/bottom-bar/plate";
+
+export const metadata = { title: "BottomBar" };
+
+<Entry
+  slug="bottom-bar"
+  lede="A bar at the bottom of the screen for the action the screen is for, in reach of a thumb, that never moves while you work."
+  plate={
+    <Plate
+      notes={[
+        "Run the next job: the list above scrolls under the bar, and the button stays where your thumb is.",
+        <>
+          With <code>position="sticky"</code> it rests at the bottom of its scroll container, as in this frame.
+        </>,
+        "Fixed, it stands on a fixed BottomNavigation and pads for the home indicator only when nothing under it does.",
+      ]}
+      caption="Live: run the jobs. The frame stands in for a phone's screen."
+    >
+      <BottomBarPlate />
+    </Plate>
+  }
+  marks={{
+    pattern: <>A plain <code>&lt;div&gt;</code>: put a button, a status or both in it</>,
+    extra: [{ term: "Stacks", detail: <>Above a fixed BottomNavigation; writes <code>--cennge-bottom-bar</code></> }],
+  }}
+>
+
+## When to use
+
+Use BottomBar on a screen built around one action that people repeat, often one-handed: Log set, Add to breakfast, Save, Check out. Put the button the full width of the bar or at its end, and a short status beside it if it helps, such as "Set 3 of 4". One bar per screen.
+
+## Similar
+
+- [FloatingActionButton](/docs/floating-action-button/) floats one icon over the content; BottomBar gives an action a whole row and room for its label and a status.
+- [BottomNavigation](/docs/bottom-navigation/) moves between screens; BottomBar acts on the one you are in.
+- [Drawer](/docs/drawer/)'s `DrawerFooter` keeps buttons at the bottom of a sheet or panel, not of the screen.
+
+## Fixed, sticky or static
+
+`position="fixed"`, the default, pins it to the bottom of the screen. Over a fixed [BottomNavigation](/docs/bottom-navigation/) it stands on the navigation instead of under it, and it writes its own height to `--cennge-bottom-bar`, so a [FloatingActionButton](/docs/floating-action-button/) floats above both. Keep your page's end clear of it:
+
+```tsx
+<main className="pb-[calc(var(--cennge-bottom-bar,0px)+var(--cennge-bottom-nav,0px))]">…</main>
+<BottomBar>
+  <Button color="primary" fullWidth onClick={logSet}>Log set</Button>
+</BottomBar>
+```
+
+`sticky` keeps it at the bottom of its scroll container, as on the plate; `static` leaves it in the flow.
+
+## Props
+
+<Props of="BottomBarProps" />
+
+</Entry>

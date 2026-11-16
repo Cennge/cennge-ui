@@ -1,0 +1,62 @@
+import { Entry, Example, Plate, Props } from "@/components/docs";
+import FabPlate from "@/examples/floating-action-button/plate";
+import Extended from "@/examples/floating-action-button/extended";
+
+export const metadata = { title: "FloatingActionButton" };
+
+<Entry
+  slug="floating-action-button"
+  lede="The one action a screen is about, floating at the bottom right in reach of a thumb: a plus to log something, a play to start."
+  plate={
+    <Plate
+      notes={[
+        "Press the plus: it opens a menu of what to log, as the trigger of a Dropdown. It can open a sheet the same way, or do the action itself.",
+        "Without a visible label it is named by its label for screen readers: \"Log\".",
+        <>
+          Fixed, it floats above a <a href="/docs/bottom-navigation/">BottomNavigation</a> and a <a href="/docs/bottom-bar/">BottomBar</a> by itself; in this frame it is placed with a class.
+        </>,
+      ]}
+      caption="Live: log something. The frame stands in for a phone's screen."
+    >
+      <FabPlate />
+    </Plate>
+  }
+  marks={{
+    pattern: <>A <code>&lt;button&gt;</code> named by <code>label</code>; or your link through <code>asChild</code></>,
+    extra: [
+      { term: "Sizes", detail: "56px, or 96px with size lg" },
+      { term: "Placement", detail: <>Fixed bottom right, above the bottom stack (<code>--cennge-bottom-nav</code>, <code>--cennge-bottom-bar</code>)</> },
+    ],
+  }}
+>
+
+## When to use
+
+Use one FloatingActionButton on a screen with one obvious action: log a meal, add a workout, start a run. If the action needs a choice first, let it open a [Dropdown](/docs/dropdown/) or a bottom [Drawer](/docs/drawer/) of the options, the most frequent first. Not every screen needs one; never use two.
+
+## Similar
+
+- [Button](/docs/button/) sits in the flow of the page with the rest of its content.
+- [BottomBar](/docs/bottom-bar/) gives an action a full row with its label, for a screen where it repeats every few seconds.
+
+## Extended, large, in colour
+
+`isExtended` shows the label beside the icon; fold it away as the page scrolls and bring it back at the top. `size="lg"` makes a 96px button for a screen with nothing else to do, and `color` takes a theme colour.
+
+<Example file="floating-action-button/extended">
+  <Extended />
+</Example>
+
+## Fixed to the screen
+
+`position="fixed"`, the default, places it 16px from the right edge and above whatever is fixed to the bottom: a [BottomNavigation](/docs/bottom-navigation/), a [BottomBar](/docs/bottom-bar/), and the home indicator. `position="static"` leaves it where you put it, as on this page.
+
+## Accessibility
+
+Its name is its `label`, given as `aria-label` while only the icon shows and as visible text once extended, so it is the same either way. The icon is hidden from screen readers. As a trigger it forwards its ref, so a Dropdown or a Drawer opens from it and gives focus back to it.
+
+## Props
+
+<Props of="FloatingActionButtonProps" />
+
+</Entry>

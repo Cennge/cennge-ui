@@ -1,0 +1,81 @@
+import { Entry, Example, Plate, Props } from "@/components/docs";
+import BottomNavigationPlate from "@/examples/bottom-navigation/plate";
+import Links from "@/examples/bottom-navigation/links";
+
+export const metadata = { title: "BottomNavigation" };
+
+<Entry
+  slug="bottom-navigation"
+  lede="The three to five top-level places of an app on a phone, in a bar at the bottom of the screen: an icon over a short label each."
+  plate={
+    <Plate
+      notes={[
+        "Tap a place: a pill lights behind its icon and it becomes the current page for screen readers.",
+        "Runs carries a count, read with its label: \"Runs 3\". Profile carries a dot, for something new without a number.",
+        <>
+          Here it sits at the foot of a frame with <code>position="static"</code>; in an app it is fixed to the bottom of the screen.
+        </>,
+      ]}
+      caption="Live: pick a place. The frame stands in for a phone's screen."
+    >
+      <BottomNavigationPlate />
+    </Plate>
+  }
+  marks={{
+    pattern: (
+      <>
+        A named <code>&lt;nav&gt;</code> of buttons or links, the current one <code>aria-current="page"</code>
+      </>
+    ),
+    state: <>Controlled: pass <code>isActive</code> to the item for the current place</>,
+    extra: [
+      { term: "Targets", detail: "64px tall, each a full share of the bar's width" },
+      { term: "Safe area", detail: <>Pads for the home indicator; needs <code>viewport-fit=cover</code></> },
+    ],
+  }}
+>
+
+## When to use
+
+Use BottomNavigation for the few places a phone app is made of, those people switch between all day: Today, Log, Progress, Profile. Keep it to three to five, each a short label under an icon, and keep it on every top-level screen in the same order. On a wide screen give the same places a [Sidebar](/docs/sidebar/) instead, and hide the bar with a class such as `md:hidden`.
+
+## Similar
+
+- [Tabs](/docs/tabs/) switch between views inside one screen, at the top of it; BottomNavigation moves between the screens of the app.
+- [Sidebar](/docs/sidebar/) holds the same places, and more of them, on a desktop.
+- [BottomBar](/docs/bottom-bar/) is the bar for one screen's main action; it stands on top of the navigation when both are there.
+
+## Links to pages
+
+With `asChild`, an item renders your link, a Next.js `Link` here, and puts the icon and label inside it. Mark the current page with `isActive`, from `usePathname()` in a Next.js app.
+
+<Example file="bottom-navigation/links">
+  <Links />
+</Example>
+
+## Fixed to the bottom
+
+`position` is `fixed` by default: the bar pins to the bottom of the screen and pads itself for the home indicator, once your viewport meta has `viewport-fit=cover`. It writes its height to `--cennge-bottom-nav` on `<html>`, so a [BottomBar](/docs/bottom-bar/) and a [FloatingActionButton](/docs/floating-action-button/) sit above it by themselves, and your page can keep its last line clear:
+
+```tsx
+<main className="pb-[var(--cennge-bottom-nav,0px)]">…</main>
+<BottomNavigation aria-label="Main" className="md:hidden">…</BottomNavigation>
+```
+
+`sticky` keeps it at the bottom of its scroll container instead, and `static` leaves it in the flow, as on this page.
+
+## Accessibility
+
+The bar is a `<nav>` named by its `aria-label`; each place is a button, or your link through `asChild`, named by its label and marked `aria-current="page"` when `isActive`. A count is part of the name, "Runs 3"; a dot is read as `badgeLabel`, "Profile new" unless you give it a word of your own. The icons are hidden from screen readers.
+
+## Props
+
+### BottomNavigation
+
+<Props of="BottomNavigationProps" />
+
+### BottomNavigationItem
+
+<Props of="BottomNavigationItemProps" />
+
+</Entry>

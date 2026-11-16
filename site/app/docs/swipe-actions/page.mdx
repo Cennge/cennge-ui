@@ -1,0 +1,56 @@
+import { Entry, Example, Plate, Props } from "@/components/docs";
+import SwipeActionsPlate from "@/examples/swipe-actions/plate";
+
+export const metadata = { title: "SwipeActions" };
+
+<Entry
+  slug="swipe-actions"
+  lede="A list row with actions behind it: swipe it sideways on a phone to reveal them, or use the menu at the end of the row anywhere."
+  plate={
+    <Plate
+      notes={[
+        "On a phone, swipe a run to the left to reveal Dismiss, to the right for Re-run; swipe all the way to run it at once.",
+        "With a mouse or a keyboard, the dots at the end of each row open the same actions in a menu.",
+        "Dismiss a run: a toast offers Undo, so a slip of the thumb costs nothing.",
+      ]}
+      caption="Live: swipe on a phone, or use the menus. Sample data."
+    >
+      <SwipeActionsPlate />
+    </Plate>
+  }
+  marks={{
+    pattern: <>A menu button per row (<code>DropdownMenu</code>); swiped-to buttons are <code>inert</code> until revealed</>,
+    keyboard: [{ keys: "tab" }, { keys: "enter" }, { keys: "down" }, { keys: "escape" }],
+    extra: [
+      { term: "Gestures", detail: "Touch and pen swipe; a mouse uses the menu, so text still selects" },
+      { term: "Full swipe", detail: "Past three fifths of the row: the leading first or the trailing last action runs" },
+    ],
+  }}
+>
+
+## When to use
+
+Use SwipeActions in lists people tidy often on a phone: a food diary, sets of a workout, habits, a list of runs. Put the action you take most on the leading side (done, re-run) and the destructive one on the trailing edge, where a full swipe reaches it, and pair a delete with an undo rather than a confirmation.
+
+## Similar
+
+- [Dropdown](/docs/dropdown/) is the menu each row already has; on its own it is enough for a desktop list.
+- [ContextMenu](/docs/context-menu/) opens on right click and long press, for actions on any area rather than a row.
+
+## Actions on both sides
+
+`leadingActions` are revealed by a swipe to the right, `trailingActions` by a swipe to the left. Each has a `label`, an optional `icon` and `color`, and `onAction`. A swipe past half of the actions' width leaves them open; a tap on the row or anywhere else closes it again, without doing what the row does. Past three fifths of the row the action at the edge runs at once.
+
+## The menu is the way in
+
+A swipe is invisible until you know it is there. Every row keeps a button at its end, named "Actions for" its `label`, that lists all its actions in a menu. Hide it with `showMenu={false}` only when the row gives the same actions another way.
+
+## Styling
+
+The row slides over the actions, so it needs a background: `bg-surface-1` by default, the page's. Change it with `classNames.row` for a list on a card. A list with rounded corners and `overflow-hidden`, as on the plate, clips a focus ring that reaches past a row: draw the row's focus ring inside it (`focus-visible:-outline-offset-2`).
+
+## Props
+
+<Props of="SwipeActionsProps" />
+
+</Entry>

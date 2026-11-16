@@ -3,6 +3,7 @@ import DrawerPlate from "@/examples/drawer/plate";
 import Placements from "@/examples/drawer/placements";
 import BottomSheet from "@/examples/drawer/bottom-sheet";
 import Settings from "@/examples/drawer/settings";
+import SnapPoints from "@/examples/drawer/snap-points";
 
 export const metadata = { title: "Drawer" };
 
@@ -50,11 +51,21 @@ A Drawer is a [Dialog](/docs/dialog/) placed at an edge: the same parts, the sam
 
 ## A sheet from the bottom
 
-A bottom drawer has rounded top corners and a handle. The handle is drawn, not dragged: the sheet closes with the cross, Escape or a tap on the backdrop. Past 85% of the screen's height the body scrolls.
+A bottom drawer has rounded top corners and a handle. Drag the handle down to close it, or close it with the cross, Escape or a tap on the backdrop. Past 85% of the screen's height the body scrolls.
 
 <Example file="drawer/bottom-sheet">
   <BottomSheet />
 </Example>
+
+## Heights it rests at
+
+`snapPoints` gives a bottom sheet the heights it rests at, as shares of the screen, lowest first: `[0.45, 0.9]` opens it at 45% and lets it grow to 90%. The handle becomes a button: a click steps to the next height and from the tallest back to the lowest, and the arrow keys step up and down. A drag settles on the nearest height, a fling moves one step, and a drag below the lowest closes the sheet. The sheet is as tall as the height it rests at, so all of its body scrolls into view at each.
+
+<Example file="drawer/snap-points">
+  <SnapPoints />
+</Example>
+
+Control the height with `snapPoint` and `onSnapPointChange`; `isDraggable={false}` keeps the sheet still.
 
 ## Settings with a footer
 
