@@ -3,6 +3,7 @@ import type { Page } from "@playwright/test";
 // Fails every test on a console error or warning, hydration mismatches included.
 import { expect, serveMapTilesOffline, test } from "../../e2e/test";
 import { nav, pages } from "../lib/nav";
+import { findOverlaps } from "./overlaps";
 
 type Theme = "dark" | "light";
 
@@ -36,6 +37,9 @@ test.describe("every page", () => {
       await expect(page.getByRole("heading", { level: 1 })).toHaveText(entry.title);
       const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
       expect(overflow, "nothing scrolls the page sideways").toBeLessThanOrEqual(0);
+      // Once the charts have drawn and the animations ended.
+      await page.waitForTimeout(700);
+      expect(await findOverlaps(page), "no text over other text").toEqual([]);
       // React reports some hydration mismatches a moment after the commit.
       await page.waitForTimeout(300);
     });
@@ -58,6 +62,8 @@ test.describe("every page", () => {
 test("the landing page renders without a console error", async ({ page }) => {
   await open(page, "/");
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+  await page.waitForTimeout(700);
+  expect(await findOverlaps(page), "no text over other text").toEqual([]);
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
   expect(overflow, "nothing scrolls the page sideways").toBeLessThanOrEqual(0);
 });
