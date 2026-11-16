@@ -50,6 +50,7 @@ export * from "./components/snippet";
 export * from "./components/spinner";
 export * from "./components/stat-tile";
 export * from "./components/stepper";
+export * from "./components/swipe-actions";
 export * from "./components/switch";
 export * from "./components/table";
 export * from "./components/tabs";

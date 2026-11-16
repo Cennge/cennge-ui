@@ -48,6 +48,8 @@ export interface DropdownContentProps extends React.HTMLAttributes<HTMLDivElemen
   /** Gap from the trigger, in px. @default 6 */
   offset?: number;
   container?: HTMLElement | null;
+  /** Runs as the menu closes and returns focus to its trigger; `event.preventDefault()` to send focus elsewhere. */
+  onCloseAutoFocus?: (event: Event) => void;
 }
 
 export const DropdownContent = React.forwardRef<HTMLDivElement, DropdownContentProps>(function DropdownContent(
