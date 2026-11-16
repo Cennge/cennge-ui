@@ -8,7 +8,9 @@ export {
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
+  defaultDrawerLabels,
   type DrawerContentProps,
+  type DrawerLabels,
   type DrawerPlacement,
   type DrawerProps,
 } from "./drawer";
