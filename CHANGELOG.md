@@ -1,5 +1,15 @@
 # cennge-ui
 
+## 0.5.0
+
+### Minor Changes
+
+- 18923ec: `BottomBar`: a bar at the bottom of the screen for a screen's main action, standing on a fixed BottomNavigation and writing its height to `--cennge-bottom-bar`.
+- 7a959a1: `BottomNavigation`: the three to five places of a phone app in a bar at the bottom, an icon over a label each, with counts and dots read by screen readers. Fixed, it pads for the home indicator and writes its height to `--cennge-bottom-nav`; bottom toasts now sit above it.
+- 5285b2e: Drawer: a bottom sheet can rest at heights (`snapPoints`), its handle a button that steps through them by click or arrow keys; drag the handle to move between them or down to close. `DropdownContent` takes `onCloseAutoFocus`.
+- 5044403: `FloatingActionButton`: the one action of a screen, floating above the bottom bars and clear of the screen's corners; its label folds in and out with `isExtended`.
+- dc1433e: `SwipeActions`: a list row with actions behind it, revealed by a swipe on a phone, run by a full swipe, and always listed in a menu at the end of the row for a mouse, a keyboard or a screen reader.
+
 ## 0.4.2
 
 ### Patch Changes
