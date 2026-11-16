@@ -28,11 +28,12 @@ A regular npm package — `npm update` and every app gets the fix.
 - **Server Components ready.** `"use client"` ships in the build; helpers stay server-safe.
 
 > **Status:** early development (0.x).
-> **69 components.**
+> **74 components.**
 > Forms: Form · Button · Input · PasswordInput · OtpInput · Textarea · NumberInput · DatePicker · DateRangePicker · TimeInput · Select · Combobox · MultiSelect · TagsInput · FileUpload · Checkbox · RadioGroup · Switch · Slider · Rating · ToggleGroup.
 > Overlays: Dialog · AlertDialog · Command · Drawer · Popover · Dropdown · ContextMenu · HoverCard · Tooltip · Toast.
 > Display: Table · Tree · Calendar · RangeCalendar · Card · Badge · Avatar · Indicator · Alert · Progress · CircularProgress · ProgressRing · RangeMeter · StatTile · Skeleton · Spinner · EmptyState · Kbd · Snippet · Separator · Timeline · ScrollArea · Prose · Carousel · VirtualList.
 > Navigation: NavigationMenu · Sidebar · Tabs · Accordion · Breadcrumbs · Pagination · Stepper.
+> Mobile: BottomNavigation · BottomBar · FloatingActionButton · SwipeActions, and Drawer as a bottom sheet with snap points.
 > Theme: ThemeSwitch, with ThemeScript and useTheme.
 > Charts ([`cennge-ui/charts`](#charts-cennge-uicharts)): BarChart · LineChart · AreaChart · DonutChart · Sparkline.
 > Maps ([`cennge-ui/map`](#map-cennge-uimap)): Map with markers, popups, routes, GeoJSON, clusters and arcs.
@@ -639,6 +640,43 @@ For dashboards and trackers: a goal to reach, an amount against a limit, a numbe
   short of the goal, green within it, amber and striped past it, so it never rests on colour alone.
 - **StatTile** colours the change by `goodDirection` and says "better" or "worse" to screen readers. A
   Sparkline or a RangeMeter fits under it in `chart`.
+
+### Mobile: BottomNavigation, BottomBar, FloatingActionButton, SwipeActions
+
+The shell of a phone app. What is fixed to the bottom stacks by itself: the bar stands on the navigation, the
+floating button above both, each padding for the home indicator once (`viewport-fit=cover` in your viewport meta).
+
+```tsx
+<BottomNavigation aria-label="Main" className="md:hidden">
+  <BottomNavigationItem asChild icon={<HomeIcon />} label="Today" isActive={pathname === "/"}>
+    <Link href="/" />
+  </BottomNavigationItem>
+  <BottomNavigationItem asChild icon={<ListIcon />} label="Log" badge={3}>
+    <Link href="/log" />
+  </BottomNavigationItem>
+</BottomNavigation>
+
+<BottomBar><Button color="primary" fullWidth onClick={logSet}>Log set</Button></BottomBar>
+
+<FloatingActionButton icon={<PlusIcon />} label="Log a meal" />
+
+<SwipeActions
+  label="Oatmeal, 320 kcal"
+  leadingActions={[{ key: "fav", label: "Favourite", onAction: favourite }]}
+  trailingActions={[{ key: "delete", label: "Delete", color: "danger", onAction: remove }]}
+>
+  <FoodRow food={oatmeal} />
+</SwipeActions>
+
+<DrawerContent placement="bottom" snapPoints={[0.45, 0.9]}>…</DrawerContent>
+```
+
+- Heights go to `--cennge-bottom-nav` and `--cennge-bottom-bar` on `<html>`: `pb-[var(--cennge-bottom-nav,0px)]` keeps a
+  page's end clear. Bottom toasts sit above them.
+- **SwipeActions**: a swipe is a shortcut, never the only way. Every row keeps a menu with the same actions for a
+  mouse, a keyboard or a screen reader; after a row is removed, focus moves to the next one.
+- **Bottom sheet**: the handle is a button that steps through the heights (click or arrow keys); a drag settles on
+  the nearest, a fling moves one step, a drag below the lowest closes it.
 
 ### Form: errors from the server, under their fields
 
