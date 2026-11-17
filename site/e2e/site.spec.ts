@@ -48,6 +48,15 @@ test.describe("every page", () => {
       test(`${entry.title}: axe in ${theme}`, async ({ page }) => {
         test.slow();
         await open(page, path, theme);
+        // Colours are measured once things have faded in: a popup half way into its fade is half its contrast.
+        await page.evaluate(() =>
+          Promise.all(
+            document
+              .getAnimations()
+              .filter((animation) => animation.effect?.getTiming().iterations !== Infinity)
+              .map((animation) => animation.finished.catch(() => undefined)),
+          ),
+        );
         const { violations } = await new AxeBuilder({ page })
           .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"])
           // MapLibre's canvas is not ours to label; the map region around it is.
